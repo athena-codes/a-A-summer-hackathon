@@ -1,1 +1,1 @@
-# a-A-summer-hackathon
+# a/A-summer-hackathon
