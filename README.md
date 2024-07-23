@@ -21,8 +21,6 @@ npm install
 ```bash
 cd backend
 pip install -r requirements.txt
-Run the Application
-Start the backend server:
 ```
 
 ### Start back end server
