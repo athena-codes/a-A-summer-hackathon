@@ -5,7 +5,7 @@
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/your-repository.git
+git clone https://github.com/athena-codes/a-A-summer-hackathon.git
 ```
 
 ### Install Dependencies
@@ -13,29 +13,26 @@ Navigate to the frontend and backend directories and install the necessary depen
 
 ### Frontend
 ```bash
-Copy code
 cd frontend
 npm install
 ```
 
 ### Backend
 ```bash
-Copy code
 cd backend
 pip install -r requirements.txt
 Run the Application
 Start the backend server:
 ```
 
-### Copy code
+### Start back end server
 ```bash
-cd backend
-python app.py
+pipenv shell
+flask run
 ```
 
 ### Start the frontend development server:
 ```bash
-Copy code
 cd frontend
 npm start
 ```
