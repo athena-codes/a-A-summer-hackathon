@@ -1,50 +1,26 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Redirect } from 'react-router-dom';
-import { login } from '../../store/session';
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { login } from '../../store/session'
 
 const LoginForm = () => {
-  const [errors, setErrors] = useState([]);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const user = useSelector(state => state.session.user);
-  const dispatch = useDispatch();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const dispatch = useDispatch()
 
-  const onLogin = async (e) => {
-    e.preventDefault();
-    const data = await dispatch(login(email, password));
-    if (data) {
-      setErrors(data);
-    }
-  };
-
-  const updateEmail = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const updatePassword = (e) => {
-    setPassword(e.target.value);
-  };
-
-  if (user) {
-    return <Redirect to='/' />;
+  const onLogin = async e => {
+    e.preventDefault()
+    await dispatch(login(email, password))
   }
 
   return (
     <form onSubmit={onLogin}>
       <div>
-        {errors.map((error, ind) => (
-          <div key={ind}>{error}</div>
-        ))}
-      </div>
-      <div>
         <label htmlFor='email'>Email</label>
         <input
           name='email'
           type='text'
-          placeholder='Email'
           value={email}
-          onChange={updateEmail}
+          onChange={e => setEmail(e.target.value)}
         />
       </div>
       <div>
@@ -52,14 +28,13 @@ const LoginForm = () => {
         <input
           name='password'
           type='password'
-          placeholder='Password'
           value={password}
-          onChange={updatePassword}
+          onChange={e => setPassword(e.target.value)}
         />
-        <button type='submit'>Login</button>
       </div>
+      <button type='submit'>Login</button>
     </form>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm

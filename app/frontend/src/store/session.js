@@ -1,109 +1,77 @@
-// constants
-const SET_USER = 'session/SET_USER';
-const REMOVE_USER = 'session/REMOVE_USER';
+import { auth } from '../firebase'
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut
+} from 'firebase/auth'
 
-const setUser = (user) => ({
+// Assuming Firebase app is initialized in another file and exported
+import { firebaseApp } from '../firebase'
+
+
+// Action Types
+const SET_USER = 'session/SET_USER'
+
+// Action Creators
+const setUser = user => ({
   type: SET_USER,
   payload: user
-});
-
-const removeUser = () => ({
-  type: REMOVE_USER,
 })
 
-const initialState = { user: null };
-
-export const authenticate = () => async (dispatch) => {
-  const response = await fetch('/api/auth/', {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-  if (response.ok) {
-    const data = await response.json();
-    if (data.errors) {
-      return;
-    }
-  
-    dispatch(setUser(data));
+// Thunks
+export const authenticate = () => async dispatch => {
+  const user = auth.currentUser
+  if (user) {
+    dispatch(setUser(user))
   }
 }
 
-export const login = (email, password) => async (dispatch) => {
-  const response = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
+export const login = (email, password) => async dispatch => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
       email,
       password
-    })
-  });
-  
-  
-  if (response.ok) {
-    const data = await response.json();
-    dispatch(setUser(data))
-    return null;
-  } else if (response.status < 500) {
-    const data = await response.json();
-    if (data.errors) {
-      return data.errors;
-    }
-  } else {
-    return ['An error occurred. Please try again.']
+    )
+    dispatch(setUser(userCredential.user))
+  } catch (error) {
+    console.error('Error logging in:', error)
   }
-
 }
 
-export const logout = () => async (dispatch) => {
-  const response = await fetch('/api/auth/logout', {
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  });
 
-  if (response.ok) {
-    dispatch(removeUser());
-  }
-};
-
-
-export const signUp = (username, email, password) => async (dispatch) => {
-  const response = await fetch('/api/auth/signup', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      username,
+export const signUp = (email, password) => async dispatch => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
       email,
-      password,
-    }),
-  });
-  
-  if (response.ok) {
-    const data = await response.json();
-    dispatch(setUser(data))
-    return null;
-  } else if (response.status < 500) {
-    const data = await response.json();
-    if (data.errors) {
-      return data.errors;
-    }
-  } else {
-    return ['An error occurred. Please try again.']
+      password
+    )
+    dispatch(setUser(userCredential.user)) // Make sure you handle setting the user in your state
+  } catch (error) {
+    console.error('Error signing up', error)
   }
 }
 
-export default function reducer(state = initialState, action) {
+
+export const logout = () => async dispatch => {
+  try {
+    await auth.signOut()
+    dispatch(setUser(null))
+  } catch (error) {
+    console.error('Error logging out', error)
+  }
+}
+
+// Reducer
+const initialState = { user: null }
+
+export default function sessionReducer (state = initialState, action) {
   switch (action.type) {
     case SET_USER:
-      return { user: action.payload }
-    case REMOVE_USER:
-      return { user: null }
+      return { ...state, user: action.payload }
     default:
-      return state;
+      return state
   }
 }
