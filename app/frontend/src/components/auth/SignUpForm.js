@@ -13,7 +13,7 @@ const SignUpForm = () => {
 const onSignUp = async e => {
   e.preventDefault()
   try {
-    await dispatch(signUp(email, password, firstName, lastName))
+    await dispatch(signUp(email, password, username, firstName, lastName))
     console.log('Signed up successfully')
   } catch (error) {
     console.error('Error signing up:', error.message)

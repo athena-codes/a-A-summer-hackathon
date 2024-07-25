@@ -57,7 +57,7 @@ export const signUp = async (email, password, username, firstName, lastName) => 
     await setDoc(doc(db, 'users', user.uid), {
       email,
       username,
-      first_name: firstName || '', // Make sure these field names match what's in Firestore
+      first_name: firstName || '',
       last_name: lastName || '',
       native_language: '' // Assume default or get from another input
     })
