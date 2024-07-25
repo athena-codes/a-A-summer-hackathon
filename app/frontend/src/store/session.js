@@ -9,6 +9,7 @@ import {
 // Assuming Firebase app is initialized in another file and exported
 import { firebaseApp } from '../firebase/firebaseConfig'
 import { db } from '../firebase/firebaseConfig' // Import Firestore database reference
+import { doc, setDoc } from 'firebase/firestore' // Make sure you're using Firestore SDK v9+
 
 
 
@@ -43,32 +44,30 @@ export const login = (email, password) => async dispatch => {
 }
 
 
-export const signUp =
-  (email, password, username, firstName, lastName) => async dispatch => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      )
-      const user = userCredential.user
+export const signUp = async (email, password, username, firstName, lastName) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
+    const user = userCredential.user
 
-      // Save additional user data in Firestore
-      await db.collection('users').doc(user.uid).set({
-        username,
-        firstName,
-        lastName,
-        email // Optional: replicate email in user document for easier querying
-      })
+    // Create or update the Firestore document
+    await setDoc(doc(db, 'users', user.uid), {
+      email,
+      username,
+      first_name: firstName || '', // Make sure these field names match what's in Firestore
+      last_name: lastName || '',
+      native_language: '' // Assume default or get from another input
+    })
 
-      console.log('User signed up and added to Firestore')
-
-      dispatch(setUser({ uid: user.uid, email, username, firstName, lastName })) // Update redux state
-    } catch (error) {
-      console.error('Error signing up:', error)
-      // Handle errors (e.g., display error messages)
-    }
+    console.log('User signed up and added to Firestore')
+  } catch (error) {
+    console.error('Error signing up:', error)
+    throw error
   }
+}
 
 
 

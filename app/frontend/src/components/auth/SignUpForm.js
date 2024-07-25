@@ -10,10 +10,16 @@ const SignUpForm = () => {
   const [lastName, setLastName] = useState('')
   const dispatch = useDispatch()
 
-  const onSignUp = async e => {
-    e.preventDefault()
-    await dispatch(signUp(email, password, username, firstName, lastName))
+const onSignUp = async e => {
+  e.preventDefault()
+  try {
+    await dispatch(signUp(email, password, firstName, lastName))
+    console.log('Signed up successfully')
+  } catch (error) {
+    console.error('Error signing up:', error.message)
   }
+}
+
 
   return (
     <form onSubmit={onSignUp}>
