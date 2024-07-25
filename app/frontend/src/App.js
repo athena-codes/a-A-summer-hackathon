@@ -6,7 +6,7 @@ import SignUpForm from './components/auth/SignUpForm'
 import NavBar from './components/NavBar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { authenticate } from './store/session'
-import { auth } from './firebase/firebase'
+import { auth } from './firebase/firebaseConfig'
 import HomePage from './components/Homepage'
 
 function App () {
