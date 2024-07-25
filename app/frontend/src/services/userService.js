@@ -1,4 +1,4 @@
-const { db } = require('../firebase/firebase');
+const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs } = require('firebase/firestore');
 
 // Service to add a user
