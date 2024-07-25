@@ -1,18 +1,17 @@
 const { addUserToDB, getUsersFromDB } = require('../services/userService');
 
-// Controller to handle adding a user
-const addUser = async (req, res) => {
-    const { name, email } = req.body;
+const testUserRoute = (req, res) => {
+    console.log('test user route hit');
     try {
-        const userId = await addUserToDB({ name, email });
-        res.status(201).json({ message: 'User added', id: userId });
+        res.status(201).json({ message: 'test user route hit'});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};
+}
 
 const getUsers = async (req, res) => {
-    console.log('this route is hit');
+    console.log('get users route is hit');
+    console.log('req.body: ', req.body);
     try {
         const users = await getUsersFromDB();
         res.status(200).json(users);
@@ -21,4 +20,6 @@ const getUsers = async (req, res) => {
     }
 };
 
-module.exports = { addUser, getUsers };
+
+
+module.exports = { addUser, getUsers, testUserRoute };
