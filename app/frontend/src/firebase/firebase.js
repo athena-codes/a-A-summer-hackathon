@@ -1,7 +1,9 @@
-// src/firebase.js
-import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+// import { initializeApp } from 'firebase/app'
+// import { getAuth } from 'firebase/auth'
+// import { getFirestore } from 'firebase/firestore'
+const { initializeApp } = require('firebase/app');
+const { getAuth } = require('firebase/auth');
+const { getFirestore } = require('firebase/firestore');
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDhfk198F2ZUgT89ON9brPk5x96rHqfjvA',
@@ -23,4 +25,6 @@ const auth = getAuth(firebaseApp)
 // Get a reference to the Firestore service
 const db = getFirestore(firebaseApp)
 
-export { auth, db }
+// export { auth, db }
+
+module.exports = { auth, db };
