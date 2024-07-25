@@ -1,4 +1,4 @@
-import { auth } from '../firebase'
+import { auth } from '../firebase/firebase'
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth'
 
 // Assuming Firebase app is initialized in another file and exported
-import { firebaseApp } from '../firebase'
+import { firebaseApp } from '../firebase/firebase'
 
 
 // Action Types

@@ -1,56 +1,50 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import LoginForm from './components/auth/LoginForm'
 import SignUpForm from './components/auth/SignUpForm'
 import NavBar from './components/NavBar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
-import UsersList from './components/UsersList'
-import User from './components/User'
 import { authenticate } from './store/session'
-import { auth } from './firebase'
+import { auth } from './firebase/firebase'
+import HomePage from './components/Homepage'
 
 function App () {
   const [loaded, setLoaded] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const checkAuth = async () => {
-      auth.onAuthStateChanged(async user => {
-        if (user) {
-          await dispatch(authenticate())
-        }
-        setLoaded(true)
-      })
-    }
-    checkAuth()
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        await dispatch(authenticate())
+        setCurrentUser(user)
+      } else {
+        setCurrentUser(null)
+      }
+      setLoaded(true)
+    })
   }, [dispatch])
 
   if (!loaded) {
-    return null
+    return <div>Loading...</div> // or any other loading indicator
   }
 
   return (
-    <BrowserRouter>
+    <>
       <NavBar />
       <Switch>
-        <Route path='/login' exact={true}>
-          <LoginForm />
+        <Route path='/login'>
+          {currentUser ? <Redirect to='/' /> : <LoginForm />}
         </Route>
-        <Route path='/sign-up' exact={true}>
-          <SignUpForm />
+        <Route path='/sign-up'>
+          {currentUser ? <Redirect to='/' /> : <SignUpForm />}
         </Route>
-        <ProtectedRoute path='/users' exact={true}>
-          <UsersList />
-        </ProtectedRoute>
-        <ProtectedRoute path='/users/:userId' exact={true}>
-          <User />
-        </ProtectedRoute>
         <ProtectedRoute path='/' exact={true}>
-          <h1>My Home Page</h1>
+          {currentUser ? <HomePage /> : <Redirect to='/login' />}
         </ProtectedRoute>
       </Switch>
-    </BrowserRouter>
+    </>
   )
 }
 
