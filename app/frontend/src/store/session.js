@@ -1,4 +1,4 @@
-import { auth } from '../firebase/firebase'
+import { auth } from '../firebase/firebaseConfig'
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -7,7 +7,9 @@ import {
 } from 'firebase/auth'
 
 // Assuming Firebase app is initialized in another file and exported
-import { firebaseApp } from '../firebase/firebase'
+import { firebaseApp } from '../firebase/firebaseConfig'
+import { db } from '../firebase/firebaseConfig' // Import Firestore database reference
+
 
 
 // Action Types
@@ -41,18 +43,33 @@ export const login = (email, password) => async dispatch => {
 }
 
 
-export const signUp = (email, password) => async dispatch => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    )
-    dispatch(setUser(userCredential.user)) // Make sure you handle setting the user in your state
-  } catch (error) {
-    console.error('Error signing up', error)
+export const signUp =
+  (email, password, username, firstName, lastName) => async dispatch => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+      const user = userCredential.user
+
+      // Save additional user data in Firestore
+      await db.collection('users').doc(user.uid).set({
+        username,
+        firstName,
+        lastName,
+        email // Optional: replicate email in user document for easier querying
+      })
+
+      console.log('User signed up and added to Firestore')
+
+      dispatch(setUser({ uid: user.uid, email, username, firstName, lastName })) // Update redux state
+    } catch (error) {
+      console.error('Error signing up:', error)
+      // Handle errors (e.g., display error messages)
+    }
   }
-}
+
 
 
 export const logout = () => async dispatch => {
