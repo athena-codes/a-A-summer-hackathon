@@ -1,4 +1,4 @@
-import { auth } from '../firebase/firebase'
+import { auth } from '../firebase/firebaseConfig'
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -7,7 +7,10 @@ import {
 } from 'firebase/auth'
 
 // Assuming Firebase app is initialized in another file and exported
-import { firebaseApp } from '../firebase/firebase'
+import { firebaseApp } from '../firebase/firebaseConfig'
+import { db } from '../firebase/firebaseConfig' // Import Firestore database reference
+import { doc, setDoc } from 'firebase/firestore' // Make sure you're using Firestore SDK v9+
+
 
 
 // Action Types
@@ -41,18 +44,31 @@ export const login = (email, password) => async dispatch => {
 }
 
 
-export const signUp = (email, password) => async dispatch => {
+export const signUp = async (email, password, username, firstName, lastName) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     )
-    dispatch(setUser(userCredential.user)) // Make sure you handle setting the user in your state
+    const user = userCredential.user
+
+    // Create or update the Firestore document
+    await setDoc(doc(db, 'users', user.uid), {
+      email,
+      username,
+      first_name: firstName || '',
+      last_name: lastName || '',
+      native_language: '' // Assume default or get from another input
+    })
+
+    console.log('User signed up and added to Firestore')
   } catch (error) {
-    console.error('Error signing up', error)
+    console.error('Error signing up:', error)
+    throw error
   }
 }
+
 
 
 export const logout = () => async dispatch => {
