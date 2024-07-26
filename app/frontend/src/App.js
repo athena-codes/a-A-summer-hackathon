@@ -8,6 +8,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import { authenticate } from './store/session'
 import { auth } from './firebase/firebaseConfig'
 import HomePage from './components/Homepage'
+import WelcomePage from './components/WelcomePage'
 
 function App () {
   const [loaded, setLoaded] = useState(false)
@@ -34,6 +35,9 @@ function App () {
     <>
       <NavBar />
       <Switch>
+        <Route exact path='/'>
+          <WelcomePage />
+        </Route>
         <Route path='/login'>
           {currentUser ? <Redirect to='/' /> : <LoginForm />}
         </Route>
