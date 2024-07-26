@@ -1,4 +1,3 @@
-// src/controllers/authController.js
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
 const { auth } = require('../firebase/firebaseConfig');
 const { addUserToDB } = require('../services/userService');
