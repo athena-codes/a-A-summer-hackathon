@@ -22,4 +22,4 @@ const getUsers = async (req, res) => {
 
 
 
-module.exports = { addUser, getUsers, testUserRoute };
+module.exports = { getUsers, testUserRoute };
