@@ -56,3 +56,4 @@ const updateUserProgress = async (req, res) => {
 };
 
 module.exports = { getUsers, testUserRoute, getUserProgress, updateUserProgress, getUserById };
+
