@@ -1,11 +1,33 @@
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
 const { auth } = require('../firebase/firebaseConfig');
-const { addUserToDB } = require('../services/userService');
+const { addUserToDB, setUserLevel } = require('../services/userService');
 
 // Register user
+// const registerUser = async (req, res) => {
+//     const { email, password, username, first_name, last_name, native_language } = req.body;
+//     try {
+//         // Create user with Firebase Auth
+//         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+//         const userId = userCredential.user.uid;
+
+//         // Save additional user data to Firestore
+//         await addUserToDB({ uid: userId, email, username, first_name, last_name, native_language });
+
+//         res.status(201).json({ message: 'User registered', uid: userId });
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// };
 const registerUser = async (req, res) => {
-    const { email, password, username, first_name, last_name, native_language } = req.body;
-    try {
+        const { email, password, username, first_name, last_name, native_language, level } = req.body;
+
+        // Validate level
+        const validLevels = ['beginner', 'intermediate', 'advanced'];
+        if (!validLevels.includes(level)) {
+        return res.status(400).json({ message: 'Invalid level. Must be one of: beginner, intermediate, advanced.' });
+        }
+
+        try {
         // Create user with Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
@@ -13,11 +35,14 @@ const registerUser = async (req, res) => {
         // Save additional user data to Firestore
         await addUserToDB({ uid: userId, email, username, first_name, last_name, native_language });
 
+        // Set user level in Firestore
+        await setUserLevel(userId, level);
+
         res.status(201).json({ message: 'User registered', uid: userId });
-    } catch (error) {
+        } catch (error) {
         res.status(500).json({ message: error.message });
-    }
-};
+        }
+    };
 
 // Login user
 const loginUser = async (req, res) => {

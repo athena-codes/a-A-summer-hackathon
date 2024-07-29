@@ -1,13 +1,4 @@
-const { getUserByIdFromDB, getUsersFromDB, getProgressFromDB, updateUserInDB, addUserToDB, addProgressToDB } = require('../services/userService');
-
-const testUserRoute = (req, res) => {
-    console.log('test user route hit');
-    try {
-        res.status(201).json({ message: 'test user route hit' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
+const { getUserByIdFromDB, getUsersFromDB, getProgressFromDB, updateUserInDB, addUserToDB, updateUserProgressFromDB } = require('../services/userService');
 
 const getUsers = async (req, res) => {
     console.log('get users route is hit');
@@ -54,6 +45,16 @@ const getUserProgress = async (req, res) => {
     }
 };
 
+const updateUserProgress = async (req, res) => {
+    const { id } = req.params;
+    const { concepts, topics } = req.body;
+    try {
+        await updateUserProgressFromDB(id, { concepts, topics });
+        res.status(200).json({ message: 'User progress updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating user progress', error: error.message });
+    }
+};
 
 
-module.exports = { getUsers, testUserRoute, getUserProgress, getUserById, updateUserById };
+module.exports = { getUsers, getUserProgress, getUserById, updateUserById, updateUserProgress };

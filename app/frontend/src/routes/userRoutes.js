@@ -1,9 +1,7 @@
 const express = require('express');
-const { getUserById, getUserProgress, getUsers, testUserRoute, updateUserById} = require('../controllers/userController');
+const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress } = require('../controllers/userController');
 
 const router = express.Router();
-
-router.get('/', testUserRoute);
 
 //get all users
 router.get('/all-users', getUsers);
@@ -12,9 +10,12 @@ router.get('/all-users', getUsers);
 router.get('/:id', getUserById)
 
 //update user by id
-router.put('/:id', updateUserById)
+router.put('/:id/update', updateUserById)
 
 //get user progress
 router.get('/:id/progress', getUserProgress)
+
+//update user progress
+router.put('/:id/progress/update', updateUserProgress)
 
 module.exports = router;

@@ -2,13 +2,31 @@ const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, setDoc } = require('firebase/firestore');
 
 // Service to add a user
-const addUserToDB = async (userData) => {
-    try {
-        const docRef = await addDoc(collection(db, 'users'), userData);
-        return docRef.id;
-    } catch (error) {
-        throw new Error('Error adding user: ' + error.message);
-    }
+// const addUserToDB = async (userData) => {
+//     try {
+//         const docRef = await addDoc(collection(db, 'users'), userData);
+//         return docRef.id;
+//     } catch (error) {
+//         throw new Error('Error adding user: ' + error.message);
+//     }
+// };
+
+const addUserToDB = async ({ uid, email, username, first_name, last_name, native_language }) => {
+    await setDoc(doc(db, 'users', uid), {
+        email,
+        username,
+        first_name,
+        last_name,
+        native_language,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    });
+};
+
+const setUserLevel = async (uid, level) => {
+    await setDoc(doc(db, 'user_levels', uid), {
+        current_level: level
+    });
 };
 
 // Service to get users from DB
@@ -70,14 +88,36 @@ const getProgressFromDB = async (uid) => {
 };
 
 // Service to add progress
-const addProgressToDB = async (progressData) => {
+const updateUserProgressFromDB = async (userId, progressData) => {
     try {
-        const docRef = await addDoc(collection(db, 'user_progress'), progressData);
-        return docRef.id;
+        const userDocRef = doc(db, 'user_progress', userId);
+
+        // Update concepts
+        const conceptsCollectionRef = collection(userDocRef, 'concepts');
+        for (const concept of progressData.concepts) {
+            const conceptDocRef = doc(conceptsCollectionRef, concept.id);
+            await setDoc(conceptDocRef, {
+            status: concept.status,
+            level: concept.level
+            }, { merge: true });
+        }
+
+        // Update topics
+        const topicsCollectionRef = collection(userDocRef, 'topics');
+        for (const topic of progressData.topics) {
+            const topicDocRef = doc(topicsCollectionRef, topic.id);
+            await setDoc(topicDocRef, {
+            conceptId: topic.conceptId,
+            status: topic.status
+            }, { merge: true });
+        }
+
+        console.log('User progress updated successfully');
     } catch (error) {
-        throw new Error('Error adding progress: ' + error.message);
+        console.error('Error updating user progress:', error);
     }
 };
+
 
 module.exports = {
     addUserToDB,
@@ -85,5 +125,6 @@ module.exports = {
     updateUserInDB,
     getUserByIdFromDB,
     getProgressFromDB,
-    addProgressToDB
+    updateUserProgressFromDB,
+    setUserLevel
 };
