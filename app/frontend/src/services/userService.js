@@ -49,10 +49,21 @@ const getUserByIdFromDB = async (id) => {
 
 // Service to get user progress
 const getProgressFromDB = async (uid) => {
+    console.log('get progress route is hit', uid);
     try {
-        const q = query(collection(db, 'user_progress'), where('uid', '==', uid));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const userDocRef = doc(db, 'progress', uid);
+
+        // Access the 'concepts' subcollection
+        const conceptsCollectionRef = collection(userDocRef, 'concepts');
+        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
+        const concepts = conceptsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Access the 'topics' subcollection
+        const topicsCollectionRef = collection(userDocRef, 'topics');
+        const topicsSnapshot = await getDocs(topicsCollectionRef);
+        const topics = topicsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        return { uid, concepts, topics };
     } catch (error) {
         throw new Error('Error fetching progress: ' + error.message);
     }

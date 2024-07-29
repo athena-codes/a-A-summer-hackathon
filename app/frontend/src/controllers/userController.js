@@ -20,6 +20,17 @@ const getUsers = async (req, res) => {
     }
 };
 
+const updateUserById = async (req, res) => {
+    const { id } = req.params;
+    const { first_name, last_name, native_language } = req.body;
+    try {
+        const updated = await updateUserInDB(id, { first_name, last_name, native_language });
+        res.status(200).json({ message: 'User updated', updated });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 // Get a user by user id from DB
 const getUserById = async (req, res) => {
     console.log('get user by id route is hit');
@@ -37,22 +48,12 @@ const getUserProgress = async (req, res) => {
     const { id } = req.params;
     try {
         const progress = await getProgressFromDB(id);
-        res.status(200).json(progress);
+        res.status(200).json({ progress });
     } catch (error) {
         res.status(500).json({ error: 'Failed to get user progress', details: error.message });
     }
 };
 
-// Update user progress
-const updateUserProgress = async (req, res) => {
-    const { id } = req.params;
-    const { conceptId, status } = req.body;
-    try {
-        const updated = await updateUserInDB(`${id}_${conceptId}`, { id, conceptId, status });
-        res.status(200).json({ message: 'Progress updated' });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to update user progress', details: error.message });
-    }
-};
 
-module.exports = { getUsers, testUserRoute, getUserProgress, updateUserProgress, getUserById };
+
+module.exports = { getUsers, testUserRoute, getUserProgress, getUserById, updateUserById };
