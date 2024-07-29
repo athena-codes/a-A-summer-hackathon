@@ -21,6 +21,16 @@ const getTopicsByConceptId = async (conceptId) => {
     }
 };
 
+// Get all concepts by difficulty level
+const getConceptsByLevel = async (level) => {
+    try {
+        const querySnapshot = await getDocs(query(collection(db, 'concepts'), where('level', '==', level)));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        throw new Error('Error fetching concepts: ' + error.message);
+    }
+};
+
 // Service to add a concept
 const addConceptToDB = async (conceptData) => {
     try {
@@ -78,5 +88,6 @@ module.exports = {
     updateConceptInDB,
     getConceptByIdFromDB,
     removeConceptFromDB,
-    getTopicsByConceptId
+    getTopicsByConceptId,
+    getConceptsByLevel
 }

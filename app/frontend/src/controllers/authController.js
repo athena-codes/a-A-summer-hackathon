@@ -1,23 +1,9 @@
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
 const { auth } = require('../firebase/firebaseConfig');
 const { addUserToDB, setUserLevel } = require('../services/userService');
+const { initializeUserProgress } = require('../services/userService');
 
 // Register user
-// const registerUser = async (req, res) => {
-//     const { email, password, username, first_name, last_name, native_language } = req.body;
-//     try {
-//         // Create user with Firebase Auth
-//         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-//         const userId = userCredential.user.uid;
-
-//         // Save additional user data to Firestore
-//         await addUserToDB({ uid: userId, email, username, first_name, last_name, native_language });
-
-//         res.status(201).json({ message: 'User registered', uid: userId });
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// };
 const registerUser = async (req, res) => {
         const { email, password, username, first_name, last_name, native_language, level } = req.body;
 
@@ -33,10 +19,13 @@ const registerUser = async (req, res) => {
         const userId = userCredential.user.uid;
 
         // Save additional user data to Firestore
-        await addUserToDB({ uid: userId, email, username, first_name, last_name, native_language });
+        await addUserToDB({ uid: userId, email, username, first_name, last_name, native_language, level });
 
         // Set user level in Firestore
         await setUserLevel(userId, level);
+
+        // Initialize user progress
+        await initializeUserProgress(userId);
 
         res.status(201).json({ message: 'User registered', uid: userId });
         } catch (error) {

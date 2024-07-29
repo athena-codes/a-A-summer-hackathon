@@ -1,23 +1,17 @@
 const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, setDoc } = require('firebase/firestore');
+const { checkAndUpdateUserLevel } = require('./levelService');
+const { getConceptsByLevel, getTopicsByConceptId } = require('./conceptService');
 
 // Service to add a user
-// const addUserToDB = async (userData) => {
-//     try {
-//         const docRef = await addDoc(collection(db, 'users'), userData);
-//         return docRef.id;
-//     } catch (error) {
-//         throw new Error('Error adding user: ' + error.message);
-//     }
-// };
-
-const addUserToDB = async ({ uid, email, username, first_name, last_name, native_language }) => {
+const addUserToDB = async ({ uid, email, username, first_name, last_name, native_language, level }) => {
     await setDoc(doc(db, 'users', uid), {
         email,
         username,
         first_name,
         last_name,
         native_language,
+        current_level: level,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
     });
@@ -26,7 +20,7 @@ const addUserToDB = async ({ uid, email, username, first_name, last_name, native
 const setUserLevel = async (uid, level) => {
     await setDoc(doc(db, 'user_levels', uid), {
         current_level: level
-    });
+    }, { merge: true });
 };
 
 // Service to get users from DB
@@ -65,6 +59,44 @@ const getUserByIdFromDB = async (id) => {
     }
 };
 
+const initializeUserProgress = async (uid) => {
+    console.log('initialize user progress route is hit', uid);
+    try {
+        const userDocRef = doc(db, 'progress', uid);
+        const userInfoRef = doc(db, 'users', uid);
+        const userInfoSnap = await getDoc(userInfoRef);
+
+        if (!userInfoSnap.exists()) {
+            throw new Error('User not found');
+        }
+        // Create the 'concepts' subcollection
+        const conceptsCollectionRef = collection(userDocRef, 'concepts');
+
+        const userInfo = userInfoSnap.data();
+        console.log('User info:', userInfo);
+        const currentLevel = userInfo.current_level;
+        // Use getConceptsByLevel to get the concepts for the current level
+        const concepts = await getConceptsByLevel(currentLevel);
+        // Initialize concepts and topics based on the current level
+        for (const concept of concepts) {
+            const topics = await getTopicsByConceptId(concept.id);
+            const conceptDocRef = doc(conceptsCollectionRef, concept.id);
+
+            await setDoc(conceptDocRef, {
+                status: false,
+                level: concept.level,
+                topics: topics.map(topic => ({
+                    id: topic.id,
+                    conceptId: topic.concept_id,
+                    status: false
+                }))
+            }, { merge: true });
+        }
+    } catch (error) {
+        throw new Error('Error initializing user progress: ' + error.message);
+    }
+}
+
 // Service to get user progress
 const getProgressFromDB = async (uid) => {
     console.log('get progress route is hit', uid);
@@ -87,10 +119,10 @@ const getProgressFromDB = async (uid) => {
     }
 };
 
-// Service to add progress
+// Service to update user progress
 const updateUserProgressFromDB = async (userId, progressData) => {
     try {
-        const userDocRef = doc(db, 'user_progress', userId);
+        const userDocRef = doc(db, 'progress', userId);
 
         // Update concepts
         const conceptsCollectionRef = collection(userDocRef, 'concepts');
@@ -112,6 +144,8 @@ const updateUserProgressFromDB = async (userId, progressData) => {
             }, { merge: true });
         }
 
+        await checkAndUpdateUserLevel(userId);
+
         console.log('User progress updated successfully');
     } catch (error) {
         console.error('Error updating user progress:', error);
@@ -126,5 +160,6 @@ module.exports = {
     getUserByIdFromDB,
     getProgressFromDB,
     updateUserProgressFromDB,
-    setUserLevel
+    setUserLevel,
+    initializeUserProgress
 };
