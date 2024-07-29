@@ -11,6 +11,16 @@ const getConceptsFromDB = async () => {
     }
 };
 
+// Get all topic by concept id
+const getTopicsByConceptId = async (conceptId) => {
+    try {
+        const querySnapshot = await getDocs(query(collection(db, 'topics'), where('concept_id', '==', conceptId)));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        throw new Error('Error fetching topics: ' + error.message);
+    }
+};
+
 // Service to add a concept
 const addConceptToDB = async (conceptData) => {
     try {
@@ -67,5 +77,6 @@ module.exports = {
     addConceptToDB,
     updateConceptInDB,
     getConceptByIdFromDB,
-    removeConceptFromDB
+    removeConceptFromDB,
+    getTopicsByConceptId
 }

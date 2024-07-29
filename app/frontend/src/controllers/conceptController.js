@@ -3,7 +3,8 @@ const {
     addConceptToDB,
     updateConceptInDB,
     getConceptByIdFromDB,
-    removeConceptFromDB
+    removeConceptFromDB,
+    getTopicsByConceptId
 } = require('../services/conceptService');
 
 // Controller to get all concepts
@@ -15,6 +16,17 @@ const getConcepts = async (req, res) => {
         res.status(500).json({ message: `Error fetching concepts: ${error.message}` });
     }
 };
+
+//Controller for getting all topics by concept id
+const getTopicsByConcept = async (req, res) => {
+    const { conceptId } = req.params;
+    try {
+        const topics = await getTopicsByConceptId(conceptId);
+        res.status(200).json({topics});
+    } catch (error) {
+        res.status(500).json({ message: `Error fetching topics: ${error.message}` });
+    }
+}
 
 // Controller to add a new concept
 const addConcept = async (req, res) => {
@@ -66,5 +78,6 @@ module.exports = {
     addConcept,
     updateConcept,
     getConceptById,
-    removeConcept
+    removeConcept,
+    getTopicsByConcept
 };
