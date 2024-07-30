@@ -47,10 +47,11 @@ const getUserProgress = async (req, res) => {
 
 const updateUserProgress = async (req, res) => {
     const { id } = req.params;
-    const { concepts, topics } = req.body;
+    console.log('update user progress route is hit', id);
     try {
-        await updateUserProgressFromDB(id, { concepts, topics });
-        res.status(200).json({ message: 'User progress updated successfully' });
+        await updateUserProgressFromDB(id);
+        const progress = await getProgressFromDB(id);
+        res.status(200).json({ message: 'User progress updated successfully', progress});
     } catch (error) {
         res.status(500).json({ message: 'Error updating user progress', error: error.message });
     }

@@ -2,6 +2,7 @@ const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, setDoc } = require('firebase/firestore');
 const { checkAndUpdateUserLevel } = require('./levelService');
 const { getConceptsByLevel, getTopicsByConceptId } = require('./conceptService');
+const e = require('express');
 
 // Service to add a user
 const addUserToDB = async ({ uid, email, username, first_name, last_name, native_language, level }) => {
@@ -76,7 +77,21 @@ const initializeUserProgress = async (uid) => {
         console.log('User info:', userInfo);
         const currentLevel = userInfo.current_level;
         // Use getConceptsByLevel to get the concepts for the current level
-        const concepts = await getConceptsByLevel(currentLevel);
+        let concepts = []
+        if (currentLevel === 'advanced') {
+            const advancedConcepts = await getConceptsByLevel('advanced');
+            const intermediateConcepts = await getConceptsByLevel('intermediate');
+            const beginnerConcepts = await getConceptsByLevel('beginner');
+            concepts = [...advancedConcepts, ...intermediateConcepts, ...beginnerConcepts];
+        } else if (currentLevel === 'intermediate') {
+            const intermediateConcepts = await getConceptsByLevel('intermediate');
+            const beginnerConcepts = await getConceptsByLevel('beginner');
+            concepts = [...intermediateConcepts, ...beginnerConcepts];
+        } else {
+            concepts = await getConceptsByLevel(currentLevel);
+        }
+
+
         // Initialize concepts and topics based on the current level
         for (const concept of concepts) {
             const topics = await getTopicsByConceptId(concept.id);
@@ -108,50 +123,47 @@ const getProgressFromDB = async (uid) => {
         const conceptsSnapshot = await getDocs(conceptsCollectionRef);
         const concepts = conceptsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // Access the 'topics' subcollection
-        const topicsCollectionRef = collection(userDocRef, 'topics');
-        const topicsSnapshot = await getDocs(topicsCollectionRef);
-        const topics = topicsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        return { uid, concepts, topics };
+        return { uid, concepts };
     } catch (error) {
         throw new Error('Error fetching progress: ' + error.message);
     }
 };
 
 // Service to update user progress
-const updateUserProgressFromDB = async (userId, progressData) => {
+const updateUserProgressFromDB = async (uid) => {
     try {
-        const userDocRef = doc(db, 'progress', userId);
+        const userProgressRef = doc(db, 'progress', uid);
 
-        // Update concepts
-        const conceptsCollectionRef = collection(userDocRef, 'concepts');
-        for (const concept of progressData.concepts) {
-            const conceptDocRef = doc(conceptsCollectionRef, concept.id);
-            await setDoc(conceptDocRef, {
-            status: concept.status,
-            level: concept.level
-            }, { merge: true });
+        const conceptsCollectionRef = collection(userProgressRef, 'concepts');
+        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
+
+        for (const conceptDoc of conceptsSnapshot.docs) {
+            const conceptData = conceptDoc.data();
+            const conceptDocRef = doc(conceptsCollectionRef, conceptDoc.id);
+
+            // Update concept status if needed
+            await updateDoc(conceptDocRef, { status: conceptData.status });
+
+            // Access and update topics
+            const topicsCollectionRef = collection(conceptDocRef, 'topics');
+            const topicsSnapshot = await getDocs(topicsCollectionRef);
+
+            for (const topicDoc of topicsSnapshot.docs) {
+                const topicData = topicDoc.data();
+                const topicDocRef = doc(topicsCollectionRef, topicDoc.id);
+
+                // Update topic status if needed
+                await updateDoc(topicDocRef, { status: topicData.status });
+            }
         }
 
-        // Update topics
-        const topicsCollectionRef = collection(userDocRef, 'topics');
-        for (const topic of progressData.topics) {
-            const topicDocRef = doc(topicsCollectionRef, topic.id);
-            await setDoc(topicDocRef, {
-            conceptId: topic.conceptId,
-            status: topic.status
-            }, { merge: true });
-        }
-
-        await checkAndUpdateUserLevel(userId);
+        await checkAndUpdateUserLevel(uid);
 
         console.log('User progress updated successfully');
     } catch (error) {
         console.error('Error updating user progress:', error);
     }
 };
-
 
 module.exports = {
     addUserToDB,
