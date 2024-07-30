@@ -1,0 +1,10 @@
+{
+    "email": "电子邮件 (Email)",
+    "password": "密码 (Password)",
+    "username": "用户名 (Username)",
+    "firstName": "名字 (First Name)",
+    "lastName": "姓氏 (Last Name)",
+    "signUp": "注册 (Sign Up)",
+    "logIn": "登录 (Log In)"
+  }
+  

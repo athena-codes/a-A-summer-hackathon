@@ -1,6 +1,7 @@
 import { Link, Container, Box } from "@mui/material";
 import React from "react";
 import LanguageSelector from "./LanguageSelector";
+import InfiniteScroll from "./InfiniteLogIn";
 
 function WelcomePage({setLocale}) {
   return (
@@ -9,6 +10,7 @@ function WelcomePage({setLocale}) {
       <Container>
         <LanguageSelector setLocale={setLocale}/>
       </Container>
+      <InfiniteScroll />
       <h3>
         Already a User?
         <Link href="/login" underline="none">
