@@ -1,6 +1,5 @@
 import React from "react";
 import { Grid, Button, Typography, Box } from "@mui/material";
-import { useTranslation } from "react-i18next";
 
 const flagsArr = [
   {
@@ -47,11 +46,6 @@ const flagsArr = [
 
 function LanguageSelector() {
 
-  const { i18n } = useTranslation();
-
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-  };
 
   return (
     <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -94,7 +88,6 @@ function LanguageSelector() {
                   objectFit: "cover",
                 },
               }}
-              onClick={() => changeLanguage(`${flag.language}`)}
             >
               <img src={flag.url} alt={`Flag of ${flag.language}`} />
               <Box className="overlay">

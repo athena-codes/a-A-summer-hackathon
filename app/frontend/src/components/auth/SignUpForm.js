@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { signUp } from "../../store/session";
-import { useTranslation } from "react-i18next";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -10,7 +9,6 @@ const SignUpForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const dispatch = useDispatch();
-  const { t } = useTranslation();
 
   const onSignUp = async (e) => {
     e.preventDefault();
@@ -25,7 +23,7 @@ const SignUpForm = () => {
   return (
     <form onSubmit={onSignUp}>
       <div>
-        <label htmlFor="email">{t("email")}</label>
+        <label htmlFor="email">Email</label>
         <input
           name="email"
           type="email"
