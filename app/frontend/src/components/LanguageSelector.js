@@ -1,5 +1,7 @@
 import React from "react";
 import { Grid, Button, Typography, Box } from "@mui/material";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
+
 
 const flagsArr = [
   {
@@ -14,38 +16,44 @@ const flagsArr = [
   },
   {
     url: "/assets/flags/Flag_of_South_Korea.svg",
-    language: "Korean",
+    language: "ko",
     label: "한국어",
   },
   {
     url: "/assets/flags/Flag_of_Spain.svg",
-    language: "Spanish",
+    language: "es",
     label: "Español",
   },
   {
     url: "/assets/flags/Flag_of_Japan.svg",
-    language: "Japanese",
+    language: "ja",
     label: "日本語",
   },
   {
     url: "/assets/flags/Flag_of_Vietnam.svg",
-    language: "Vietnamese",
+    language: "vi",
     label: "Tiếng Việt",
   },
   {
     url: "/assets/flags/Flag_of_the_People's_Republic_of_China.svg",
-    language: "Chinese",
+    language: "zh",
     label: "中文",
   },
   {
     url: "/assets/flags/Flag_of_India.svg",
-    language: "Hindi",
+    language: "hi",
     label: "हिंदी",
   },
 ];
 
-function LanguageSelector() {
+function LanguageSelector({ setLocale }) {
 
+  const history = useHistory();
+
+  const handleLanguageChange = (language) => {
+    setLocale(language);
+    history.push('/login'); 
+  };
 
   return (
     <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -88,6 +96,7 @@ function LanguageSelector() {
                   objectFit: "cover",
                 },
               }}
+              onClick={() => handleLanguageChange(flag.language)}
             >
               <img src={flag.url} alt={`Flag of ${flag.language}`} />
               <Box className="overlay">

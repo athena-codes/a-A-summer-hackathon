@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { signUp } from "../../store/session";
+import { FormattedMessage } from 'react-intl';
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -23,53 +24,60 @@ const SignUpForm = () => {
   return (
     <form onSubmit={onSignUp}>
       <div>
-        <label htmlFor="email">Email</label>
+        <label htmlFor='email'>
+          <FormattedMessage id='email' defaultMessage='Email' />
+        </label>
         <input
-          name="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name='email'
+          type='email'
+          // Your other props here
         />
       </div>
       <div>
-        <label htmlFor="password">Password</label>
+        <label htmlFor='password'>
+          <FormattedMessage id='password' defaultMessage='Password' />
+        </label>
         <input
-          name="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          name='password'
+          type='password'
+          // Your other props here
         />
       </div>
       <div>
-        <label htmlFor="username">Username</label>
+        <label htmlFor='username'>
+          <FormattedMessage id='username' defaultMessage='Username' />
+        </label>
         <input
-          name="username"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          name='username'
+          type='text'
+          // Your other props here
         />
       </div>
       <div>
-        <label htmlFor="firstName">First Name</label>
+        <label htmlFor='firstName'>
+          <FormattedMessage id='firstName' defaultMessage='First Name' />
+        </label>
         <input
-          name="firstName"
-          type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
+          name='firstName'
+          type='text'
+          // Your other props here
         />
       </div>
       <div>
-        <label htmlFor="lastName">Last Name</label>
+        <label htmlFor='lastName'>
+          <FormattedMessage id='lastName' defaultMessage='Last Name' />
+        </label>
         <input
-          name="lastName"
-          type="text"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
+          name='lastName'
+          type='text'
+          // Your other props here
         />
       </div>
-      <button type="submit">Sign Up</button>
+      <button type='submit'>
+        <FormattedMessage id='signUp' defaultMessage='Sign Up' />
+      </button>
     </form>
   );
-};
+}
 
 export default SignUpForm;

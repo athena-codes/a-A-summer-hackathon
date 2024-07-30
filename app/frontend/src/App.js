@@ -10,7 +10,7 @@ import { auth } from './firebase/firebaseConfig'
 import HomePage from './components/Homepage'
 import WelcomePage from './components/WelcomePage'
 
-function App () {
+function App ({ setLocale }) {
   const [loaded, setLoaded] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const dispatch = useDispatch()
@@ -36,7 +36,7 @@ function App () {
       <NavBar />
       <Switch>
         <Route exact path='/'>
-          <WelcomePage />
+          <WelcomePage setLocale={setLocale} />
         </Route>
         <Route path='/login'>
           {currentUser ? <Redirect to='/' /> : <LoginForm />}
