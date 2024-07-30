@@ -1,16 +1,17 @@
 import React from "react";
 import { Grid, Button, Typography, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const flagsArr = [
   {
-    url: "/assets/flags/Flag_of_France.svg",
-    language: "French",
-    label: "Français",
+    url: "/assets/flags/Flag_of_the_United_States.svg",
+    language: "en",
+    label: "English",
   },
   {
-    url: "/assets/flags/Flag_of_the_United_States.svg",
-    language: "English",
-    label: "English",
+    url: "/assets/flags/Flag_of_France.svg",
+    language: "fr",
+    label: "Français",
   },
   {
     url: "/assets/flags/Flag_of_South_Korea.svg",
@@ -44,7 +45,14 @@ const flagsArr = [
   },
 ];
 
-function FlagGrid() {
+function LanguageSelector() {
+
+  const { i18n } = useTranslation();
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
   return (
     <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       {flagsArr.map((flag, index) => (
@@ -86,6 +94,7 @@ function FlagGrid() {
                   objectFit: "cover",
                 },
               }}
+              onClick={() => changeLanguage(`${flag.language}`)}
             >
               <img src={flag.url} alt={`Flag of ${flag.language}`} />
               <Box className="overlay">
@@ -106,4 +115,4 @@ function FlagGrid() {
   );
 }
 
-export default FlagGrid;
+export default LanguageSelector;

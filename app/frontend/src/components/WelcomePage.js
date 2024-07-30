@@ -1,21 +1,21 @@
-import { Link, Container } from "@mui/material";
+import { Link, Container, Box } from "@mui/material";
 import React from "react";
-import FlagGrid from "./FlagGrid";
+import LanguageSelector from "./LanguageSelector";
 
 function WelcomePage() {
   return (
-    <div>
+    <Box display="flex" alignItems="center" flexDirection="column">
       <h1>Select Your Language</h1>
       <Container>
-        <FlagGrid />
+        <LanguageSelector />
       </Container>
-      <p>
+      <h3>
         Already a User?
         <Link href="/login" underline="none">
           {" Log in"}
         </Link>
-      </p>
-    </div>
+      </h3>
+    </Box>
   );
 }
 
