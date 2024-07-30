@@ -1,12 +1,22 @@
-import React from 'react'
+import { Link, Container } from "@mui/material";
+import React from "react";
+import FlagGrid from "./FlagGrid";
 
-function WelcomePage () {
+function WelcomePage() {
   return (
     <div>
-      <h1>Welcome!</h1>
-      <p>This is a protected area accessible only by authenticated users.</p>
+      <h1>Select Your Language</h1>
+      <Container>
+        <FlagGrid />
+      </Container>
+      <p>
+        Already a User?
+        <Link href="/login" underline="none">
+          {" Log in"}
+        </Link>
+      </p>
     </div>
-  )
+  );
 }
 
-export default WelcomePage
+export default WelcomePage;
