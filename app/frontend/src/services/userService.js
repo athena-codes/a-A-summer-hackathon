@@ -1,14 +1,27 @@
 const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, setDoc } = require('firebase/firestore');
+const { checkAndUpdateUserLevel } = require('./levelService');
+const { getConceptsByLevel, getTopicsByConceptId } = require('./conceptService');
+const e = require('express');
 
 // Service to add a user
-const addUserToDB = async (userData) => {
-    try {
-        const docRef = await addDoc(collection(db, 'users'), userData);
-        return docRef.id;
-    } catch (error) {
-        throw new Error('Error adding user: ' + error.message);
-    }
+const addUserToDB = async ({ uid, email, username, first_name, last_name, native_language, level }) => {
+    await setDoc(doc(db, 'users', uid), {
+        email,
+        username,
+        first_name,
+        last_name,
+        native_language,
+        current_level: level,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    });
+};
+
+const setUserLevel = async (uid, level) => {
+    await setDoc(doc(db, 'user_levels', uid), {
+        current_level: level
+    }, { merge: true });
 };
 
 // Service to get users from DB
@@ -47,24 +60,108 @@ const getUserByIdFromDB = async (id) => {
     }
 };
 
+const initializeUserProgress = async (uid) => {
+    console.log('initialize user progress route is hit', uid);
+    try {
+        const userDocRef = doc(db, 'progress', uid);
+        const userInfoRef = doc(db, 'users', uid);
+        const userInfoSnap = await getDoc(userInfoRef);
+
+        if (!userInfoSnap.exists()) {
+            throw new Error('User not found');
+        }
+        // Create the 'concepts' subcollection
+        const conceptsCollectionRef = collection(userDocRef, 'concepts');
+
+        const userInfo = userInfoSnap.data();
+        console.log('User info:', userInfo);
+        const currentLevel = userInfo.current_level;
+        // Use getConceptsByLevel to get the concepts for the current level
+        let concepts = []
+        if (currentLevel === 'advanced') {
+            const advancedConcepts = await getConceptsByLevel('advanced');
+            const intermediateConcepts = await getConceptsByLevel('intermediate');
+            const beginnerConcepts = await getConceptsByLevel('beginner');
+            concepts = [...advancedConcepts, ...intermediateConcepts, ...beginnerConcepts];
+        } else if (currentLevel === 'intermediate') {
+            const intermediateConcepts = await getConceptsByLevel('intermediate');
+            const beginnerConcepts = await getConceptsByLevel('beginner');
+            concepts = [...intermediateConcepts, ...beginnerConcepts];
+        } else {
+            concepts = await getConceptsByLevel(currentLevel);
+        }
+
+
+        // Initialize concepts and topics based on the current level
+        for (const concept of concepts) {
+            const topics = await getTopicsByConceptId(concept.id);
+            const conceptDocRef = doc(conceptsCollectionRef, concept.id);
+
+            await setDoc(conceptDocRef, {
+                status: false,
+                level: concept.level,
+                topics: topics.map(topic => ({
+                    id: topic.id,
+                    conceptId: topic.concept_id,
+                    status: false
+                }))
+            }, { merge: true });
+        }
+    } catch (error) {
+        throw new Error('Error initializing user progress: ' + error.message);
+    }
+}
+
 // Service to get user progress
 const getProgressFromDB = async (uid) => {
+    console.log('get progress route is hit', uid);
     try {
-        const q = query(collection(db, 'user_progress'), where('uid', '==', uid));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const userDocRef = doc(db, 'progress', uid);
+
+        // Access the 'concepts' subcollection
+        const conceptsCollectionRef = collection(userDocRef, 'concepts');
+        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
+        const concepts = conceptsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        return { uid, concepts };
     } catch (error) {
         throw new Error('Error fetching progress: ' + error.message);
     }
 };
 
-// Service to add progress
-const addProgressToDB = async (progressData) => {
+// Service to update user progress
+const updateUserProgressFromDB = async (uid) => {
     try {
-        const docRef = await addDoc(collection(db, 'user_progress'), progressData);
-        return docRef.id;
+        const userProgressRef = doc(db, 'progress', uid);
+
+        const conceptsCollectionRef = collection(userProgressRef, 'concepts');
+        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
+
+        for (const conceptDoc of conceptsSnapshot.docs) {
+            const conceptData = conceptDoc.data();
+            const conceptDocRef = doc(conceptsCollectionRef, conceptDoc.id);
+
+            // Update concept status if needed
+            await updateDoc(conceptDocRef, { status: conceptData.status });
+
+            // Access and update topics
+            const topicsCollectionRef = collection(conceptDocRef, 'topics');
+            const topicsSnapshot = await getDocs(topicsCollectionRef);
+
+            for (const topicDoc of topicsSnapshot.docs) {
+                const topicData = topicDoc.data();
+                const topicDocRef = doc(topicsCollectionRef, topicDoc.id);
+
+                // Update topic status if needed
+                await updateDoc(topicDocRef, { status: topicData.status });
+            }
+        }
+
+        await checkAndUpdateUserLevel(uid);
+
+        console.log('User progress updated successfully');
     } catch (error) {
-        throw new Error('Error adding progress: ' + error.message);
+        console.error('Error updating user progress:', error);
     }
 };
 
@@ -74,5 +171,7 @@ module.exports = {
     updateUserInDB,
     getUserByIdFromDB,
     getProgressFromDB,
-    addProgressToDB
+    updateUserProgressFromDB,
+    setUserLevel,
+    initializeUserProgress
 };

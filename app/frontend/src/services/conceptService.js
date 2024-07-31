@@ -1,10 +1,30 @@
 const { db } = require('../firebase/firebaseConfig');
-const { collection, addDoc, getDocs, query, where, getDoc, updateDoc } = require('firebase/firestore');
+const { deleteDoc, doc, collection, addDoc, getDocs, query, where, getDoc, updateDoc } = require('firebase/firestore');
 
 // Service to get concepts
 const getConceptsFromDB = async () => {
     try {
         const querySnapshot = await getDocs(collection(db, 'concepts'));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        throw new Error('Error fetching concepts: ' + error.message);
+    }
+};
+
+// Get all topic by concept id
+const getTopicsByConceptId = async (conceptId) => {
+    try {
+        const querySnapshot = await getDocs(query(collection(db, 'topics'), where('concept_id', '==', conceptId)));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        throw new Error('Error fetching topics: ' + error.message);
+    }
+};
+
+// Get all concepts by difficulty level
+const getConceptsByLevel = async (level) => {
+    try {
+        const querySnapshot = await getDocs(query(collection(db, 'concepts'), where('level', '==', level)));
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
         throw new Error('Error fetching concepts: ' + error.message);
@@ -23,8 +43,12 @@ const addConceptToDB = async (conceptData) => {
 
 // Service to update a concept
 const updateConceptInDB = async (conceptId, updatedData) => {
+    console.log('hit');
+    console.log('conceptId: ', conceptId);
+    console.log('updatedData: ', updatedData);
     try {
         const conceptRef = doc(db, 'concepts', conceptId);
+        console.log('conceptRef: ', conceptRef);
         await updateDoc(conceptRef, updatedData);
         return true;
     } catch (error) {
@@ -63,5 +87,7 @@ module.exports = {
     addConceptToDB,
     updateConceptInDB,
     getConceptByIdFromDB,
-    removeConceptFromDB
+    removeConceptFromDB,
+    getTopicsByConceptId,
+    getConceptsByLevel
 }
