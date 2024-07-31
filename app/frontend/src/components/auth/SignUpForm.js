@@ -1,25 +1,29 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { signUp } from "../../store/session";
-import { FormattedMessage } from 'react-intl';
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { signUp } from '../../store/session'
+import { FormattedMessage } from 'react-intl'
+import { useHistory } from 'react-router-dom/cjs/react-router-dom'
+
 
 const SignUpForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const dispatch = useDispatch();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const dispatch = useDispatch()
+  const history = useHistory()
 
-  const onSignUp = async (e) => {
-    e.preventDefault();
+  const onSignUp = async e => {
+    e.preventDefault()
     try {
-      await dispatch(signUp(email, password, username, firstName, lastName));
-      console.log("Signed up successfully");
+      await dispatch(signUp(email, password, username, firstName, lastName))
+      console.log('Signed up successfully')
+      history.push('/home')
     } catch (error) {
-      console.error("Error signing up:", error.message);
+      console.error('Error signing up:', error.message)
     }
-  };
+  }
 
   return (
     <form onSubmit={onSignUp}>
@@ -30,7 +34,9 @@ const SignUpForm = () => {
         <input
           name='email'
           type='email'
-          // Your other props here
+          value={email}
+          onChange={e => setEmail(e.target.value)} // Ensures state updates when user types in the email field
+          required
         />
       </div>
       <div>
@@ -40,7 +46,9 @@ const SignUpForm = () => {
         <input
           name='password'
           type='password'
-          // Your other props here
+          value={password}
+          onChange={e => setPassword(e.target.value)} // Updates password state
+          required
         />
       </div>
       <div>
@@ -50,7 +58,8 @@ const SignUpForm = () => {
         <input
           name='username'
           type='text'
-          // Your other props here
+          value={username}
+          onChange={e => setUsername(e.target.value)} // Updates username state
         />
       </div>
       <div>
@@ -60,7 +69,8 @@ const SignUpForm = () => {
         <input
           name='firstName'
           type='text'
-          // Your other props here
+          value={firstName}
+          onChange={e => setFirstName(e.target.value)} // Updates firstName state
         />
       </div>
       <div>
@@ -70,14 +80,15 @@ const SignUpForm = () => {
         <input
           name='lastName'
           type='text'
-          // Your other props here
+          value={lastName}
+          onChange={e => setLastName(e.target.value)} // Updates lastName state
         />
       </div>
       <button type='submit'>
         <FormattedMessage id='signUp' defaultMessage='Sign Up' />
       </button>
     </form>
-  );
+  )
 }
 
-export default SignUpForm;
+export default SignUpForm

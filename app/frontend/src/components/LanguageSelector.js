@@ -52,7 +52,7 @@ function LanguageSelector({ setLocale }) {
 
   const handleLanguageChange = (language) => {
     setLocale(language);
-    history.push('/login'); 
+    history.push('/sign-up');
   };
 
   return (

@@ -18,7 +18,7 @@ function App ({ setLocale }) {
   useEffect(() => {
     auth.onAuthStateChanged(async user => {
       if (user) {
-        await dispatch(authenticate())
+        await dispatch(authenticate()) // Make sure this properly sets the user
         setCurrentUser(user)
       } else {
         setCurrentUser(null)
@@ -36,7 +36,7 @@ function App ({ setLocale }) {
       <NavBar />
       <Switch>
         <Route exact path='/'>
-          <WelcomePage setLocale={setLocale} />
+          {currentUser ? <HomePage /> : <WelcomePage setLocale={setLocale} />}
         </Route>
         <Route path='/login'>
           {currentUser ? <Redirect to='/' /> : <LoginForm />}
@@ -44,12 +44,14 @@ function App ({ setLocale }) {
         <Route path='/sign-up'>
           {currentUser ? <Redirect to='/' /> : <SignUpForm />}
         </Route>
-        <ProtectedRoute path='/' exact={true}>
+        {/* Ensure your ProtectedRoute component is redirecting correctly */}
+        <ProtectedRoute path='/home'>
           {currentUser ? <HomePage /> : <Redirect to='/login' />}
         </ProtectedRoute>
       </Switch>
     </>
   )
 }
+
 
 export default App
