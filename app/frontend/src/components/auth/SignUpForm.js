@@ -26,17 +26,17 @@ const SignUpForm = () => {
   };
 
   return (
-    <Container
-      maxWidth="xs"
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        height: "100vh", // Full viewport height
-        border: "1px solid black",
-      }}
-    >
-      <form onSubmit={onSignUp}>
-        <h2>Create your account</h2>
+    <form onSubmit={onSignUp}>
+      <Container maxWidth="xs"
+        sx={{
+          display: "flex",
+          flexDirection: 'column',
+          justifyContent: "center",
+          border: "1px solid black",
+          p: 10,
+        }}
+      >
+        <h1>Create your account</h1>
         <Box display="flex" flexDirection="column" p={1}>
           <label htmlFor="email">
             <FormattedMessage id="email" defaultMessage="Email" />
@@ -143,19 +143,23 @@ const SignUpForm = () => {
             InputProps={{ sx: { borderRadius: 100 } }}
             required
           />
+          <Button
+            variant="contained"
+            type="submit"
+            color="primary"
+            sx={{
+              borderRadius: 100,
+              mt: 5,
+            }}
+          >
+            <FormattedMessage id="signUp" defaultMessage="Sign Up" />
+          </Button>
         </Box>
         {/* <button type="submit">
           <FormattedMessage id="signUp" defaultMessage="Sign Up" />
         </button> */}
-        <Button
-          variant="contained"
-          type="submit"
-          color="primary"
-        >
-          <FormattedMessage id="signUp" defaultMessage="Sign Up" />
-        </Button>
-      </form>
-    </Container>
+      </Container>
+    </form>
   );
 };
 
