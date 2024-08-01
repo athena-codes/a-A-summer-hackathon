@@ -1,5 +1,5 @@
 import React from 'react';
-import "../style/styles.css";
+import "../styles/styles.css";
 
 const InfiniteScroll = () => {
   const links = [

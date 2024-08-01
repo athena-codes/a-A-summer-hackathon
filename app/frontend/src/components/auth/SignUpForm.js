@@ -1,94 +1,162 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { signUp } from '../../store/session'
-import { FormattedMessage } from 'react-intl'
-import { useHistory } from 'react-router-dom/cjs/react-router-dom'
-
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { signUp } from "../../store/session";
+import { FormattedMessage } from "react-intl";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { Box, Button, Container, TextField } from "@mui/material";
 
 const SignUpForm = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const dispatch = useDispatch()
-  const history = useHistory()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const dispatch = useDispatch();
+  const history = useHistory();
 
-  const onSignUp = async e => {
-    e.preventDefault()
+  const onSignUp = async (e) => {
+    e.preventDefault();
     try {
-      await dispatch(signUp(email, password, username, firstName, lastName))
-      console.log('Signed up successfully')
-      history.push('/home')
+      await dispatch(signUp(email, password, username, firstName, lastName));
+      console.log("Signed up successfully");
+      history.push("/home");
     } catch (error) {
-      console.error('Error signing up:', error.message)
+      console.error("Error signing up:", error.message);
     }
-  }
+  };
 
   return (
-    <form onSubmit={onSignUp}>
-      <div>
-        <label htmlFor='email'>
-          <FormattedMessage id='email' defaultMessage='Email' />
-        </label>
-        <input
+    <Container
+      maxWidth="xs"
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        height: "100vh", // Full viewport height
+        border: "1px solid black",
+      }}
+    >
+      <form onSubmit={onSignUp}>
+        <h2>Create your account</h2>
+        <Box display="flex" flexDirection="column" p={1}>
+          <label htmlFor="email">
+            <FormattedMessage id="email" defaultMessage="Email" />
+          </label>
+          {/* <input
           name='email'
           type='email'
           value={email}
           onChange={e => setEmail(e.target.value)} // Ensures state updates when user types in the email field
           required
-        />
-      </div>
-      <div>
-        <label htmlFor='password'>
-          <FormattedMessage id='password' defaultMessage='Password' />
-        </label>
-        <input
+        /> */}
+          <TextField
+            id="outlined-email-input"
+            label="Enter your Email"
+            type="email"
+            autoComplete="current-email"
+            onChange={(e) => setEmail(e.target.value)} // Ensures state updates when user types in the email field
+            size="small"
+            InputProps={{ sx: { borderRadius: 100 } }}
+            required
+          />
+        </Box>
+        <Box display="flex" flexDirection="column" p={1}>
+          <label htmlFor="password">
+            <FormattedMessage id="password" defaultMessage="Password" />
+          </label>
+          {/* <input
           name='password'
           type='password'
           value={password}
           onChange={e => setPassword(e.target.value)} // Updates password state
           required
-        />
-      </div>
-      <div>
-        <label htmlFor='username'>
-          <FormattedMessage id='username' defaultMessage='Username' />
-        </label>
-        <input
+        /> */}
+          <TextField
+            id="outlined-password-input"
+            label="Enter your Password"
+            type="password"
+            autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)} // Updates password state
+            size="small"
+            InputProps={{ sx: { borderRadius: 100 } }}
+            required
+          />
+        </Box>
+        <Box display="flex" flexDirection="column" p={1}>
+          <label htmlFor="username">
+            <FormattedMessage id="username" defaultMessage="Username" />
+          </label>
+          {/* <input
           name='username'
           type='text'
           value={username}
           onChange={e => setUsername(e.target.value)} // Updates username state
-        />
-      </div>
-      <div>
-        <label htmlFor='firstName'>
-          <FormattedMessage id='firstName' defaultMessage='First Name' />
-        </label>
-        <input
+        /> */}
+          <TextField
+            id="outlined-username-input"
+            label="Enter your username"
+            type="text"
+            autoComplete="current-username"
+            onChange={(e) => setUsername(e.target.value)} // Updates username state
+            size="small"
+            InputProps={{ sx: { borderRadius: 100 } }}
+            required
+          />
+        </Box>
+        <Box display="flex" flexDirection="column" p={1}>
+          <label htmlFor="firstName">
+            <FormattedMessage id="firstName" defaultMessage="First Name" />
+          </label>
+          {/* <input
           name='firstName'
           type='text'
           value={firstName}
           onChange={e => setFirstName(e.target.value)} // Updates firstName state
-        />
-      </div>
-      <div>
-        <label htmlFor='lastName'>
-          <FormattedMessage id='lastName' defaultMessage='Last Name' />
-        </label>
-        <input
+        /> */}
+          <TextField
+            id="outlined-username-input"
+            label="Enter your first name"
+            type="text"
+            autoComplete="current-username"
+            onChange={(e) => setFirstName(e.target.value)} // Updates firstName state
+            size="small"
+            InputProps={{ sx: { borderRadius: 100 } }}
+            required
+          />
+        </Box>
+        <Box display="flex" flexDirection="column" p={1}>
+          <label htmlFor="lastName">
+            <FormattedMessage id="lastName" defaultMessage="Last Name" />
+          </label>
+          {/* <input
           name='lastName'
           type='text'
           value={lastName}
           onChange={e => setLastName(e.target.value)} // Updates lastName state
-        />
-      </div>
-      <button type='submit'>
-        <FormattedMessage id='signUp' defaultMessage='Sign Up' />
-      </button>
-    </form>
-  )
-}
+        /> */}
+          <TextField
+            id="outlined-username-input"
+            label="Enter your last name"
+            type="text"
+            autoComplete="current-username"
+            onChange={(e) => setLastName(e.target.value)} // Updates lastName state
+            size="small"
+            InputProps={{ sx: { borderRadius: 100 } }}
+            required
+          />
+        </Box>
+        {/* <button type="submit">
+          <FormattedMessage id="signUp" defaultMessage="Sign Up" />
+        </button> */}
+        <Button
+          variant="contained"
+          type="submit"
+          color="primary"
+        >
+          <FormattedMessage id="signUp" defaultMessage="Sign Up" />
+        </Button>
+      </form>
+    </Container>
+  );
+};
 
-export default SignUpForm
+export default SignUpForm;

@@ -29,13 +29,13 @@ const messages = {
 };
 
 const Main = () => {
-  const [locale, setLocale] = useState('en');
+  const [locale, setLocale] = useState("en");
 
   return (
     <IntlProvider locale={locale} messages={messages[locale]}>
       <BrowserRouter>
         <Provider store={store}>
-          <App setLocale={setLocale} />
+            <App setLocale={setLocale} />
         </Provider>
       </BrowserRouter>
     </IntlProvider>
