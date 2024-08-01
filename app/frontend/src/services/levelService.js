@@ -61,7 +61,6 @@ const checkAndUpdateUserLevel = async (userId) => {
                 passedConceptsCount++;
             }
         }
-
         // Define criteria for level progression
         const criteria = {
             beginner: 5, // Number of concepts to pass to move from beginner to intermediate
