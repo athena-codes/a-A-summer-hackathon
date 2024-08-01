@@ -6,7 +6,7 @@ const authRoutes = require('./frontend/src/routes/authRoutes');
 const conceptRoutes = require('./frontend/src/routes/conceptRoutes');
 const topicRoutes = require('./frontend/src/routes/topicRoutes');
 const levelRoutes = require('./frontend/src/routes/levelRoutes');
-const sessionRoutes = require('./frontend/src/routes/sessionRoutes');
+const deckRoutes = require('./frontend/src/routes/deckRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,7 +23,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/concepts', conceptRoutes);
 app.use('/api/topics', topicRoutes);
 app.use('/api/levels', levelRoutes);
-app.use('/api/sessions', sessionRoutes);
+app.use('/api/decks', deckRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
