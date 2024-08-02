@@ -9,6 +9,7 @@ const levelRoutes = require('./frontend/src/routes/levelRoutes');
 const sessionRoutes = require('./frontend/src/routes/sessionRoutes');
 const aiRoutes = require('./frontend/src/routes/aiRoutes');
 
+const deckRoutes = require('./frontend/src/routes/deckRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -28,6 +29,7 @@ app.use('/api/levels', levelRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/ai', aiRoutes);
 
+app.use('/api/decks', deckRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
