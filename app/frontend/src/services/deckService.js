@@ -1,5 +1,5 @@
 const { db } = require('../firebase/firebaseConfig');
-const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, Timestamp } = require('firebase/firestore');
+const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, Timestamp, setDoc } = require('firebase/firestore');
 
 //service to view all decks
 const getDecksFromDB = async () => {
@@ -19,15 +19,36 @@ const getDecksByTopicIdFromDB = async (topicId) => {
         throw new Error('Error fetching decks: ' + error.message);
     }
 }
-//service to create a deck (empty)
-const createDeckInDB = async (topicId) => {
+
+//service to view a deck
+const getDeckFromDB = async (deckId) => {
     try {
-        const docRef = await addDoc(collection(db, 'decks'), topicId)
-        return docRef.id
+        const docRef = doc(db, 'decks', deckId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return { id: docSnap.id, ...docSnap.data() };
+        } else {
+            throw new Error('Deck not found');
+        }
+    } catch(error) {
+        throw new Error('Error fetching deck: ' + error.message);
+    }
+}
+
+//service to create a deck (empty)
+const createDeckInDB = async ({ topic_id, createdAt, archived }) => {
+    try {
+        const docRef = await addDoc(collection(db, 'decks'), {
+            topic_id,
+            createdAt,
+            archived
+        });
+        const deck = { id: docRef.id, topic_id, createdAt, archived };
+        return deck;
     } catch(error) {
         throw new Error('Error creating deck: ' + error.message);
     }
-}
+};
 
 //service to add a card to a deck
 const addCardToDeckInDB = async () => {
@@ -52,15 +73,28 @@ const removeDeckFromDB = async () => {
 }
 
 //service to archive a deck
-const archiveDeckInDB = async (topicId, archived) => {
+const archiveDeckInDB = async (deckId, uid) => {
     try {
-        const deckRef = doc(db, 'decks', topicId);
-        await updateDoc(deckRef, { archived });
+        // Update the deck's archived status in the main collection
+        const deckRef = doc(db, 'decks', deckId);
+        await updateDoc(deckRef, { archived: true });
+
+        // Get the deck data
+        const deckDoc = await getDoc(deckRef);
+        if (!deckDoc.exists()) {
+            throw new Error('Deck not found');
+        }
+        const deckData = deckDoc.data();
+
+        // Add the deck to the user's subcollection
+        const userDecksCollectionRef = collection(doc(db, 'users', uid), 'decks');
+        await setDoc(doc(userDecksCollectionRef, deckId), deckData);
+
         return true;
-    } catch(error) {
+    } catch (error) {
         throw new Error('Error archiving deck: ' + error.message);
     }
-}
+};
 
 
 //service to view archived decks
@@ -73,5 +107,30 @@ const getArchivedDecksFromDB = async () => {
     }
 }
 
+//service to view user archived decks
+const getUserArchivedDecksFromDB = async (uid) => {
+    try {
+        const userDocRef = doc(db, 'users', uid);
+        const userDoc = await getDoc(userDocRef);
 
-module.exports = { getDecksFromDB, getDecksByTopicIdFromDB, createDeckInDB, addCardToDeckInDB, removeCardFromDeckInDB, removeDeckFromDB, archiveDeckInDB, getArchivedDecksFromDB };
+        if (!userDoc.exists()) {
+            throw new Error('User not found');
+        }
+        const userDecksCollectionRef = collection(userDocRef, 'decks');
+
+        const userDecksSnapshot = await getDocs(userDecksCollectionRef);
+        const userDecks = userDecksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return userDecks;
+    } catch(error) {
+        throw new Error('Error fetching user archived decks: ' + error.message);
+    }
+}
+
+
+module.exports = {
+    getDecksFromDB, getDecksByTopicIdFromDB,
+    createDeckInDB, addCardToDeckInDB,
+    removeCardFromDeckInDB, removeDeckFromDB,
+    archiveDeckInDB, getArchivedDecksFromDB,
+    getUserArchivedDecksFromDB, getDeckFromDB
+};

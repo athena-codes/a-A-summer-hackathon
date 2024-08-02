@@ -1,7 +1,12 @@
-const { getDecksFromDB, createDeckInDB, addCardToDeckInDB, removeCardFromDeckInDB, removeDeckFromDB, archiveDeckInDB, getArchivedDecksFromDB } = require('../services/deckService');
+const { getDecksFromDB, createDeckInDB,
+    addCardToDeckInDB, removeCardFromDeckInDB,
+    removeDeckFromDB, archiveDeckInDB,
+    getArchivedDecksFromDB, getUserArchivedDecksFromDB
+    , getDeckFromDB
+ } = require('../services/deckService');
 
 
-const getDecks = async (req, res) => {
+const getAllDecks = async (req, res) => {
     try {
         const decks = await getDecksFromDB();
         res.status(200).json({ decks });
@@ -11,15 +16,25 @@ const getDecks = async (req, res) => {
 }
 
 
+const getDeck = async (req, res) => {
+    const { deckId } = req.params;
+    try {
+        const deck = await getDeckFromDB(deckId);
+        res.status(200).json({ deck });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 const createDeck = async (req, res) => {
-    const { topic_id, createdAt, archived } = req.body;
+    const { topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
     try {
         const deck = await createDeckInDB({ topic_id, createdAt, archived });
         res.status(201).json({ message: 'Deck created', deck });
     } catch (error) {
         res.status(500).json({ message: `Error creating deck: ${error.message}` });
     }
-}
+};
 
 
 const addCardToDeck = async (req, res) => {
@@ -57,10 +72,16 @@ const removeDeck = async (req, res) => {
 
 
 const archiveDeck = async (req, res) => {
-    const { deckId } = req.params;
+    //const { deckId, uid } = req.params;
+    const { deckId, uid } = req.body;
+
+    if (!deckId || !uid) {
+        return res.status(400).json({ message: 'Missing deckId or uid' });
+    }
+
     try {
-        await archiveDeckInDB(deckId);
-        res.status(200).json({ message: 'Deck archived' });
+        await archiveDeckInDB(deckId, uid);
+        res.status(200).json({ message: 'Deck archived'});
     } catch (error) {
         res.status(500).json({ message: `Error archiving deck: ${error.message}` });
     }
@@ -76,4 +97,14 @@ const getArchivedDecks = async (req, res) => {
     }
 }
 
-module.exports = { getDecks, createDeck, addCardToDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks };
+const getUserArchivedDecks = async (req, res) => {
+    const { uid } = req.params;
+    try {
+        const decks = await getUserArchivedDecksFromDB(uid);
+        res.status(200).json({ decks });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { getAllDecks, createDeck, addCardToDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks };
