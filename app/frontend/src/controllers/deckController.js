@@ -107,4 +107,4 @@ const getUserArchivedDecks = async (req, res) => {
     }
 }
 
-module.exports = { getAllDecks, createDeck, addCardToDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks };
+module.exports = { getAllDecks, getDeck, createDeck, addCardToDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks };
