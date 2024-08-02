@@ -27,13 +27,25 @@ const addCardQuestions = async (req, res) => {
         //generate questionData for front
         let questionData = await generateQuestionsByAI(user_native_language, user_level)
         console.log("確認我拿到的questions是什麼: ", questionData, typeof (questionData))
-        const { question, options, answer, explanation } = questionData
+
+        // //method 1- insert db 1 by 1
+        // for (let q of questionData) {
+        //     const { question, options, answer, explanation } = q
+        //     const question_from_ai = await addQuestionsToDB("qX9q8i4wE24ohjSykFf8", { question, options, answer, explanation });
+
+        // }
+
+        //method 2- insert db with questionData
+        const question_from_ai = await addQuestionsToDB("qX9q8i4wE24ohjSykFf8", { questionData });
+
+        res.status(201).json({ message: 'questions generated from ai added to db successfully!' });
+
+        // const { question, options, answer, explanation } = questionData
 
 
+        // const question_from_ai = await addQuestionsToDB("reference", { question, options, answer, explanation });
 
-        const question_from_ai = await addQuestionsToDB("reference", { question, options, answer, explanation });
-
-        res.status(201).json({ message: 'questions added', question_from_ai });
+        // res.status(201).json({ message: 'questions added', question_from_ai });
     } catch (error) {
         res.status(500).json({ message: `Error adding questions: ${error.message}` });
     }

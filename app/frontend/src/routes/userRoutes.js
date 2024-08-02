@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress } = require('../controllers/userController');
+// const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress } = require('../controllers/userController');
 const { getAllQuestionsbyAI } = require('../controllers/aiController');
 
 const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt } = require('../controllers/userController');
