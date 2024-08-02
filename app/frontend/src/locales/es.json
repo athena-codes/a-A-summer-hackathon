@@ -1,0 +1,10 @@
+{
+    "email": "Correo electrónico (Email)",
+    "password": "Contraseña (Password)",
+    "username": "Nombre de usuario (Username)",
+    "firstName": "Nombre (First Name)",
+    "lastName": "Apellido (Last Name)",
+    "signUp": "Registrarse (Sign Up)",
+    "logIn": "Iniciar sesión (Log In)"
+  }
+  

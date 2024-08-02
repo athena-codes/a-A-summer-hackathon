@@ -25,8 +25,8 @@ pip install -r requirements.txt
 
 ### Start back end server
 ```bash
-pipenv shell
-flask run
+go to root of project
+node server.js
 ```
 
 ### Start the frontend development server:
