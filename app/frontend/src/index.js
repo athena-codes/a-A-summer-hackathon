@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import configureStore from "./store";
+import theme from "./theme/theme"
 import enMessages from "./locales/en.json";
 import frMessages from "./locales/fr.json";
 import esMessages from "./locales/es.json";
@@ -14,6 +15,7 @@ import jaMessages from "./locales/ja.json";
 import koMessages from "./locales/ko.json";
 import viMessages from "./locales/vi.json";
 import zhMessages from "./locales/zh.json";
+import { ThemeProvider } from "@mui/material";
 
 const store = configureStore();
 
@@ -29,13 +31,15 @@ const messages = {
 };
 
 const Main = () => {
-  const [locale, setLocale] = useState('en');
+  const [locale, setLocale] = useState("en");
 
   return (
     <IntlProvider locale={locale} messages={messages[locale]}>
       <BrowserRouter>
         <Provider store={store}>
-          <App setLocale={setLocale} />
+          <ThemeProvider theme={theme}>
+            <App setLocale={setLocale} />
+          </ThemeProvider>
         </Provider>
       </BrowserRouter>
     </IntlProvider>
