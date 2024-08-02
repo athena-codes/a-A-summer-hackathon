@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress } = require('../controllers/userController');
+const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt } = require('../controllers/userController');
 
 const router = express.Router();
 
@@ -17,5 +17,11 @@ router.get('/:id/progress', getUserProgress)
 
 //update user progress
 router.put('/:id/progress/update', updateUserProgress)
+
+//get user attempts
+router.get('/:id/attempts', getUserAttempts)
+
+//add user attempt
+router.post('/:id/attempts/start', addUserAttempt)
 
 module.exports = router;

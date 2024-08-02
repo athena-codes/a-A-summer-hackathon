@@ -2,7 +2,6 @@ const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, setDoc } = require('firebase/firestore');
 const { checkAndUpdateUserLevel } = require('./levelService');
 const { getConceptsByLevel, getTopicsByConceptId } = require('./conceptService');
-const e = require('express');
 
 // Service to add a user
 const addUserToDB = async ({ uid, email, username, first_name, last_name, native_language, level }) => {
@@ -19,8 +18,9 @@ const addUserToDB = async ({ uid, email, username, first_name, last_name, native
 };
 
 const setUserLevel = async (uid, level) => {
-    await setDoc(doc(db, 'user_levels', uid), {
-        current_level: level
+    await setDoc(doc(db, 'users', uid), {
+        current_level: level,
+        updatedAt: new Date().toISOString()
     }, { merge: true });
 };
 
