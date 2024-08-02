@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { signUp } from "../../store/session";
 import { FormattedMessage } from "react-intl";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
-import { Box, Button, Container, TextField } from "@mui/material";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -27,20 +27,32 @@ const SignUpForm = () => {
 
   return (
     <form onSubmit={onSignUp}>
-      <Container maxWidth="xs"
+      <Container
+        maxWidth="xs"
         sx={{
           display: "flex",
-          flexDirection: 'column',
+          flexDirection: "column",
           justifyContent: "center",
           border: "1px solid black",
           p: 10,
+          borderRadius: 10,
         }}
       >
-        <h1>Create your account</h1>
+        <Typography
+          variant="h1"
+          sx={{
+            // color: "primary.main",
+            fontSize: "2rem",
+            textAlign: "center",
+            fontWeight: "bold",
+          }}
+        >
+          Create your account
+        </Typography>
         <Box display="flex" flexDirection="column" p={1}>
-          <label htmlFor="email">
+          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
             <FormattedMessage id="email" defaultMessage="Email" />
-          </label>
+          </Typography>
           {/* <input
           name='email'
           type='email'
@@ -60,9 +72,9 @@ const SignUpForm = () => {
           />
         </Box>
         <Box display="flex" flexDirection="column" p={1}>
-          <label htmlFor="password">
+          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
             <FormattedMessage id="password" defaultMessage="Password" />
-          </label>
+          </Typography>
           {/* <input
           name='password'
           type='password'
@@ -82,9 +94,10 @@ const SignUpForm = () => {
           />
         </Box>
         <Box display="flex" flexDirection="column" p={1}>
-          <label htmlFor="username">
+          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
             <FormattedMessage id="username" defaultMessage="Username" />
-          </label>
+          </Typography>
+
           {/* <input
           name='username'
           type='text'
@@ -103,9 +116,10 @@ const SignUpForm = () => {
           />
         </Box>
         <Box display="flex" flexDirection="column" p={1}>
-          <label htmlFor="firstName">
+          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
             <FormattedMessage id="firstName" defaultMessage="First Name" />
-          </label>
+          </Typography>
+
           {/* <input
           name='firstName'
           type='text'
@@ -124,9 +138,9 @@ const SignUpForm = () => {
           />
         </Box>
         <Box display="flex" flexDirection="column" p={1}>
-          <label htmlFor="lastName">
+          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
             <FormattedMessage id="lastName" defaultMessage="Last Name" />
-          </label>
+          </Typography>
           {/* <input
           name='lastName'
           type='text'
@@ -149,10 +163,13 @@ const SignUpForm = () => {
             color="primary"
             sx={{
               borderRadius: 100,
-              mt: 5,
+              mt: 4,
+              fontWeight: "500"
             }}
           >
-            <FormattedMessage id="signUp" defaultMessage="Sign Up" />
+            {/* <Typography sx={{  }}> */}
+              <FormattedMessage id="signUp" defaultMessage="Sign Up" />
+            {/* </Typography> */}
           </Button>
         </Box>
         {/* <button type="submit">

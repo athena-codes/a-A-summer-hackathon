@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/session";
 import { FormattedMessage } from "react-intl";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -15,31 +16,82 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={onLogin}>
-      <div>
-        <label htmlFor="email">
-          <FormattedMessage id="email" defaultMessage="Email" />
-        </label>
-        <input
-          name="email"
-          type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="password">
-          <FormattedMessage id="password" defaultMessage="Password" />
-        </label>
-        <input
+      <Container
+        maxWidth="xs"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          border: "1px solid black",
+          p: 10,
+          borderRadius: 10,
+        }}
+      >
+        <Typography
+          variant="h1"
+          sx={{
+            // color: "primary.main",
+            fontSize: "2rem",
+            textAlign: "center",
+            fontWeight: "bold",
+          }}
+        >
+          Log In
+        </Typography>
+        <Box display="flex" flexDirection="column" p={1}>
+        <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1, }}>
+            <FormattedMessage id="email" defaultMessage="Email" />
+          </Typography>
+          {/* <input
+            name="email"
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          /> */}
+             <TextField
+            id="outlined-email-input"
+            label="Enter your Email"
+            type="email"
+            autoComplete="current-email"
+            onChange={(e) => setEmail(e.target.value)} // Ensures state updates when user types in the email field
+            size="small"
+            InputProps={{ sx: { borderRadius: 100 } }}
+            required
+          />
+        </Box>
+        <Box display="flex" flexDirection="column" p={1}>
+          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
+            <FormattedMessage id="password" defaultMessage="Password" />
+          </Typography>
+          {/* <input
           name="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
-      <button type="submit">
-      <FormattedMessage id='logIn' defaultMessage='Log In' />
-      </button>
+        /> */}
+          <TextField
+            id="outlined-password-input"
+            label="Enter your Password"
+            type="password"
+            autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)} // Updates password state
+            size="small"
+            InputProps={{ sx: { borderRadius: 100 } }}
+            required
+          />
+        </Box>
+        <Button
+          variant="contained"
+          type="submit"
+          color="primary"
+          sx={{
+            borderRadius: 100,
+            mt: 4,
+          }}
+        >
+          <FormattedMessage id="logIn" defaultMessage="Log In" />
+        </Button>
+      </Container>
     </form>
   );
 };
