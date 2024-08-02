@@ -9,6 +9,7 @@ import { authenticate } from './store/session'
 import { auth } from './firebase/firebaseConfig'
 import HomePage from './components/Homepage'
 import WelcomePage from './components/WelcomePage'
+import Concepts from './components/Concepts'
 
 function App ({ setLocale }) {
   const [loaded, setLoaded] = useState(false)
@@ -48,10 +49,12 @@ function App ({ setLocale }) {
         <ProtectedRoute path='/home'>
           {currentUser ? <HomePage /> : <Redirect to='/login' />}
         </ProtectedRoute>
+        <Route path='/concepts'>
+          <Concepts />
+        </Route>
       </Switch>
     </>
   )
 }
-
 
 export default App
