@@ -13,6 +13,7 @@ import WelcomePage from './components/WelcomePage'
 function App ({ setLocale }) {
   const [loaded, setLoaded] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+  const [language, setLanguage] = useState('en');
   const dispatch = useDispatch()
 
   useEffect(() => {
