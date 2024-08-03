@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { signUp } from "../../store/session";
 import { FormattedMessage } from "react-intl";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { useHistory } from "react-router-dom";
 import {
   Box,
   Button,
@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 
-const SignUpForm = () => {
+const SignUpForm = ({ locale, setLocale }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -21,10 +21,9 @@ const SignUpForm = () => {
   const [lastName, setLastName] = useState("");
   const dispatch = useDispatch();
   const history = useHistory();
-  const [language, setLanguage] = React.useState("");
 
   const handleChange = (event) => {
-    setLanguage(event.target.value);
+    setLocale(event.target.value);
   };
 
   const onSignUp = async (e) => {
@@ -36,6 +35,36 @@ const SignUpForm = () => {
     } catch (error) {
       console.error("Error signing up:", error.message);
     }
+  };
+
+  const defaultMessages = {
+    email: "Email",
+    password: "Password",
+    username: "Username",
+    firstName: "First Name",
+    lastName: "Last Name",
+    signUp: "Sign Up",
+    logIn: "Log In",
+    createYourAccount: "Create your Account",
+    confirmPassword: "Confirm Password",
+    nativeLanguage: "Native Language",
+  };
+
+  const getFieldLabel = (id) => {
+    const defaultMessage = defaultMessages[id] || id;
+
+    return (
+      <Box display="flex" alignItems="center">
+        <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
+          <FormattedMessage id={id} defaultMessage={defaultMessage} />
+        </Typography>
+        {locale !== "en" && (
+          <Typography variant="caption" color="textSecondary" sx={{ ml: 1 }}>
+            {defaultMessage}
+          </Typography>
+        )}
+      </Box>
+    );
   };
 
   return (
@@ -51,151 +80,90 @@ const SignUpForm = () => {
           borderRadius: 10,
         }}
       >
-        <Box display="flex" flexDirection="column" alignItems="center" mb="10px">
+       <Box display="flex" flexDirection="column" alignItems="center" mb="10px">
           <Typography
             variant="h1"
             sx={{
-              // color: "primary.main",
               fontSize: "2rem",
               fontWeight: "bold",
             }}
           >
-            <FormattedMessage
-              id="createYourAccount"
-              defaultMessage="Create your Account"
-            />
+            <FormattedMessage id="createYourAccount" defaultMessage={defaultMessages["createYourAccount"]} />
           </Typography>
-          <Typography>Create your Account</Typography>
         </Box>
-        <Box display="flex" flexDirection="column" p={1}>
-          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
-            <FormattedMessage id="firstName" defaultMessage="First Name" />
-          </Typography>
 
-          {/* <input
-          name='firstName'
-          type='text'
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)} // Updates firstName state
-        /> */}
+        <Box display="flex" flexDirection="column" p={1}>
+          {getFieldLabel("firstName")}
           <TextField
-            id="outlined-username-input"
-            // label="Enter your first name"
+            id="outlined-firstName-input"
             type="text"
-            autoComplete="current-username"
-            onChange={(e) => setFirstName(e.target.value)} // Updates firstName state
+            autoComplete="given-name"
+            onChange={(e) => setFirstName(e.target.value)}
             size="small"
             InputProps={{ sx: { borderRadius: 100 } }}
             required
           />
         </Box>
-        <Box display="flex" flexDirection="column" p={1}>
-          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
-            <FormattedMessage id="lastName" defaultMessage="Last Name" />
-          </Typography>
-          {/* <input
-          name='lastName'
-          type='text'
-          value={lastName}
-          onChange={e => setLastName(e.target.value)} // Updates lastName state
-        /> */}
-          <TextField
-            id="outlined-username-input"
-            // label="Enter your last name"
-            type="text"
-            autoComplete="current-username"
-            onChange={(e) => setLastName(e.target.value)} // Updates lastName state
-            size="small"
-            InputProps={{ sx: { borderRadius: 100 } }}
-            required
-          />
-        </Box>
-        <Box display="flex" flexDirection="column" p={1}>
-          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
-            <FormattedMessage id="username" defaultMessage="Username" />
-          </Typography>
 
-          {/* <input
-          name='username'
-          type='text'
-          value={username}
-          onChange={e => setUsername(e.target.value)} // Updates username state
-        /> */}
+        <Box display="flex" flexDirection="column" p={1}>
+          {getFieldLabel("lastName")}
           <TextField
-            id="outlined-username-input"
-            // label="Enter your username"
+            id="outlined-lastName-input"
             type="text"
-            autoComplete="current-username"
-            onChange={(e) => setUsername(e.target.value)} // Updates username state
+            autoComplete="family-name"
+            onChange={(e) => setLastName(e.target.value)}
             size="small"
             InputProps={{ sx: { borderRadius: 100 } }}
             required
           />
         </Box>
+
         <Box display="flex" flexDirection="column" p={1}>
-          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
-            <FormattedMessage id="email" defaultMessage="Email" />
-          </Typography>
-          {/* <input
-          name='email'
-          type='email'
-          value={email}
-          onChange={e => setEmail(e.target.value)} // Ensures state updates when user types in the email field
-          required
-        /> */}
+          {getFieldLabel("username")}
+          <TextField
+            id="outlined-username-input"
+            type="text"
+            autoComplete="username"
+            onChange={(e) => setUsername(e.target.value)}
+            size="small"
+            InputProps={{ sx: { borderRadius: 100 } }}
+            required
+          />
+        </Box>
+
+        <Box display="flex" flexDirection="column" p={1}>
+          {getFieldLabel("email")}
           <TextField
             id="outlined-email-input"
-            // label="Enter your Email"
             type="email"
-            autoComplete="current-email"
-            onChange={(e) => setEmail(e.target.value)} // Ensures state updates when user types in the email field
+            autoComplete="email"
+            onChange={(e) => setEmail(e.target.value)}
             size="small"
             InputProps={{ sx: { borderRadius: 100 } }}
             required
           />
         </Box>
+
         <Box display="flex" flexDirection="column" p={1}>
-          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
-            <FormattedMessage id="password" defaultMessage="Password" />
-          </Typography>
-          {/* <input
-          name='password'
-          type='password'
-          value={password}
-          onChange={e => setPassword(e.target.value)} // Updates password state
-          required
-        /> */}
+          {getFieldLabel("password")}
           <TextField
             id="outlined-password-input"
-            // label="Enter your Password"
             type="password"
-            autoComplete="current-password"
-            onChange={(e) => setPassword(e.target.value)} // Updates password state
+            autoComplete="new-password"
+            onChange={(e) => setPassword(e.target.value)}
             size="small"
             InputProps={{ sx: { borderRadius: 100 } }}
             required
           />
         </Box>
+
         <Box display="flex" flexDirection="column" p={1}>
-          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
-            <FormattedMessage
-              id="confirmPassword"
-              defaultMessage="Confirm Password"
-            />
-          </Typography>
-          {/* <input
-          name='password'
-          type='password'
-          value={password}
-          onChange={e => setPassword(e.target.value)} // Updates password state
-          required
-        /> */}
+          {getFieldLabel("confirmPassword")}
           <TextField
-            id="outlined-password-input"
-            // label="Enter your Password"
+            id="outlined-confirm-password-input"
             type="password"
-            autoComplete="current-password"
-            onChange={(e) => setPassword(e.target.value)} // Updates password state
+            autoComplete="new-password"
+            onChange={(e) => setPassword(e.target.value)}
             size="small"
             InputProps={{ sx: { borderRadius: 100 } }}
             required
@@ -204,19 +172,14 @@ const SignUpForm = () => {
 
         <Box display="flex" flexDirection="column" p={1}>
           <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
-            <FormattedMessage
-              id="selectedLanguage"
-              defaultMessage="Native Language"
-            />
+            {getFieldLabel("nativeLanguage")}
           </Typography>
-          {/* <input
-          name='password'
-          type='password'
-          value={password}
-          onChange={e => setPassword(e.target.value)} // Updates password state
-          required
-        /> */}
-          <Select value={language} onChange={handleChange}>
+          <Select
+            value={locale}
+            onChange={handleChange}
+            sx={{ borderRadius: 10 }}
+            size="small"
+          >
             <MenuItem value="en">English</MenuItem>
             <MenuItem value="fr">Français</MenuItem>
             <MenuItem value="ko">한국어</MenuItem>
@@ -227,6 +190,7 @@ const SignUpForm = () => {
             <MenuItem value="hi">हिंदी</MenuItem>
           </Select>
         </Box>
+
         <Button
           variant="contained"
           type="submit"
@@ -239,9 +203,6 @@ const SignUpForm = () => {
         >
           <FormattedMessage id="signUp" defaultMessage="Sign Up" />
         </Button>
-        {/* <button type="submit">
-          <FormattedMessage id="signUp" defaultMessage="Sign Up" />
-        </button> */}
       </Container>
     </form>
   );
