@@ -69,7 +69,7 @@ const NavBar = () => {
             padding: '10px',
             borderRadius: '20px',
             backgroundColor: '#a8716f',
-            position: 'relative',
+            border: '2px solid #160e0e',
             "&:hover": {
               cursor: "pointer"
             }
