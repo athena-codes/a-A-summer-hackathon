@@ -3,7 +3,7 @@ const { addCardQuestions, getAllQuestionsbyAI } = require('../controllers/aiCont
 const router = express.Router();
 
 
-router.post('/questions', addCardQuestions);
+router.post('/create-questions', addCardQuestions);
 
 // router.get('/:userId/all-questions', getAllQuestionsbyAI);
 
