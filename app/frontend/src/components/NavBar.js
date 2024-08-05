@@ -24,10 +24,10 @@ const StyledMenu = styled((props) => (
     borderRadius: 6,
     marginTop: theme.spacing(1),
     minWidth: 180,
-    color:
-      theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+    // color:
+    //   theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
     boxShadow:
-      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 10px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
     '& .MuiMenu-list': {
       padding: '4px 0',
     },
@@ -100,30 +100,43 @@ const NavBar = () => {
           onClose={handleClose}
         >
 
-          {!user && <MenuItem>
-            <Link href='/login'
-              // exact={true}activeClassName='active'
-              underline="none">
-              <Typography
-                color="primary"
-              >
-                Log In
-              </Typography>
-
-            </Link>
-          </MenuItem>
+          {!user &&
+            <Box>
+              <MenuItem>
+                <Link href='/login'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Log In
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <Link href='/sign-up'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Sign Up
+                  </Typography>
+                </Link>
+              </MenuItem>
+            </Box>
           }
           {user &&
-            <>
+            <Box>
               <MenuItem>
 
-                Hello, {user.email}
+                Hello, {user.email}!
 
               </MenuItem>
               <MenuItem>
                 <LogoutButton />
               </MenuItem>
-            </>
+            </Box>
           }
         </StyledMenu>
       </Container>
