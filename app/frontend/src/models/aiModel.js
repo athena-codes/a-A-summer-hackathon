@@ -19,9 +19,13 @@ async function generateVocabularyQuestionsByAI(topic, native_language, level) {
 
 
 
+    //     if (topic === "Common Nouns") {
+    //         prompt = `You're an English teacher there're 3 levels :begineer, itermediate, advanced. Give me 3 unique Basic nouns questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
+    // Don't eat the rotten apple. Identify the common noun in this sentence.
+    //  using this JSON schema: { "type":"array", "properties": {"question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
+    //     }
     if (topic === "Common Nouns") {
-        prompt = `You're an English teacher there're 3 levels :begineer, itermediate, advanced. Give me 3 unique Basic nouns questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
-Don't eat the rotten apple. Identify the common noun in this sentence.
+        prompt = `You're an English teacher there're 3 levels students:begineer, itermediate, advanced. Give me 3 unique common nouns in english to test if ${level} learner understand the vocabulary and 4 choices ,answer and explaination in ${native_language}.
  using this JSON schema: { "type":"array", "properties": {"question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
     }
     else if (topic === "Basic Verbs") {
