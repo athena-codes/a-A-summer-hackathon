@@ -99,7 +99,8 @@ const NavBar = () => {
           open={open}
           onClose={handleClose}
         >
-          <MenuItem>
+
+          {!user && <MenuItem>
             <Link href='/login'
               // exact={true}activeClassName='active'
               underline="none">
@@ -108,11 +109,22 @@ const NavBar = () => {
               >
                 Log In
               </Typography>
+
             </Link>
           </MenuItem>
-          <MenuItem>
-            <LogoutButton />
-          </MenuItem>
+          }
+          {user &&
+            <>
+              <MenuItem>
+
+                Hello, {user.email}
+
+              </MenuItem>
+              <MenuItem>
+                <LogoutButton />
+              </MenuItem>
+            </>
+          }
         </StyledMenu>
       </Container>
     </nav>
