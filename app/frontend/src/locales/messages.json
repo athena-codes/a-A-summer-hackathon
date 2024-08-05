@@ -1,0 +1,98 @@
+{
+    "en": {
+        "email": "Email",
+        "password": "Password",
+        "username": "Username",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "signUp": "Sign Up",
+        "logIn": "Log In",
+        "createYourAccount": "Create your Account",
+        "confirmPassword": "Confirm Password",
+        "nativeLanguage": "Native Language"
+    },
+    "fr": {
+        "email": "E-mail",
+        "password": "Mot de passe",
+        "username": "Nom d'utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom de famille",
+        "signUp": "S'inscrire (Sign Up)",
+        "logIn": "Se connecter (Log In)",
+        "createYourAccount": "Créez votre compte",
+        "confirmPassword": "Confirmer le mot de passe",
+        "nativeLanguage": "Langue maternelle"
+    },
+    "es": {
+        "email": "Correo electrónico",
+        "password": "Contraseña",
+        "username": "Nombre de usuario",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "signUp": "Registrarse (Sign Up)",
+        "logIn": "Iniciar sesión (Log In)",
+        "createYourAccount": "Crea tu cuenta",
+        "confirmPassword": "Confirmar contraseña",
+        "nativeLanguage": "Idioma nativo"
+    },
+    "hi": {
+        "email": "ईमेल",
+        "password": "पासवर्ड",
+        "username": "उपयोगकर्ता नाम",
+        "firstName": "पहला नाम",
+        "lastName": "अंतिम नाम",
+        "signUp": "साइन अप (Sign Up)",
+        "logIn": "लॉग इन (Log In)",
+        "createYourAccount": "अपना खाता बनाएं",
+        "confirmPassword": "पासवर्ड की पुष्टि करें",
+        "nativeLanguage": "मूल भाषा"
+    },
+    "ko": {
+        "email": "이메일",
+        "password": "비밀번호",
+        "username": "사용자 이름",
+        "firstName": "이름",
+        "lastName": "성",
+        "signUp": "회원가입 (Sign Up)",
+        "logIn": "로그인 (Log In)",
+        "createYourAccount": "계정을 생성하세요",
+        "confirmPassword": "비밀번호 확인",
+        "nativeLanguage": "모국어"
+    },
+    "vi": {
+        "email": "Email",
+        "password": "Mật khẩu",
+        "username": "Tên người dùng",
+        "firstName": "Tên",
+        "lastName": "Họ",
+        "signUp": "Đăng ký (Sign Up)",
+        "logIn": "Đăng nhập (Log In)",
+        "createYourAccount": "Tạo tài khoản của bạn",
+        "confirmPassword": "Xác nhận mật khẩu",
+        "nativeLanguage": "Ngôn ngữ mẹ đẻ"
+    },
+    "zh": {
+        "email": "电子邮件",
+        "password": "密码",
+        "username": "用户名",
+        "firstName": "名字",
+        "lastName": "姓氏",
+        "signUp": "注册 (Sign Up)",
+        "logIn": "登录 (Log In)",
+        "createYourAccount": "创建您的帐户",
+        "confirmPassword": "确认密码",
+        "nativeLanguage": "母语"
+    },
+    "ja": {
+        "email": "メールアドレス",
+        "password": "パスワード",
+        "username": "ユーザー名",
+        "firstName": "名",
+        "lastName": "姓",
+        "signUp": "サインアップ (Sign Up)",
+        "logIn": "ログイン (Log In)",
+        "createYourAccount": "アカウントを作成する",
+        "confirmPassword": "パスワードの確認",
+        "nativeLanguage": "母国語"
+    }
+}
