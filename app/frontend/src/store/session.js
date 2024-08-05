@@ -45,6 +45,20 @@ export const login = (email, password) => async dispatch => {
 
 
 export const signUp = async (email, password, username, firstName, lastName) => {
+  console.log('Signing up with:', {
+  email,
+  password,
+  username,
+  firstName,
+  lastName
+})
+
+if (!email) {
+  console.error('Email is undefined or empty.')
+  return // Prevent further execution if email is empty
+}
+
+
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
