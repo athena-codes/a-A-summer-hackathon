@@ -35,16 +35,10 @@ const addQuestionsToDB = async (uid, aiData) => {
 
     try {
         const usersRef = doc(db, 'users', uid)
-        // console.log("usersRef: ", usersRef)
         const aiGeneratedRequestsRef = collection(usersRef, "ai_generated_requests")
-        // console.log("aiGeneratedRequestsRef: ", aiGeneratedRequestsRef)
-
-        // //method 1- insert db 1 by 1
-        // const docRef = await addDoc(aiGeneratedRequestsRef, aiData);
-
-        //method 2- insert db with questionData
         const docRef = await addDoc(aiGeneratedRequestsRef, aiData);
 
+        return docRef.id
 
     } catch (error) {
         throw new Error('DB-Error adding question: ' + error.message);

@@ -27,26 +27,7 @@ const addCardQuestions = async (req, res) => {
     if (concept === "Basic Vocabulary") {
         console.log("the learner is clicking Basic Vocabulary~~")
         try {
-
-            //generate questionData for front
             let questionData = await generateVocabularyQuestionsByAI(topic, user_native_language, user_level)
-
-            // //method 1- insert db 1 by 1
-            // for (let q of questionData) {
-            //     const { question, options, answer, explanation } = q
-            //     const question_from_ai = await addQuestionsToDB("qX9q8i4wE24ohjSykFf8", { question, options, answer, explanation });
-
-            // }
-            // const { question, options, answer, explanation } = questionData
-
-
-            // const question_from_ai = await addQuestionsToDB("reference", { question, options, answer, explanation });
-
-            // res.status(201).json({ message: 'questions added', question_from_ai });
-
-            //method 2- insert db with questionData
-            // const question_from_ai = await addQuestionsToDB("qX9q8i4wE24ohjSykFf8", { questionData });
-            //taking userid AND aiData
             const question_from_ai = await addQuestionsToDB("n0M6NHzgMb5MTJFIpzFK", { questionData });
 
 
@@ -59,8 +40,6 @@ const addCardQuestions = async (req, res) => {
     else if (concept === "Basic Grammar") {
         console.log("the learner is clicking Basic Grammar~~")
         try {
-
-            //generate questionData for front
             let questionData = await generateGrammerQuestionsByAI(topic, user_native_language, user_level)
 
 
@@ -71,7 +50,6 @@ const addCardQuestions = async (req, res) => {
 
             // }
             // const { question, options, answer, explanation } = questionData
-
 
             // const question_from_ai = await addQuestionsToDB("reference", { question, options, answer, explanation });
 
