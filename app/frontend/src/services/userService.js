@@ -79,13 +79,17 @@ const initializeUserProgress = async (uid) => {
         // Use getConceptsByLevel to get the concepts for the current level
         let concepts = []
         if (currentLevel === 'advanced') {
-            const advancedConcepts = await getConceptsByLevel('advanced');
-            const intermediateConcepts = await getConceptsByLevel('intermediate');
-            const beginnerConcepts = await getConceptsByLevel('beginner');
+            const [advancedConcepts, intermediateConcepts, beginnerConcepts] = await Promise.all([
+                getConceptsByLevel('advanced'),
+                getConceptsByLevel('intermediate'),
+                getConceptsByLevel('beginner')
+            ]);
             concepts = [...advancedConcepts, ...intermediateConcepts, ...beginnerConcepts];
         } else if (currentLevel === 'intermediate') {
-            const intermediateConcepts = await getConceptsByLevel('intermediate');
-            const beginnerConcepts = await getConceptsByLevel('beginner');
+            const [intermediateConcepts, beginnerConcepts] = await Promise.all([
+                getConceptsByLevel('intermediate'),
+                getConceptsByLevel('beginner')
+            ]);
             concepts = [...intermediateConcepts, ...beginnerConcepts];
         } else {
             concepts = await getConceptsByLevel(currentLevel);
