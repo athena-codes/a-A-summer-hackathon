@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/create-questions', addCardQuestions);
 
-// router.get('/:userId/all-questions', getAllQuestionsbyAI);
+//router.get('/:userId/all-questions', getAllQuestionsbyAI);
 
 
 

@@ -21,53 +21,29 @@ const getAllQuestionsbyAI = async (req, res) => {
 // get question from AI and store in db
 const addCardQuestions = async (req, res) => {
     console.log("am i hitting get ai questions route")
-    const { concept, topic, user_native_language, user_level } = req.body
-
+    const { concept, topic, user_native_language, user_level, userId } = req.body
     // get data from aiModel based on different cocept
-    if (concept === "Basic Vocabulary") {
-        console.log("the learner is clicking Basic Vocabulary~~")
-        try {
-            let questionData = await generateVocabularyQuestionsByAI(topic, user_native_language, user_level)
-            const question_from_ai = await addQuestionsToDB("n0M6NHzgMb5MTJFIpzFK", { questionData });
-
-
-            res.status(201).json({ message: `questions generated from ai added to db successfully! ${question_from_ai}` });
-
-        } catch (error) {
-            res.status(500).json({ message: `Error adding questions: ${error.message}` });
-        }
-    }
-    else if (concept === "Basic Grammar") {
-        console.log("the learner is clicking Basic Grammar~~")
-        try {
-            let questionData = await generateGrammerQuestionsByAI(topic, user_native_language, user_level)
-
-
-            // //method 1- insert db 1 by 1
-            // for (let q of questionData) {
-            //     const { question, options, answer, explanation } = q
-            //     const question_from_ai = await addQuestionsToDB("qX9q8i4wE24ohjSykFf8", { question, options, answer, explanation });
-
-            // }
-            // const { question, options, answer, explanation } = questionData
-
-            // const question_from_ai = await addQuestionsToDB("reference", { question, options, answer, explanation });
-
-            // res.status(201).json({ message: 'questions added', question_from_ai });
-
-            //method 2- insert db with questionData
-            const question_from_ai = await addQuestionsToDB("qX9q8i4wE24ohjSykFf8", { questionData });
-
-            res.status(201).json({ message: `questions generated from ai added to db successfully! ${question_from_ai}` });
-
-        } catch (error) {
-            res.status(500).json({ message: `Error adding questions: ${error.message}` });
+    try {
+        let questionData;
+        if (concept === "Basic Vocabulary") {
+            console.log("the learner is clicking Basic Vocabulary~~");
+            questionData = await generateVocabularyQuestionsByAI(topic, user_native_language, user_level);
+        } else if (concept === "Basic Grammar") {
+            console.log("the learner is clicking Basic Grammar~~");
+            questionData = await generateGrammerQuestionsByAI(topic, user_native_language, user_level);
+        } else if (concept === "Everyday Situations") {
+            console.log("the learner is clicking Everyday Situations~~");
+            // Handle this case accordingly
         }
 
-    }
-    else if (concept === "Everyday Situations") {
-        console.log("the learner is clicking Everyday Situations~~")
-
+        if (questionData) {
+            const question_from_ai = await addQuestionsToDB(userId, { questionData });
+            res.status(201).json({ message: `questions generated from ai added to db successfully!`, question_from_ai });
+        } else {
+            res.status(400).json({ message: `Invalid concept: ${concept}` });
+        }
+    } catch (error) {
+        res.status(500).json({ message: `Error adding questions: ${error.message}` });
     }
 
 

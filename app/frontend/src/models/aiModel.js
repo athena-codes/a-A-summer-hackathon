@@ -54,15 +54,10 @@ Special people won.What is the adjective here ? using this JSON schema: { "type"
         let jsonData = JSON.parse([jsonString])
         console.log("jsonData: ", jsonData);
         console.log("jsonData: ", typeof ((jsonData)));
-        return jsonData
+        return {topic, level, jsonData}
     } catch (error) {
         console.error('Error generating content:', error);
     }
-
-
-
-
-
 }
 
 //generate Grammer questions from ai

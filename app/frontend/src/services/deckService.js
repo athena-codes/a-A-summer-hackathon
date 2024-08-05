@@ -50,13 +50,40 @@ const createDeckInDB = async ({ topic_id, createdAt, archived }) => {
     }
 };
 
-//service to add a card to a deck
-const addCardToDeckInDB = async () => {
+//service to add cards to a deck
+const addCardsToDeckInDB = async (userId) => {
     try {
-        const deck = []
-        //call ai route to request a card
-        //while loop? until deck is full (10 cards)
-        return deck
+        const deck = [];
+
+        // Get user reference
+        const userRef = doc(db, 'users', userId);
+
+        // Get the 'ai_generated_requests' collection reference for the user
+        const aiGeneratedRequestsRef = collection(userRef, "ai_generated_requests");
+
+        // Get documents from 'ai_generated_requests' collection
+        const snapshot = await getDocs(aiGeneratedRequestsRef);
+
+        // Iterate through the documents in the snapshot and process their fields
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const { questionData } = data;
+
+            if (questionData) {
+                const { jsonData, level, topic } = questionData;
+
+                // Process each question in jsonData
+                jsonData.forEach(question => {
+                    deck.push({
+                        ...question,
+                        level,
+                        topic,
+                    });
+                });
+            }
+        });
+
+        return deck;
     } catch (error) {
         throw new Error('Error adding card to deck: ' + error.message);
     }
@@ -129,7 +156,7 @@ const getUserArchivedDecksFromDB = async (uid) => {
 
 module.exports = {
     getDecksFromDB, getDecksByTopicIdFromDB,
-    createDeckInDB, addCardToDeckInDB,
+    createDeckInDB, addCardsToDeckInDB,
     removeCardFromDeckInDB, removeDeckFromDB,
     archiveDeckInDB, getArchivedDecksFromDB,
     getUserArchivedDecksFromDB, getDeckFromDB

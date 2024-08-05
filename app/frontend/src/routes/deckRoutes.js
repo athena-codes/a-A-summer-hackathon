@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllDecks, getDeck, createDeck, addCardToDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks } = require('../controllers/deckController');
+const { getAllDecks, getDeck, createDeck, addCardsToDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks } = require('../controllers/deckController');
 const router = express.Router();
 
 router.get('/all', getAllDecks);
