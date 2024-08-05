@@ -2,8 +2,9 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import MaterialIcon from 'material-icons-react';
-import { Menu, Box, Container, MenuItem } from "@mui/material";
+import { Link, Menu, Box, Container, MenuItem, Typography } from "@mui/material";
 import { styled } from '@mui/styles';
+import LogoutButton from './auth/LogoutButton';
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -99,9 +100,18 @@ const NavBar = () => {
           onClose={handleClose}
         >
           <MenuItem>
-            <NavLink to='/login' exact={true} activeClassName='active'>
-              Log In
-            </NavLink>
+            <Link href='/login'
+              // exact={true}activeClassName='active'
+              underline="none">
+              <Typography
+                color="primary"
+              >
+                Log In
+              </Typography>
+            </Link>
+          </MenuItem>
+          <MenuItem>
+            <LogoutButton />
           </MenuItem>
         </StyledMenu>
       </Container>
