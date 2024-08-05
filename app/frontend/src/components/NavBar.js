@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import MaterialIcon from 'material-icons-react';
 import { Menu, Box, Container, MenuItem } from "@mui/material";
 import { styled } from '@mui/styles';
@@ -41,6 +42,9 @@ const StyledMenu = styled((props) => (
 
 
 const NavBar = () => {
+  const user = useSelector((state) => state.session.user);
+  console.log(user);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -79,7 +83,7 @@ const NavBar = () => {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
           variant="contained"
-          disableElevation
+          disableelevation="true"
           onClick={handleClick}
         >
           <MaterialIcon icon="menu" size='medium' color='#f4f4f4' />
@@ -94,9 +98,11 @@ const NavBar = () => {
           open={open}
           onClose={handleClose}
         >
-          <MenuItem><NavLink to='/login' exact={true} activeClassName='active'>
-            Log In
-          </NavLink></MenuItem>
+          <MenuItem>
+            <NavLink to='/login' exact={true} activeClassName='active'>
+              Log In
+            </NavLink>
+          </MenuItem>
         </StyledMenu>
       </Container>
     </nav>
