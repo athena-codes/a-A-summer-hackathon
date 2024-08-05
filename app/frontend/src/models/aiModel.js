@@ -1,14 +1,14 @@
+require('./polyfill')
+require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { sendEmailVerification } = require("firebase/auth");
-
 // Access your API key as an environment variable (see "Set up your API key" above)
+const { API_KEY } = process.env;
 
-
-const genAI = new GoogleGenerativeAI("API");
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 
 //generate Vocabulary questions from ai
-
 async function generateVocabularyQuestionsByAI(topic, native_language, level) {
     console.log("am i hitting generateVocabularyQuestionsByAI functions and check the user level: ", native_language, level)
     // The Gemini 1.5 models are versatile and work with both text-only and multimodal prompts
@@ -16,8 +16,6 @@ async function generateVocabularyQuestionsByAI(topic, native_language, level) {
 
     // Default prompt
     let prompt = `You're an English teacher there're 3 student levels beginner, intermediate, advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this JSON schema: { "type":"array", "properties": {"question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
-
-
 
     if (topic === "Common Nouns") {
         prompt = `You're an English teacher there're 3 levels :beginner, intermediate, advanced. Give me 3 unique Basic nouns questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
@@ -39,24 +37,32 @@ Special people won.What is the adjective here ? using this JSON schema: { "type"
         prompt = `You're an English teacher there're 3 levels :beginner, intermediate, advanced. Give me 3 unique Common Phrases questions (Greetings, introductions, common questions (e.g., How are you?)) to test if ${level} learner understand how to response it and 4 choices in english,answer and explaination in ${native_language}. Using JSON schema: { "type":"array", "properties": {"question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
     }
 
+    console.log('after prompts')
+
+
+    try {
+        console.log('before generateContent')
+        const result = await model.generateContent(prompt);
+        console.log('result: ', result);
+        const jsonString = result.response.text();
+
+        console.log("jsonString: ", jsonString);
+        console.log("jsonString type: ", typeof (jsonString));
+
+
+        console.log("------------------------------")
+        let jsonData = JSON.parse([jsonString])
+        console.log("jsonData: ", jsonData);
+        console.log("jsonData: ", typeof ((jsonData)));
+        return jsonData
+    } catch (error) {
+        console.error('Error generating content:', error);
+    }
 
 
 
-    const result = await model.generateContent(prompt);
-    const jsonString = result.response.text();
-
-    console.log("jsonString: ", jsonString);
-    console.log("jsonString type: ", typeof (jsonString));
 
 
-    console.log("------------------------------")
-    let jsonData = JSON.parse([jsonString])
-    console.log("jsonData: ", jsonData);
-    console.log("jsonData: ", typeof ((jsonData)));
-
-
-
-    return jsonData
 }
 
 //generate Grammer questions from ai
@@ -68,8 +74,6 @@ async function generateGrammerQuestionsByAI(topic, native_language, level) {
 
     // Default prompt
     let prompt = `You're an English teacher there're 3 student levels beginner, intermediate, advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this JSON schema: { "type":"array", "properties": {"question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
-
-
 
     if (topic === "Present Simple Tense") {
         prompt = `You're an English teacher there're 3 student levels beginner, intermediate, advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this JSON schema: { "type":"array", "properties": {"question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
@@ -86,8 +90,6 @@ async function generateGrammerQuestionsByAI(topic, native_language, level) {
         console.log("Possessive Pronouns?")
         prompt = `You're an English teacher. create 3 practices for ${level} learners to test if they understand Possessive Pronouns. The practice includes a question and 4 options in English, answer and explanation in ${native_language} using this JSON schema: { "type":"array", "properties": {"question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
     }
-    // const prompt = `You're an English teacher, there're 3 student levels - begineer, itermediate, advanced , I'm teaching ${native_language} as native language ${level} learner, provide a JavaScript Object Notation format includes 1 fill-in-the-blank question for present simple tense in english, mutiple choices ,answer and explaination in ${native_language} for ${level} learner.`
-
 
     const result = await model.generateContent(prompt);
     // const response = await result.response;

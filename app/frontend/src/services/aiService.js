@@ -6,7 +6,9 @@ const getQuestionsByUserIdFromDB = async (uid) => {
     console.log("checking if i am hitting getQuestionsByUserIdFromDB: ")
     try {
         // Reference to the ai_generated_requests subcollection
-        const aiGeneratedRequestsRef = collection(db, 'users', 'reference', 'ai_generated_requests');
+        const userRef = doc(db, 'users', uid);
+
+        const aiGeneratedRequestsRef = collection(userRef, 'ai_generated_requests');
 
         // Get the documents
         const aiGeneratedRequestsSnapshot = await getDocs(aiGeneratedRequestsRef);
