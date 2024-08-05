@@ -43,9 +43,6 @@ const addConceptToDB = async (conceptData) => {
 
 // Service to update a concept
 const updateConceptInDB = async (conceptId, updatedData) => {
-    console.log('hit');
-    console.log('conceptId: ', conceptId);
-    console.log('updatedData: ', updatedData);
     try {
         const conceptRef = doc(db, 'concepts', conceptId);
         console.log('conceptRef: ', conceptRef);
