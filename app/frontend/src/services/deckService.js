@@ -6,7 +6,7 @@ const getDecksFromDB = async () => {
     try {
         const querySnapshot = await getDocs(collection(db, 'decks'));
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch(error) {
+    } catch (error) {
         throw new Error('Error fetching decks: ' + error.message);
     }
 }
@@ -15,7 +15,7 @@ const getDecksByTopicIdFromDB = async (topicId) => {
     try {
         const querySnapshot = await getDocs(query(collection(db, 'decks'), where('topic_id', '==', topicId)));
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch(error) {
+    } catch (error) {
         throw new Error('Error fetching decks: ' + error.message);
     }
 }
@@ -30,7 +30,7 @@ const getDeckFromDB = async (deckId) => {
         } else {
             throw new Error('Deck not found');
         }
-    } catch(error) {
+    } catch (error) {
         throw new Error('Error fetching deck: ' + error.message);
     }
 }
@@ -45,7 +45,7 @@ const createDeckInDB = async ({ topic_id, createdAt, archived }) => {
         });
         const deck = { id: docRef.id, topic_id, createdAt, archived };
         return deck;
-    } catch(error) {
+    } catch (error) {
         throw new Error('Error creating deck: ' + error.message);
     }
 };
@@ -57,7 +57,7 @@ const addCardToDeckInDB = async () => {
         //call ai route to request a card
         //while loop? until deck is full (10 cards)
         return deck
-    } catch(error) {
+    } catch (error) {
         throw new Error('Error adding card to deck: ' + error.message);
     }
 }
@@ -102,7 +102,7 @@ const getArchivedDecksFromDB = async () => {
     try {
         const querySnapshot = await getDocs(query(collection(db, 'decks'), where('archived', '==', true)));
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch(error) {
+    } catch (error) {
         throw new Error('Error fetching archived decks: ' + error.message);
     }
 }
@@ -121,7 +121,7 @@ const getUserArchivedDecksFromDB = async (uid) => {
         const userDecksSnapshot = await getDocs(userDecksCollectionRef);
         const userDecks = userDecksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         return userDecks;
-    } catch(error) {
+    } catch (error) {
         throw new Error('Error fetching user archived decks: ' + error.message);
     }
 }
