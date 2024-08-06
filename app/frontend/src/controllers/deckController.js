@@ -3,7 +3,7 @@ const { getDecksFromDB, createDeckInDB,
     removeDeckFromDB, archiveDeckInDB,
     getArchivedDecksFromDB, getUserArchivedDecksFromDB
     , getDeckFromDB
- } = require('../services/deckService');
+} = require('../services/deckService');
 
 
 const getAllDecks = async (req, res) => {
@@ -27,10 +27,12 @@ const getDeck = async (req, res) => {
 }
 
 const createDeck = async (req, res) => {
-    const { topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
+    const { userId, topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
     try {
-        const deck = await createDeckInDB({ topic_id, createdAt, archived });
-        await addCardsToDeckInDB(deck.id);
+        const deck = await createDeckInDB({ userId, topic_id, createdAt, archived });
+        //get cards from user_id and store into db
+        const addtodeck = await addCardsToDeckInDB(userId);
+        console.log("addtodeck : ", addtodeck)
         res.status(201).json({ message: 'Deck created', deck });
     } catch (error) {
         res.status(500).json({ message: `Error creating deck: ${error.message}` });
@@ -82,7 +84,7 @@ const archiveDeck = async (req, res) => {
 
     try {
         await archiveDeckInDB(deckId, uid);
-        res.status(200).json({ message: 'Deck archived'});
+        res.status(200).json({ message: 'Deck archived' });
     } catch (error) {
         res.status(500).json({ message: `Error archiving deck: ${error.message}` });
     }

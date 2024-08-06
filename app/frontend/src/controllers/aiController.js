@@ -1,8 +1,6 @@
 const { addQuestionsToDB, getQuestionsByUserIdFromDB } = require('../services/aiService');
-const { generateGrammerQuestionsByAI, generateVocabularyQuestionsByAI } = require('../models/aiModel');
+const { generateGrammerQuestionsByAI, generateVocabularyQuestionsByAI, generateScenarioQuestionsByAI } = require('../models/aiModel');
 const { options } = require('../routes/userRoutes');
-
-
 
 
 
@@ -33,7 +31,7 @@ const addCardQuestions = async (req, res) => {
             questionData = await generateGrammerQuestionsByAI(topic, user_native_language, user_level);
         } else if (concept === "Everyday Situations") {
             console.log("the learner is clicking Everyday Situations~~");
-            // Handle this case accordingly
+            questionData = await generateScenarioQuestionsByAI(topic, user_native_language, user_level)
         }
 
         if (questionData) {

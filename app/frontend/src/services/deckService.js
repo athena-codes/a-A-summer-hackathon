@@ -52,6 +52,7 @@ const createDeckInDB = async ({ topic_id, createdAt, archived }) => {
 
 //service to add cards to a deck
 const addCardsToDeckInDB = async (userId) => {
+    console.log("我有盡到這裡addCardsToDeckInDB ??", userId)
     try {
         const deck = [];
 
@@ -63,25 +64,14 @@ const addCardsToDeckInDB = async (userId) => {
 
         // Get documents from 'ai_generated_requests' collection
         const snapshot = await getDocs(aiGeneratedRequestsRef);
+        console.log("snapshot: ", snapshot)
+        console.log("snapshot docs: ", snapshot.docs)
+
 
         // Iterate through the documents in the snapshot and process their fields
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            const { questionData } = data;
-
-            if (questionData) {
-                const { jsonData, level, topic } = questionData;
-
-                // Process each question in jsonData
-                jsonData.forEach(question => {
-                    deck.push({
-                        ...question,
-                        level,
-                        topic,
-                    });
-                });
-            }
-        });
+        snapshot.docs.map(doc => (
+            deck.push(doc.data())
+        ))
 
         return deck;
     } catch (error) {
