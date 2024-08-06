@@ -3,7 +3,7 @@ const { getDecksFromDB, createDeckInDB,
     removeDeckFromDB, archiveDeckInDB,
     getArchivedDecksFromDB, getUserArchivedDecksFromDB
     , getDeckFromDB
- } = require('../services/deckService');
+} = require('../services/deckService');
 
 
 const getAllDecks = async (req, res) => {
@@ -69,7 +69,7 @@ const archiveDeck = async (req, res) => {
 
     try {
         await archiveDeckInDB(deckId, uid);
-        res.status(200).json({ message: 'Deck archived'});
+        res.status(200).json({ message: 'Deck archived' });
     } catch (error) {
         res.status(500).json({ message: `Error archiving deck: ${error.message}` });
     }

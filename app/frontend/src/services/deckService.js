@@ -53,6 +53,7 @@ const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
 
 //service to add cards to a deck
 const addCardsToDeckInDB = async (userId) => {
+    console.log("我有盡到這裡addCardsToDeckInDB ??", userId)
     try {
         const deck = [];
         console.log('userId: ', userId);
