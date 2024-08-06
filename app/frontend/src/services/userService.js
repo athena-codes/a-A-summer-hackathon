@@ -16,6 +16,7 @@ const addUserToDB = async ({ uid, email, username, first_name, last_name, native
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
     });
+    console.log('database', db)
 };
 
 const setUserLevel = async (uid, level) => {
