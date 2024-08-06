@@ -29,7 +29,7 @@ const StyledMenu = styled((props) => (
     boxShadow:
       'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
     '& .MuiMenu-list': {
-      padding: '14px 0',
+      padding: '10px 0 14px 0',
     },
     '& .MuiMenuItem-root': {
       '& .MuiSvgIcon-root': {
