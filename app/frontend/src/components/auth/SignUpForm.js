@@ -22,19 +22,23 @@ const SignUpForm = ({ locale, setLocale }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const handleChange = (event) => {
-    setLocale(event.target.value);
-  };
+  const onSignUp = async e => {
+    e.preventDefault()
+  try {
+    // Pass locale as nativeLanguage to the signUp function
+    await dispatch(
+      signUp(email, password, username, firstName, lastName, locale)
+    )
+    console.log('Signed up successfully')
+    history.push('/home') // Redirect to home page after successful signup
+  } catch (error) {
+    console.error('Error signing up:', error.message)
+  }
+}
 
-  const onSignUp = async (e) => {
-    e.preventDefault();
-    try {
-      await dispatch(signUp(email, password, username, firstName, lastName));
-      console.log("Signed up successfully");
-      history.push("/home");
-    } catch (error) {
-      console.error("Error signing up:", error.message);
-    }
+  const handleChange = (event) => {
+    console.log('Language selected: ', event.target.value) // Debugging
+    setLocale(event.target.value);
   };
 
   const defaultMessages = {
@@ -208,4 +212,6 @@ const SignUpForm = ({ locale, setLocale }) => {
   );
 };
 
-export default SignUpForm;
+
+
+export default SignUpForm

@@ -50,7 +50,7 @@ const NoHoverMenuItem = styled(MenuItem)(({ theme }) => ({
 
 const NavBar = () => {
   const user = useSelector((state) => state.session.user);
-  console.log(user);
+  // console.log(user);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);

@@ -22,6 +22,6 @@ const auth = getAuth(firebaseApp)
 // Get a reference to the Firestore service
 const db = getFirestore(firebaseApp)
 
-// export { auth, db }
+export { auth, db }
 
-module.exports = { auth, db };
+// module.exports = { auth, db };
