@@ -27,9 +27,9 @@ const StyledMenu = styled((props) => (
     // color:
     //   theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
     boxShadow:
-      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 10px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
     '& .MuiMenu-list': {
-      padding: '4px 0',
+      padding: '14px 0',
     },
     '& .MuiMenuItem-root': {
       '& .MuiSvgIcon-root': {
@@ -41,6 +41,12 @@ const StyledMenu = styled((props) => (
   },
 }));
 
+const NoHoverMenuItem = styled(MenuItem)(({ theme }) => ({
+  '&:hover': {
+    backgroundColor: 'transparent',
+    cursor: 'default'
+  },
+}));
 
 const NavBar = () => {
   const user = useSelector((state) => state.session.user);
@@ -74,7 +80,7 @@ const NavBar = () => {
             padding: '10px',
             borderRadius: '20px',
             backgroundColor: '#a8716f',
-            border: '2px solid #160e0e',
+            border: '1.5px solid #160e0e',
             "&:hover": {
               cursor: "pointer"
             }
@@ -128,14 +134,22 @@ const NavBar = () => {
           }
           {user &&
             <Box>
+              <NoHoverMenuItem>
+                <Typography
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Hello, {user.email}!
+                </Typography>
+              </NoHoverMenuItem>
               <MenuItem>
-
-                Hello, {user.email}!
-
+                Profile
               </MenuItem>
               <MenuItem>
+                Concepts
+              </MenuItem>
+              <NoHoverMenuItem>
                 <LogoutButton />
-              </MenuItem>
+              </NoHoverMenuItem>
             </Box>
           }
         </StyledMenu>
