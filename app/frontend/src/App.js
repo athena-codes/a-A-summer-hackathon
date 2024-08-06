@@ -9,6 +9,7 @@ import { authenticate } from './store/session'
 import { auth } from './firebase/firebaseConfig'
 import HomePage from './components/Homepage'
 import WelcomePage from './components/WelcomePage'
+import ConceptPage from './components/ConceptPage'
 
 function App ({ locale, setLocale }) {
   const [loaded, setLoaded] = useState(false)
@@ -36,7 +37,7 @@ function App ({ locale, setLocale }) {
       <NavBar />
       <Switch>
         <Route exact path='/'>
-          {currentUser ? <HomePage /> : <WelcomePage setLocale={setLocale} />}
+          {currentUser ? <ConceptPage /> : <WelcomePage setLocale={setLocale} />}
         </Route>
         <Route path='/login'>
           {currentUser ? <Redirect to='/' /> : <LoginForm />}
@@ -46,7 +47,7 @@ function App ({ locale, setLocale }) {
         </Route>
         {/* Ensure your ProtectedRoute component is redirecting correctly */}
         <ProtectedRoute path='/home'>
-          {currentUser ? <HomePage /> : <Redirect to='/login' />}
+          {currentUser ? <ConceptPage /> : <Redirect to='/login' />}
         </ProtectedRoute>
       </Switch>
     </>
