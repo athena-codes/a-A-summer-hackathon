@@ -1,6 +1,8 @@
-const { initializeApp } = require('firebase/app');
-const { getAuth } = require('firebase/auth');
-const { getFirestore } = require('firebase/firestore');
+// Import Firebase modules using ES6 import syntax
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
+
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDhfk198F2ZUgT89ON9brPk5x96rHqfjvA',
@@ -17,11 +19,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig)
 
 // Get a reference to the Firebase Auth object
-const auth = getAuth(firebaseApp)
+export const auth = getAuth(firebaseApp)
 
 // Get a reference to the Firestore service
-const db = getFirestore(firebaseApp)
-
-// export { auth, db }
-
-module.exports = { auth, db };
+export const db = getFirestore(firebaseApp)

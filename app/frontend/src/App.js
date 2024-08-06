@@ -10,7 +10,7 @@ import { auth } from './firebase/firebaseConfig'
 import HomePage from './components/Homepage'
 import WelcomePage from './components/WelcomePage'
 
-function App ({ setLocale }) {
+function App ({ locale, setLocale }) {
   const [loaded, setLoaded] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const dispatch = useDispatch()
@@ -42,7 +42,7 @@ function App ({ setLocale }) {
           {currentUser ? <Redirect to='/' /> : <LoginForm />}
         </Route>
         <Route path='/sign-up'>
-          {currentUser ? <Redirect to='/' /> : <SignUpForm />}
+          {currentUser ? <Redirect to='/' /> : <SignUpForm setLocale={setLocale} locale={locale}/>}
         </Route>
         {/* Ensure your ProtectedRoute component is redirecting correctly */}
         <ProtectedRoute path='/home'>
