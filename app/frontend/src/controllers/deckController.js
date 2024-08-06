@@ -27,28 +27,15 @@ const getDeck = async (req, res) => {
 }
 
 const createDeck = async (req, res) => {
-    const { topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
+    const { userId, topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
     try {
-        const deck = await createDeckInDB({ topic_id, createdAt, archived });
-        await addCardsToDeckInDB(deck.id);
+        const deck = await createDeckInDB({ userId, topic_id, createdAt, archived });
+        await addCardsToDeckInDB(userId);
         res.status(201).json({ message: 'Deck created', deck });
     } catch (error) {
         res.status(500).json({ message: `Error creating deck: ${error.message}` });
     }
 };
-
-
-// const addCardsToDeck = async (req, res) => {
-//     const { deckId } = req.params;
-//     //generated card => from ai_request
-//     try {
-//         await addCardToDeckInDB(deckId);
-//         res.status(200).json({ message: 'Card added to deck' });
-//     } catch (error) {
-//         res.status(500).json({ message: `Error adding card to deck: ${error.message}` });
-//     }
-// }
-
 
 const removeCardFromDeck = async (req, res) => {
     const { deckId } = req.params;

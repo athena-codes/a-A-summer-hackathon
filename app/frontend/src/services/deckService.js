@@ -36,14 +36,15 @@ const getDeckFromDB = async (deckId) => {
 }
 
 //service to create a deck (empty)
-const createDeckInDB = async ({ topic_id, createdAt, archived }) => {
+const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
     try {
         const docRef = await addDoc(collection(db, 'decks'), {
+            userId,
             topic_id,
             createdAt,
             archived
         });
-        const deck = { id: docRef.id, topic_id, createdAt, archived };
+        const deck = { id: docRef.id, userId: userId, topic_id: topic_id, createdAt, archived };
         return deck;
     } catch (error) {
         throw new Error('Error creating deck: ' + error.message);
@@ -54,35 +55,17 @@ const createDeckInDB = async ({ topic_id, createdAt, archived }) => {
 const addCardsToDeckInDB = async (userId) => {
     try {
         const deck = [];
+        console.log('userId: ', userId);
 
-        // Get user reference
         const userRef = doc(db, 'users', userId);
-
-        // Get the 'ai_generated_requests' collection reference for the user
         const aiGeneratedRequestsRef = collection(userRef, "ai_generated_requests");
-
-        // Get documents from 'ai_generated_requests' collection
         const snapshot = await getDocs(aiGeneratedRequestsRef);
-
-        // Iterate through the documents in the snapshot and process their fields
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            const { questionData } = data;
-
-            if (questionData) {
-                const { jsonData, level, topic } = questionData;
-
-                // Process each question in jsonData
-                jsonData.forEach(question => {
-                    deck.push({
-                        ...question,
-                        level,
-                        topic,
-                    });
-                });
-            }
-        });
-
+        console.log('snapshot: ', snapshot);
+        snapshot.docs.map(doc => (
+            console.log('doc: ', doc.data()),
+            deck.push(doc.data())
+        ))
+        console.log('deck: ', deck);
         return deck;
     } catch (error) {
         throw new Error('Error adding card to deck: ' + error.message);
