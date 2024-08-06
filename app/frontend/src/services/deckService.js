@@ -60,7 +60,7 @@ const addCardsToDeckInDB = async (userId) => {
         const userRef = doc(db, 'users', userId);
         const aiGeneratedRequestsRef = collection(userRef, "ai_generated_requests");
         const snapshot = await getDocs(aiGeneratedRequestsRef);
-        console.log('snapshot: ', snapshot);
+        console.log('snapshot: ', snapshot.docs);
         snapshot.docs.map(doc => (
             console.log('doc: ', doc.data()),
             deck.push(doc.data())

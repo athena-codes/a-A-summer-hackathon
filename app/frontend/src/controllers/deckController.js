@@ -29,9 +29,10 @@ const getDeck = async (req, res) => {
 const createDeck = async (req, res) => {
     const { userId, topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
     try {
-        const deck = await createDeckInDB({ userId, topic_id, createdAt, archived });
-        await addCardsToDeckInDB(userId);
-        res.status(201).json({ message: 'Deck created', deck });
+        const deckInfo = await createDeckInDB({ userId, topic_id, createdAt, archived });
+        const deckQuestions = await addCardsToDeckInDB(userId);
+
+        res.status(201).json({ message: 'Deck created', deckInfo, deckQuestions });
     } catch (error) {
         res.status(500).json({ message: `Error creating deck: ${error.message}` });
     }
