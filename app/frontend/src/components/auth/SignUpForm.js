@@ -19,11 +19,16 @@ const SignUpForm = ({ locale, setLocale }) => {
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [level, setLevel] = useState("");
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const handleChange = (event) => {
+  const handleLanguageChange = (event) => {
     setLocale(event.target.value);
+  };
+
+  const handleLevelChange = (event) => {
+    setLevel(event.target.value);
   };
 
   const onSignUp = async (e) => {
@@ -48,14 +53,15 @@ const SignUpForm = ({ locale, setLocale }) => {
     createYourAccount: "Create your Account",
     confirmPassword: "Confirm Password",
     nativeLanguage: "Native Language",
+    englishProficiency: "English Proficiency Level",
   };
 
   const getFieldLabel = (id) => {
     const defaultMessage = defaultMessages[id] || id;
 
     return (
-      <Box display="flex" alignItems="center">
-        <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
+      <Box display="flex" flexDirection="column">
+        <Typography sx={{ fontWeight: "bold", px: 1 }}>
           <FormattedMessage id={id} defaultMessage={defaultMessage} />
         </Typography>
         {locale !== "en" && (
@@ -80,42 +86,50 @@ const SignUpForm = ({ locale, setLocale }) => {
           borderRadius: 10,
         }}
       >
-       <Box display="flex" flexDirection="column" alignItems="center" mb="10px">
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          mb="10px"
+        >
           <Typography
-            variant="h1"
-            sx={{
-              fontSize: "2rem",
-              fontWeight: "bold",
-            }}
+          fontSize="100"
+            // sx={{
+            //   variant: "h1",
+            //   fontSize: "2rem",
+            //   fontWeight: "bold",
+            // }}
           >
-            <FormattedMessage id="createYourAccount" defaultMessage={defaultMessages["createYourAccount"]} />
+            {getFieldLabel("createYourAccount")}
           </Typography>
         </Box>
 
-        <Box display="flex" flexDirection="column" p={1}>
-          {getFieldLabel("firstName")}
-          <TextField
-            id="outlined-firstName-input"
-            type="text"
-            autoComplete="given-name"
-            onChange={(e) => setFirstName(e.target.value)}
-            size="small"
-            InputProps={{ sx: { borderRadius: 100 } }}
-            required
-          />
-        </Box>
+        <Box display="flex" flexDirection="row" p={1}>
+          <Box display="flex" flexDirection="column">
+            {getFieldLabel("firstName")}
+            <TextField
+              id="outlined-firstName-input"
+              type="text"
+              autoComplete="given-name"
+              onChange={(e) => setFirstName(e.target.value)}
+              size="small"
+              InputProps={{ sx: { borderRadius: 100 } }}
+              required
+            />
+          </Box>
+          <Box display="flex" flexDirection="column">
+            {getFieldLabel("lastName")}
 
-        <Box display="flex" flexDirection="column" p={1}>
-          {getFieldLabel("lastName")}
-          <TextField
-            id="outlined-lastName-input"
-            type="text"
-            autoComplete="family-name"
-            onChange={(e) => setLastName(e.target.value)}
-            size="small"
-            InputProps={{ sx: { borderRadius: 100 } }}
-            required
-          />
+            <TextField
+              id="outlined-lastName-input"
+              type="text"
+              autoComplete="family-name"
+              onChange={(e) => setLastName(e.target.value)}
+              size="small"
+              InputProps={{ sx: { borderRadius: 100 } }}
+              required
+            />
+          </Box>
         </Box>
 
         <Box display="flex" flexDirection="column" p={1}>
@@ -171,12 +185,10 @@ const SignUpForm = ({ locale, setLocale }) => {
         </Box>
 
         <Box display="flex" flexDirection="column" p={1}>
-          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
-            {getFieldLabel("nativeLanguage")}
-          </Typography>
+          {getFieldLabel("nativeLanguage")}
           <Select
             value={locale}
-            onChange={handleChange}
+            onChange={handleLanguageChange}
             sx={{ borderRadius: 10 }}
             size="small"
           >
@@ -191,6 +203,18 @@ const SignUpForm = ({ locale, setLocale }) => {
           </Select>
         </Box>
 
+        <Box display="flex" flexDirection="column" p={1}>
+          {getFieldLabel("englishProficiency")}
+          <Select
+            value={level}
+            onChange={handleLevelChange}
+            sx={{ borderRadius: 10 }}
+            size="small"
+          >
+            <MenuItem value="beginner">1</MenuItem>
+            <MenuItem value="intermediate">2</MenuItem>
+            <MenuItem value="advance">3</MenuItem>
+          </Select>
         <Button
           variant="contained"
           type="submit"
@@ -203,6 +227,8 @@ const SignUpForm = ({ locale, setLocale }) => {
         >
           <FormattedMessage id="signUp" defaultMessage="Sign Up" />
         </Button>
+        </Box>
+
       </Container>
     </form>
   );

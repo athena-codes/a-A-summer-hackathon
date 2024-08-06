@@ -17,25 +17,25 @@ const InfiniteScroll = () => {
     <div className="scroll-wrapper">
       <div className="scroll-container">
         {links.map((link, index) => (
-          <a href={`#${link.toLowerCase().replace(/ /g, '-')}`} key={index} className="scroll-item">
+          <p key={index} className="scroll-item">
             {link}
-          </a>
+          </p>
         ))}
         {/* Repeat the list to make the scroll effect more seamless */}
         {links.map((link, index) => (
-          <a href={`#${link.toLowerCase().replace(/ /g, '-')}`} key={`repeat-${index}`} className="scroll-item">
+          <p key={`repeat-${index}`} className="scroll-item">
             {link}
-          </a>
+          </p>
         ))}
         {links.map((link, index) => (
-          <a href={`#${link.toLowerCase().replace(/ /g, '-')}`} key={`repeat-${index}`} className="scroll-item">
+          <p key={`repeat-${index}`} className="scroll-item">
             {link}
-          </a>
+          </p>
         ))}
         {links.map((link, index) => (
-          <a href={`#${link.toLowerCase().replace(/ /g, '-')}`} key={`repeat-${index}`} className="scroll-item">
+          <p key={`repeat-${index}`} className="scroll-item">
             {link}
-          </a>
+          </p>
         ))}
       </div>
       <div className="scroll-mask"></div>
