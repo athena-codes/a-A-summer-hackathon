@@ -52,7 +52,7 @@ const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
 };
 
 //service to add cards to a deck
-const addCardsToDeckInDB = async (userId) => {
+const addCardsToDeckInDB = async (deckId, userId) => {
     try {
         const deck = [];
         console.log('userId: ', userId);
@@ -66,6 +66,9 @@ const addCardsToDeckInDB = async (userId) => {
             deck.push(doc.data())
         ))
         console.log('deck: ', deck);
+        //we look for the deck in the db and add the deck
+        const deckRef = doc(db, 'decks', deckId);
+        await updateDoc(deckRef, { cards: deck });
         return deck;
     } catch (error) {
         throw new Error('Error adding card to deck: ' + error.message);

@@ -30,7 +30,8 @@ const createDeck = async (req, res) => {
     const { userId, topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
     try {
         const deckInfo = await createDeckInDB({ userId, topic_id, createdAt, archived });
-        const deckQuestions = await addCardsToDeckInDB(userId);
+        const deckId = deckInfo.id;
+        const deckQuestions = await addCardsToDeckInDB(deckId, userId);
 
         res.status(201).json({ message: 'Deck created', deckInfo, deckQuestions });
     } catch (error) {
