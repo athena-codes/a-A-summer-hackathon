@@ -1,7 +1,7 @@
 // Import Firebase modules using ES6 import syntax
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getFirestore, collection } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
 
 
 const firebaseConfig = {
@@ -23,16 +23,3 @@ export const auth = getAuth(firebaseApp)
 
 // Get a reference to the Firestore service
 export const db = getFirestore(firebaseApp)
-
-console.log('DATABASE', db)
-
-try {
-  const myCollection = collection(db, 'myCollection')
-  console.log('Collection reference:', myCollection)
-} catch (error) {
-  console.error('Error creating collection reference:', error)
-}
-
-// export { auth, db }
-
-// module.exports = { auth, db };
