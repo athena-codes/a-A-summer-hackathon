@@ -34,7 +34,7 @@ const SignUpForm = ({ locale, setLocale }) => {
   const onSignUp = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(signUp(email, password, username, firstName, lastName));
+      await dispatch(signUp(email, password, username, firstName, lastName, locale, level));
       console.log("Signed up successfully");
       history.push("/home");
     } catch (error) {
@@ -234,4 +234,6 @@ const SignUpForm = ({ locale, setLocale }) => {
   );
 };
 
-export default SignUpForm;
+
+
+export default SignUpForm
