@@ -38,13 +38,30 @@ const getDeckFromDB = async (deckId) => {
 //service to create a deck (empty)
 const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
     try {
+        const topicRef = doc(db, 'topics', topic_id);
+        const topicDoc = await getDoc(topicRef);
+
+        if (!topicDoc.exists()) {
+            throw new Error('Topic not found');
+        }
+        let conceptId = topicDoc.data().concept_id;
+        console.log('conceptId: ', conceptId)
+        const conceptRef = doc(db, 'concepts', conceptId);
+        const conceptDoc = await getDoc(conceptRef);
+        if (!conceptDoc.exists()) {
+            throw new Error('Concept not found');
+        }
+        console.log('hit here', conceptDoc.data().level)
+        const level = conceptDoc.data().level
         const docRef = await addDoc(collection(db, 'decks'), {
             userId,
+            level,
             topic_id,
             createdAt,
             archived
         });
-        const deck = { id: docRef.id, userId: userId, topic_id: topic_id, createdAt, archived };
+        const deck = { id: docRef.id, level, userId: userId, topic_id: topic_id, createdAt, archived };
+        console.log('deck check: ', deck)
         return deck;
     } catch (error) {
         throw new Error('Error creating deck: ' + error.message);
@@ -55,20 +72,37 @@ const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
 const addCardsToDeckInDB = async (deckId, userId) => {
     try {
         const deck = [];
-        console.log('userId: ', userId);
-
         const userRef = doc(db, 'users', userId);
+        const deckRef = doc(db, 'decks', deckId);
+        const deckDoc = await getDoc(deckRef);
+        if (!deckDoc.exists()) {
+            throw new Error('Deck not found');
+        }
+
+        const topicRef = doc(db, 'topics', deckDoc.data().topic_id);
+        console.log('topicRef: ', topicRef);
+        const topicDoc = await getDoc(topicRef);
+        if (!topicDoc.exists()) {
+            throw new Error('Topic not found');
+        }
+        const level = deckDoc.data().level;
+        const topic_name = topicDoc.data().topic_name;
         const aiGeneratedRequestsRef = collection(userRef, "ai_generated_requests");
+        //check ai_generated_id, then check topic/level
+        console.log('topic_name: ', topic_name, 'level: ', level)
         const snapshot = await getDocs(aiGeneratedRequestsRef);
         console.log('snapshot: ', snapshot.docs);
-        snapshot.docs.map(doc => (
-            console.log('doc: ', doc.data()),
-            deck.push(doc.data())
-        ))
+        snapshot.docs.map(doc => {
+            console.log('doc: ', doc.data());
+            if (doc.data().questionData.topic === topic_name && doc.data().questionData.level === level) {
+                console.log('inside if statement: ', doc.data());
+                deck.push(doc.data());
+            }
+        })
         console.log('deck: ', deck);
         //we look for the deck in the db and add the deck
-        const deckRef = doc(db, 'decks', deckId);
-        await updateDoc(deckRef, { cards: deck });
+
+        await setDoc(deckRef, { userId: userId, cards: deck });
         return deck;
     } catch (error) {
         throw new Error('Error adding card to deck: ' + error.message);
