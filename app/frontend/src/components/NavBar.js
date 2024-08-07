@@ -106,7 +106,26 @@ const NavBar = () => {
           onClose={handleClose}
         >
 
-          {!user &&
+          {user ? (
+            <Box>
+              <NoHoverMenuItem>
+                <Typography
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Hello, {user.email}!
+                </Typography>
+              </NoHoverMenuItem>
+              <MenuItem>
+                Profile
+              </MenuItem>
+              <MenuItem>
+                Concepts
+              </MenuItem>
+              <NoHoverMenuItem>
+                <LogoutButton />
+              </NoHoverMenuItem>
+            </Box>
+          ) : (
             <Box>
               <MenuItem>
                 <Link href='/login'
@@ -131,26 +150,7 @@ const NavBar = () => {
                 </Link>
               </MenuItem>
             </Box>
-          }
-          {user &&
-            <Box>
-              <NoHoverMenuItem>
-                <Typography
-                  sx={{ fontWeight: "bold" }}
-                >
-                  Hello, {user.email}!
-                </Typography>
-              </NoHoverMenuItem>
-              <MenuItem>
-                Profile
-              </MenuItem>
-              <MenuItem>
-                Concepts
-              </MenuItem>
-              <NoHoverMenuItem>
-                <LogoutButton />
-              </NoHoverMenuItem>
-            </Box>
+          )
           }
         </StyledMenu>
       </Container>
