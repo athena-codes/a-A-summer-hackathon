@@ -52,8 +52,7 @@ const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
 };
 
 //service to add cards to a deck
-const addCardsToDeckInDB = async (userId) => {
-    console.log("我有盡到這裡addCardsToDeckInDB ??", userId)
+const addCardsToDeckInDB = async (deckId, userId) => {
     try {
         const deck = [];
         console.log('userId: ', userId);
@@ -61,12 +60,15 @@ const addCardsToDeckInDB = async (userId) => {
         const userRef = doc(db, 'users', userId);
         const aiGeneratedRequestsRef = collection(userRef, "ai_generated_requests");
         const snapshot = await getDocs(aiGeneratedRequestsRef);
-        console.log('snapshot: ', snapshot);
+        console.log('snapshot: ', snapshot.docs);
         snapshot.docs.map(doc => (
             console.log('doc: ', doc.data()),
             deck.push(doc.data())
         ))
         console.log('deck: ', deck);
+        //we look for the deck in the db and add the deck
+        const deckRef = doc(db, 'decks', deckId);
+        await updateDoc(deckRef, { cards: deck });
         return deck;
     } catch (error) {
         throw new Error('Error adding card to deck: ' + error.message);

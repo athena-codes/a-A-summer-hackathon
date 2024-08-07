@@ -5,7 +5,7 @@ const { sendEmailVerification } = require("firebase/auth");
 // Access your API key as an environment variable (see "Set up your API key" above)
 const { API_KEY } = process.env;
 
-const genAI = new GoogleGenerativeAI("AIzaSyB6i-dR2CuBW3JLxv0hCTZ5YZxGOW3Hshg");
+const genAI = new GoogleGenerativeAI("API_KEY");
 
 
 //generate Vocabulary questions from ai
