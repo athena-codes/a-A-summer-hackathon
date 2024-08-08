@@ -10,7 +10,7 @@ function HomePage() {
     <Container>
       <Box>
         <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-          <h1>Welcome, {user.email}.</h1>
+          <h1>Welcome, {user.email}!</h1>
           <Link href='/'
             // exact={true}activeClassName='active'
             underline="none">
@@ -18,10 +18,10 @@ function HomePage() {
               variant="contained"
               color="primary"
             >
-              Start Learning Now!
+              Start Learning Now
             </Button>
           </Link>
-          <p style={{ paddingTop: "16px" }}>Here is your latest Lingo.ai progress:</p>
+          <h2 style={{ paddingTop: "16px" }}>Your Latest Lingo.ai Progress</h2>
         </Box>
         <Grid container columnSpacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
           <Grid item xs={12} sm={4}>
@@ -53,7 +53,12 @@ function HomePage() {
               sx={{ height: 25 }}
               style={{ marginTop: 30 }}
             />
-
+            <img src="/assets/badges/beginner-badge.png"
+              style={{
+                marginTop: 30,
+                width: "50%"
+              }}
+            />
           </Grid>
         </Grid>
       </Box>
