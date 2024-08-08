@@ -7,10 +7,11 @@ import NavBar from './components/NavBar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { authenticate } from './store/session'
 import { auth } from './firebase/firebaseConfig'
-import HomePage from './components/Homepage'
+import HomePage from './components/HomePage'
 import WelcomePage from './components/WelcomePage'
 import ConceptPage from './components/ConceptPage'
 import TopicsPage from './components/TopicsPage'
+import MainPage from './components/MainPage'
 
 function App({ locale, setLocale }) {
   const [loaded, setLoaded] = useState(false)
@@ -38,7 +39,7 @@ function App({ locale, setLocale }) {
       <NavBar />
       <Switch>
         <Route exact path='/'>
-          {currentUser ? <ConceptPage /> : <WelcomePage setLocale={setLocale} />}
+          {currentUser ? <HomePage /> : <WelcomePage setLocale={setLocale} />}
         </Route>
         <Route path='/login'>
           {currentUser ? <Redirect to='/' /> : <LoginForm />}
@@ -49,8 +50,14 @@ function App({ locale, setLocale }) {
         <Route path='/topics'>
           {currentUser ? <TopicsPage /> : <WelcomePage setLocale={setLocale} />}
         </Route>
+        <Route path='/concepts'>
+          {currentUser ? <ConceptPage /> : <WelcomePage setLocale={setLocale} />}
+        </Route>
+        <Route path='/main'>
+          {currentUser ? <MainPage /> : <WelcomePage setLocale={setLocale} />}
+        </Route>
         {/* Ensure your ProtectedRoute component is redirecting correctly */}
-        <ProtectedRoute path='/home'>
+        <ProtectedRoute path='/'>
           {currentUser ? <HomePage /> : <Redirect to='/login' />}
         </ProtectedRoute>
       </Switch>

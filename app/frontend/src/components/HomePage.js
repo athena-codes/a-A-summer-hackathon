@@ -11,7 +11,7 @@ function HomePage() {
       <Box>
         <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
           <h1>Welcome, {user.email}.</h1>
-          <Link href='/'
+          <Link href='/concepts'
             // exact={true}activeClassName='active'
             underline="none">
             <Button

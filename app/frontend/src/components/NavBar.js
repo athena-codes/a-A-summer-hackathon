@@ -120,7 +120,7 @@ const NavBar = () => {
                 </Typography>
               </NoHoverMenuItem>
               <MenuItem>
-                <Link href='/home'
+                <Link href='/'
                   // exact={true}activeClassName='active'
                   underline="none">
                   <Typography
@@ -131,7 +131,7 @@ const NavBar = () => {
                 </Link>
               </MenuItem>
               <MenuItem>
-                <Link href='/'
+                <Link href='/concepts'
                   // exact={true}activeClassName='active'
                   underline="none">
                   <Typography
