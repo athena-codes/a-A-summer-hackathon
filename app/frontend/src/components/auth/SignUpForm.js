@@ -97,7 +97,7 @@ const SignUpForm = ({ locale, setLocale }) => {
           flexDirection: "column",
           justifyContent: "center",
           border: "1px solid black",
-          p: 5,
+          p: 2,
           borderRadius: 10,
         }}
       >
@@ -108,15 +108,17 @@ const SignUpForm = ({ locale, setLocale }) => {
           mb="10px"
         >
           <Typography
-            fontSize="100"
-            // sx={{
-            //   variant: "h1",
-            //   fontSize: "2rem",
-            //   fontWeight: "bold",
-            // }}
-          >
-            {getFieldLabel("createYourAccount")}
-          </Typography>
+          variant="h1"
+          m={2}
+          sx={{
+            // color: "primary.main",
+            fontSize: "2rem",
+            textAlign: "center",
+            fontWeight: "bold",
+          }}
+        >
+          Create your Account
+        </Typography>
         </Box>
 
         <Box display="flex" flexDirection="row" p={1}>
@@ -261,13 +263,16 @@ const SignUpForm = ({ locale, setLocale }) => {
             color="primary"
             sx={{
               borderRadius: 100,
-              mt: 4,
+              mt: 2,
               fontWeight: "500",
             }}
           >
             <FormattedMessage id="signUp" defaultMessage="Sign Up" />
           </Button>
-          <Button onClick={handleDemoClick}>
+          <Button onClick={handleDemoClick} type="submit" sx={{
+            borderRadius: 100,
+            mt: 1,
+          }}>
           Demo
         </Button>
         </Box>

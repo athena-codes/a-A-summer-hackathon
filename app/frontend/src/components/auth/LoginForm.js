@@ -20,7 +20,7 @@ const LoginForm = () => {
     const credential = "Demo-lition@gmail.com";
     const password = "password";
 
-    await dispatch(login(credential, password ));
+    await dispatch(login(credential, password));
   };
 
   return (
@@ -32,12 +32,13 @@ const LoginForm = () => {
           flexDirection: "column",
           justifyContent: "center",
           border: "1px solid black",
-          p: 10,
+          p: 2,
           borderRadius: 10,
         }}
       >
         <Typography
           variant="h1"
+          m={2}
           sx={{
             // color: "primary.main",
             fontSize: "2rem",
@@ -88,21 +89,28 @@ const LoginForm = () => {
             InputProps={{ sx: { borderRadius: 100 } }}
             required
           />
+          <Button
+            variant="contained"
+            type="submit"
+            color="primary"
+            sx={{
+              borderRadius: 100,
+              mt: 2,
+            }}
+          >
+            <FormattedMessage id="logIn" defaultMessage="Log In" />
+          </Button>
+          <Button
+            onClick={handleDemoClick}
+            type="submit"
+            sx={{
+              borderRadius: 100,
+              mt: 1,
+            }}
+          >
+            Demo
+          </Button>
         </Box>
-        <Button
-          variant="contained"
-          type="submit"
-          color="primary"
-          sx={{
-            borderRadius: 100,
-            mt: 4,
-          }}
-        >
-          <FormattedMessage id="logIn" defaultMessage="Log In" />
-        </Button>
-        <Button onClick={handleDemoClick} type="submit">
-          Demo
-        </Button>
       </Container>
     </form>
   );
