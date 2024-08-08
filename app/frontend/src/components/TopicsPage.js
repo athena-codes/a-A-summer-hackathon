@@ -1,18 +1,17 @@
 import { Box, Button, Container, Grid, LinearProgress } from "@mui/material";
 import React from "react";
 
-function ConceptPage() {
+function TopicsPage() {
     return (
         <Container>
             <Box>
                 <Box display="flex" flexDirection="column" alignItems="center">
-                    <h1>Select a Beginner Concept</h1>
+                    <h1>Select a Basic Vocabulary Topic</h1>
                     <p>
-                        These are the recommended concepts based on your selected
-                        proficiency level.
+                        Select any topic to begin. In order to pass a topic, you must score at least 80% three times.
                     </p>
 
-                    <p>Pass all the concepts to unlock the next proficiency level.</p>
+                    <p>Pass all the topics to unlock the next concept.</p>
                 </Box>
                 <Box px={50}>
                     <LinearProgress
@@ -27,7 +26,7 @@ function ConceptPage() {
                 <Grid item>
                     <Button>
                         <Box display="flex" flexDirection="column">
-                            <p>basic vocab</p>
+                            <p>Common Nous</p>
                             <p>explanation</p>
                             <LinearProgress
                                 variant="determinate"
@@ -41,7 +40,7 @@ function ConceptPage() {
                 <Grid item>
                     <Button>
                         <Box display="flex" flexDirection="column">
-                            <p>basic vocab</p>
+                            <p>Pronouns</p>
                             <p>explanation</p>
                             <LinearProgress
                                 variant="determinate"
@@ -54,7 +53,7 @@ function ConceptPage() {
                 <Grid item>
                     <Button>
                         <Box display="flex" flexDirection="column">
-                            <p>basic vocab</p>
+                            <p>Basic Verbs</p>
                             <p>explanation</p>
                             <LinearProgress
                                 variant="determinate"
@@ -69,7 +68,7 @@ function ConceptPage() {
                 <Grid item>
                     <Button>
                         <Box display="flex" flexDirection="column">
-                            <p>basic vocab</p>
+                            <p>Adjectives</p>
                             <p>explanation</p>
                             <LinearProgress
                                 variant="determinate"
@@ -82,7 +81,20 @@ function ConceptPage() {
                 <Grid item>
                     <Button>
                         <Box display="flex" flexDirection="column">
-                            <p>basic vocab</p>
+                            <p>Numbers</p>
+                            <p>explanation</p>
+                            <LinearProgress
+                                variant="determinate"
+                                value={50}
+                                sx={{ height: 15 }}
+                            />
+                        </Box>
+                    </Button>
+                </Grid>
+                <Grid item>
+                    <Button>
+                        <Box display="flex" flexDirection="column">
+                            <p>Days and Months</p>
                             <p>explanation</p>
                             <LinearProgress
                                 variant="determinate"
@@ -97,4 +109,4 @@ function ConceptPage() {
     );
 }
 
-export default ConceptPage;
+export default TopicsPage;
