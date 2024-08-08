@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { signUp } from "../../store/session";
+import { login, signUp } from "../../store/session";
 import { FormattedMessage } from "react-intl";
 import { useHistory } from "react-router-dom";
 import {
@@ -10,8 +10,10 @@ import {
   MenuItem,
   Select,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 
 const SignUpForm = ({ locale, setLocale }) => {
   const [email, setEmail] = useState("");
@@ -28,13 +30,26 @@ const SignUpForm = ({ locale, setLocale }) => {
   };
 
   const handleLevelChange = (event) => {
-    setLevel(event.target.value);
+    const value = event.target.value;
+    setLevel(value);
+  };
+
+  const handleDemoClick = async (e) => {
+    e.preventDefault();
+
+    const credential = "Demo-lition@gmail.com";
+    const password = "password";
+
+    await dispatch(login(credential, password ));
+    
   };
 
   const onSignUp = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(signUp(email, password, username, firstName, lastName, locale, level));
+      await dispatch(
+        signUp(email, password, username, firstName, lastName, locale, level)
+      );
       console.log("Signed up successfully");
       history.push("/home");
     } catch (error) {
@@ -82,7 +97,7 @@ const SignUpForm = ({ locale, setLocale }) => {
           flexDirection: "column",
           justifyContent: "center",
           border: "1px solid black",
-          p: 10,
+          p: 2,
           borderRadius: 10,
         }}
       >
@@ -93,15 +108,17 @@ const SignUpForm = ({ locale, setLocale }) => {
           mb="10px"
         >
           <Typography
-          fontSize="100"
-            // sx={{
-            //   variant: "h1",
-            //   fontSize: "2rem",
-            //   fontWeight: "bold",
-            // }}
-          >
-            {getFieldLabel("createYourAccount")}
-          </Typography>
+          variant="h1"
+          m={2}
+          sx={{
+            // color: "primary.main",
+            fontSize: "2rem",
+            textAlign: "center",
+            fontWeight: "bold",
+          }}
+        >
+          Create your Account
+        </Typography>
         </Box>
 
         <Box display="flex" flexDirection="row" p={1}>
@@ -204,36 +221,64 @@ const SignUpForm = ({ locale, setLocale }) => {
         </Box>
 
         <Box display="flex" flexDirection="column" p={1}>
-          {getFieldLabel("englishProficiency")}
+          <Box display="flex">
+            {getFieldLabel("englishProficiency")}
+            <Tooltip
+              title={
+                <Typography>
+                  Beginner: Start here if you need to learn basic words, simple
+                  sentences, and everyday phrases.
+                  {
+                    <Typography my={1}>
+                      Intermediate: Choose this if you can understand and use
+                      common phrases and need to improve grammar and vocabulary.
+                    </Typography>
+                  }
+                  {
+                    <Typography>
+                      Advanced: Select this if you are comfortable with complex
+                      sentences and want to master fluency and advanced topics.
+                    </Typography>
+                  }
+                </Typography>
+              }
+              arrow
+            >
+              <InfoIcon color="divider" />
+            </Tooltip>
+          </Box>
           <Select
             value={level}
             onChange={handleLevelChange}
             sx={{ borderRadius: 10 }}
             size="small"
           >
-            <MenuItem value="beginner">1</MenuItem>
-            <MenuItem value="intermediate">2</MenuItem>
-            <MenuItem value="advance">3</MenuItem>
+            <MenuItem value="beginner">1: Beginner</MenuItem>
+            <MenuItem value="intermediate">2: Intermediate</MenuItem>
+            <MenuItem value="advance">3: Advance</MenuItem>
           </Select>
-        <Button
-          variant="contained"
-          type="submit"
-          color="primary"
-          sx={{
+          <Button
+            variant="contained"
+            type="submit"
+            color="primary"
+            sx={{
+              borderRadius: 100,
+              mt: 2,
+              fontWeight: "500",
+            }}
+          >
+            <FormattedMessage id="signUp" defaultMessage="Sign Up" />
+          </Button>
+          <Button onClick={handleDemoClick} type="submit" sx={{
             borderRadius: 100,
-            mt: 4,
-            fontWeight: "500",
-          }}
-        >
-          <FormattedMessage id="signUp" defaultMessage="Sign Up" />
+            mt: 1,
+          }}>
+          Demo
         </Button>
         </Box>
-
       </Container>
     </form>
   );
 };
 
-
-
-export default SignUpForm
+export default SignUpForm;

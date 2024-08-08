@@ -82,7 +82,7 @@ const NavBar = () => {
             columnGap: '10px',
             alignItems: 'center',
             padding: '10px',
-            borderRadius: '20px',
+            borderRadius: '5px',
             backgroundColor: '#a8716f',
             border: '1.5px solid #160e0e',
             "&:hover": {
