@@ -11,6 +11,15 @@ const getConceptsFromDB = async () => {
     }
 };
 
+const checkUserConceptsPassed = async (uid) => {
+    //checks to see if all concepts have status passed
+    try {
+        const querySnapshot = await getDocs(query(collection(db, 'progress'), where('uid', '==', uid)));
+        return
+    } catch (error) {
+        throw new Error('Error fetching concepts: ' + error.message);
+    }
+}
 // Get all topic by concept id
 const getTopicsByConceptId = async (conceptId) => {
     try {

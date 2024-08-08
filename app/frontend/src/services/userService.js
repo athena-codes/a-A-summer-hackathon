@@ -135,6 +135,7 @@ const getProgressFromDB = async (uid) => {
 
 // Service to update user progress
 const updateUserProgressFromDB = async (uid) => {
+    //call this service as a check after a concept is passed
     try {
         const userProgressRef = doc(db, 'progress', uid);
 

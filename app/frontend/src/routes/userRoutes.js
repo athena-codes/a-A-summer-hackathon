@@ -29,6 +29,6 @@ router.get('/:userId/all-questions', getAllQuestionsbyAI);
 router.get('/:id/attempts', getUserAttempts)
 
 //add user attempt
-router.post('/:id/attempts/start', addUserAttempt)
+router.post('/:id/attempts/new', addUserAttempt)
 
 module.exports = router;

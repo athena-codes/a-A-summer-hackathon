@@ -1,11 +1,12 @@
 const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where } = require('firebase/firestore');
 
-
 //Service to view all user attempts
 const getUserAttemptsFromDB = async (uid) => {
     try {
-        const userAttemptsRef = collection(db, 'attempts');
+        const userRef = doc(db, 'users', uid);
+        const userAttemptsRef = collection(userRef, 'attempts');
+        console.log('userAttemptsRef: ', userAttemptsRef);
         const userAttemptsSnapshot = await getDocs(userAttemptsRef);
         const userAttempts = userAttemptsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         return userAttempts;
@@ -14,12 +15,15 @@ const getUserAttemptsFromDB = async (uid) => {
     }
 }
 
-//Service to add user attempt (session start)
-const addUserAttemptToDB = async (attemptData, uid) => {
+//Service to add user attempt; call this service after user starts a deck
+const AddUserAttemptToDB = async (attemptData, id) => {
     try {
-        // find user doc based on uid and then add attempt to attemps subcollection
-        const userDocRef = doc(db, 'users', uid);
-        const docRef = await addDoc(collection(userDocRef, 'attempts'), attemptData);
+        //attempt data = grab json data from frontend, its passed thru this and if it matches
+        //with correct answer, add +1 to pass count for this attempt
+        console.log('attemptData: ', attemptData);
+        const userDocRef = doc(db, 'users', id);
+        const userAttemptsRef = collection(userDocRef, 'attempts')
+        const docRef = await addDoc(userAttemptsRef, attemptData);
         console.log('Document written with ID: ', docRef.id);
         return docRef.id;
     } catch (error) {
@@ -27,26 +31,59 @@ const addUserAttemptToDB = async (attemptData, uid) => {
     }
 }
 
-//Service to update user attempt (adding score)
-const updateUserAttemptInDB = async (uid, updatedData) => {
+const checkAnswerInDB = async (id, attemptId, answer) => {
     try {
-        const userAttemptRef = doc(db, 'attempts', uid);
-        await updateDoc(userAttemptRef, updatedData);
-        return true;
+        const attemptDocRef = doc(db, 'users', uid, 'attempts', attemptId);
+        const attemptDoc = await getDoc(attemptDocRef);
+
+        // Ensure attemptDoc exists and has data
+        if (!attemptDoc.exists()) {
+            throw new Error('Attempt not found');
+        }
+
+        const attemptData = attemptDoc.data();
+        console.log('attemptData: ', attemptData);
+        const { correctAnswer } = attemptData;
+
+        // Ensure correctAnswer is defined
+        if (correctAnswer === undefined) {
+            throw new Error('Correct answer is not defined in the database');
+        }
+
+        if (answer === correctAnswer) {
+            await updateDoc(attemptDocRef, { passes: increment(1) });
+            return { message: 'Answer is correct!' };
+        } else {
+            return { message: 'Answer is incorrect.', correctAnswer };
+        }
     } catch (error) {
-        throw new Error('Error updating user attempt: ' + error.message);
+        throw new Error('Error checking answer: ' + error.message);
     }
 }
 
-//Service to end user attempt (session end)
-const endUserAttemptInDB = async (uid) => {
+//Service to update user attempt
+const updateUserAttemptInDB = async (uid, attemptId, updateData) => {
     try {
-        const userAttemptRef = doc(db, 'attempts', uid);
-        await updateDoc(userAttemptRef, { end_time: new Date().toISOString() });
-        return true;
+        const attemptDocRef = doc(db, 'users', uid, 'attempts', attemptId);
+        await updateDoc(attemptDocRef, updateData);
+        console.log('Attempt updated:', attemptId);
+    } catch (error) {
+        throw new Error('Error updating user attempt: ' + error.message);
+    }
+};
+
+
+//Service to end user attempt (session end)
+const endUserAttemptInDB = async (uid, attemptId) => {
+    try {
+        const userDocRef = doc(db, 'users', uid);
+        const attemptDocRef = doc(userDocRef, 'attempts', attemptId);
+        await updateDoc(attemptDocRef, { status: 'ended', endTime: new Date() });
+        console.log('User attempt ended');
     } catch (error) {
         throw new Error('Error ending user attempt: ' + error.message);
     }
 }
 
-module.exports = { getUserAttemptsFromDB, addUserAttemptToDB, updateUserAttemptInDB, endUserAttemptInDB };
+
+module.exports = { checkAnswerInDB, getUserAttemptsFromDB, AddUserAttemptToDB, updateUserAttemptInDB, endUserAttemptInDB };
