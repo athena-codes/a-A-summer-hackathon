@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { signUp } from "../../store/session";
+import { login, signUp } from "../../store/session";
 import { FormattedMessage } from "react-intl";
 import { useHistory } from "react-router-dom";
 import {
@@ -22,7 +22,6 @@ const SignUpForm = ({ locale, setLocale }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [level, setLevel] = useState("");
-  const [tooltipText, setTooltipText] = useState("");
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -33,6 +32,16 @@ const SignUpForm = ({ locale, setLocale }) => {
   const handleLevelChange = (event) => {
     const value = event.target.value;
     setLevel(value);
+  };
+
+  const handleDemoClick = async (e) => {
+    e.preventDefault();
+
+    const credential = "Demo-lition@gmail.com";
+    const password = "password";
+
+    await dispatch(login(credential, password ));
+    
   };
 
   const onSignUp = async (e) => {
@@ -258,6 +267,9 @@ const SignUpForm = ({ locale, setLocale }) => {
           >
             <FormattedMessage id="signUp" defaultMessage="Sign Up" />
           </Button>
+          <Button onClick={handleDemoClick}>
+          Demo
+        </Button>
         </Box>
       </Container>
     </form>
