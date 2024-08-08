@@ -1,6 +1,10 @@
 const { addQuestionsToDB, getQuestionsByUserIdFromDB } = require('../services/aiService');
 const { generateQuestionsByAI } = require('../models/aiModel');
 const { options } = require('../routes/userRoutes');
+const { db } = require('../firebase/firebaseConfig');
+
+const { doc, getDoc } = require('firebase/firestore');
+
 
 
 
@@ -20,11 +24,30 @@ const getAllQuestionsbyAI = async (req, res) => {
 // get question from AI and store in db
 const addCardQuestions = async (req, res) => {
     console.log("am i hitting get ai questions route: ", req.body)
-    const { topic, user_native_language, user_level, userId } = req.body
+    const { topic_id, user_native_language, user_level, userId } = req.body
+
+
+    //check if topic belongs to an existing concept
+    const topicRef = doc(db, 'topics', topic_id);
+    console.log("topicRef: ", topicRef)
+    const topicDoc = await getDoc(topicRef);
+    console.log("topicDoc: ", topicDoc)
+    if (!topicDoc.exists()) {
+        throw new Error("Topic does not exist!");
+    }
+
+    const topicData = topicDoc.data();
+    const topic_name = topicData.topic_name
+    console.log("topicData: ", topicData);
+
+    if (!topicData.concept_id) {
+        throw new Error("Invalid topic due to concept_id is empty!!")
+    }
 
     try {
 
-        let questionData = await generateQuestionsByAI(topic, user_native_language, user_level);
+        let questionData = await generateQuestionsByAI(topic_name, user_native_language, user_level);
+        console.log("questionData: ", questionData)
 
         if (questionData) {
             const question_from_ai = await addQuestionsToDB(userId, { questionData });
