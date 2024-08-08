@@ -1,11 +1,11 @@
 import React from 'react'
+import { Box, Button, Container, Grid, LinearProgress } from "@mui/material";
 
-function HomePage () {
+function HomePage() {
   return (
-    <div>
-      <h1>Welcome to the Home Page</h1>
-      <p>This is a protected area accessible only by authenticated users.</p>
-    </div>
+    <Container>
+      <h1>Profile</h1>
+    </Container>
   )
 }
 
