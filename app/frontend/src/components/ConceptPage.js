@@ -12,7 +12,7 @@ function ConceptPage() {
             proficiency level.
           </p>
 
-          <p>pass all the concepts to unlock the next proficiency level.</p>
+          <p>Pass all the concepts to unlock the next proficiency level.</p>
         </Box>
         <Box px={50}>
           <LinearProgress

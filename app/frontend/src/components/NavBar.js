@@ -31,6 +31,10 @@ const StyledMenu = styled((props) => (
     '& .MuiMenu-list': {
       padding: '10px 0 14px 0',
     },
+    '& .MuiMenuItem-root:hover': { // target hover state
+      backgroundColor: 'transparent', // remove background on hover
+      cursor: 'default'
+    },
     '& .MuiMenuItem-root': {
       '& .MuiSvgIcon-root': {
         fontSize: 18,
@@ -127,7 +131,15 @@ const NavBar = () => {
                 </Link>
               </MenuItem>
               <MenuItem>
-                Concepts
+                <Link href='/'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Concepts
+                  </Typography>
+                </Link>
               </MenuItem>
               <NoHoverMenuItem>
                 <LogoutButton />
