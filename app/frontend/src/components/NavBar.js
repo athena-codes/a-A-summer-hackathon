@@ -116,7 +116,15 @@ const NavBar = () => {
                 </Typography>
               </NoHoverMenuItem>
               <MenuItem>
-                Profile
+                <Link href='/home'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Profile
+                  </Typography>
+                </Link>
               </MenuItem>
               <MenuItem>
                 Concepts

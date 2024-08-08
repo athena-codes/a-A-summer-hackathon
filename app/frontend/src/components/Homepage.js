@@ -1,13 +1,23 @@
 import React from 'react'
+import { useSelector } from 'react-redux';
 import { Box, Button, Container, Grid, LinearProgress } from "@mui/material";
 
 
 function HomePage() {
+  const user = useSelector((state) => state.session.user);
+
   return (
     <Container>
       <Box>
         <Box display="flex" flexDirection="column" alignItems="center">
-          <h1>Profile</h1>
+          <h1>Hello, {user.email}.</h1>
+          <Button
+            variant="contained"
+            color="primary"
+          >
+            Start Learning Now!
+          </Button>
+          <p style={{ paddingTop: "16px" }}>Here is your latest Lingo.ai progress:</p>
         </Box>
         <Grid container columnSpacing={2} rowSpacing={12}>
           <Grid item xs={12} sm={4}>
