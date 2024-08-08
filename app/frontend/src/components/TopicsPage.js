@@ -26,7 +26,7 @@ function TopicsPage() {
                 <Grid item>
                     <Button>
                         <Box display="flex" flexDirection="column">
-                            <p>Common Nous</p>
+                            <p>Common Nouns</p>
                             <p>explanation</p>
                             <LinearProgress
                                 variant="determinate"
