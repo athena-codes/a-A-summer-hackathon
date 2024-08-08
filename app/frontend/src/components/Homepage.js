@@ -1,10 +1,53 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import { Box, Button, Container, Grid, LinearProgress, Link } from "@mui/material";
+import { Box, Button, Container, Grid, LinearProgress, Link, Typography } from "@mui/material";
 
 
 function HomePage() {
   const user = useSelector((state) => state.session.user);
+
+  const data = [
+    {
+      left: 'Current English Proficiency Level:',
+      right: 'Intermediate'
+    },
+    {
+      left: 'Proficiency Level Progress:',
+      right: <LinearProgress
+        variant="determinate"
+        value={50}
+        sx={{ height: 25 }}
+      />
+    },
+    {
+      left: 'Current Concept:',
+      right: 'Basic Nouns'
+    },
+    {
+      left: 'Concept Progress:',
+      right: <LinearProgress
+        variant="determinate"
+        value={50}
+        sx={{ height: 25 }}
+      />
+    },
+    {
+      left: 'Topics Progress:',
+      right: <LinearProgress
+        variant="determinate"
+        value={50}
+        sx={{ height: 25 }}
+      />
+    },
+    {
+      left: 'Badges:',
+      right: <img src="/assets/badges/beginner-badge.png"
+        style={{
+          width: "25%"
+        }}
+      />
+    },
+  ]
 
   return (
     <Container>
@@ -21,45 +64,19 @@ function HomePage() {
               Start Learning Now
             </Button>
           </Link>
-          <h2 style={{ paddingTop: "16px" }}>Your Latest Lingo.ai Progress</h2>
+          <h2 style={{ padding: "16px 0px", }}>Your Latest Lingo.ai Progress</h2>
         </Box>
-        <Grid container columnSpacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Grid item xs={12} sm={4}>
-            <p style={{ marginTop: 30 }}>Current English Proficiency Level:</p>
-            <p style={{ marginTop: 30 }}>Proficiency Level Progress:</p>
-            <p style={{ marginTop: 30 }}>Current Concept:</p>
-            <p style={{ marginTop: 30 }}>Concept Progress:</p>
-            <p style={{ marginTop: 30 }}>Topic Progress:</p>
-            <p style={{ marginTop: 30 }}>Badges:</p>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <p style={{ marginTop: 30 }}>Intermediate</p>
-            <LinearProgress
-              variant="determinate"
-              value={50}
-              sx={{ height: 25 }}
-              style={{ marginTop: 30 }}
-            />
-            <p style={{ marginTop: 30 }}>Basic Nouns</p>
-            <LinearProgress
-              variant="determinate"
-              value={50}
-              sx={{ height: 25 }}
-              style={{ marginTop: 30 }}
-            />
-            <LinearProgress
-              variant="determinate"
-              value={50}
-              sx={{ height: 25 }}
-              style={{ marginTop: 30 }}
-            />
-            <img src="/assets/badges/beginner-badge.png"
-              style={{
-                marginTop: 30,
-                width: "50%"
-              }}
-            />
-          </Grid>
+        <Grid container rowSpacing={4} sx={{ display: 'flex', justifyContent: 'center' }}>
+          {data.map((row, index) => (
+            <React.Fragment key={index}>
+              <Grid item xs={4}>
+                <Typography fontWeight="bold">{row.left}</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                {row.right}
+              </Grid>
+            </React.Fragment>
+          ))}
         </Grid>
       </Box>
     </Container>
