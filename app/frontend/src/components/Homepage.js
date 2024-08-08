@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import { Box, Button, Container, Grid, LinearProgress } from "@mui/material";
+import { Box, Button, Container, Grid, LinearProgress, Link } from "@mui/material";
 
 
 function HomePage() {
@@ -11,12 +11,16 @@ function HomePage() {
       <Box>
         <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
           <h1>Welcome, {user.email}.</h1>
-          <Button
-            variant="contained"
-            color="primary"
-          >
-            Start Learning Now!
-          </Button>
+          <Link href='/'
+            // exact={true}activeClassName='active'
+            underline="none">
+            <Button
+              variant="contained"
+              color="primary"
+            >
+              Start Learning Now!
+            </Button>
+          </Link>
           <p style={{ paddingTop: "16px" }}>Here is your latest Lingo.ai progress:</p>
         </Box>
         <Grid container columnSpacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>

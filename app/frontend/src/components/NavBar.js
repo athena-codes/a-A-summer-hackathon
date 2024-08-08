@@ -131,7 +131,15 @@ const NavBar = () => {
                 </Link>
               </MenuItem>
               <MenuItem>
-                Concepts
+                <Link href='/'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Concepts
+                  </Typography>
+                </Link>
               </MenuItem>
               <NoHoverMenuItem>
                 <LogoutButton />
