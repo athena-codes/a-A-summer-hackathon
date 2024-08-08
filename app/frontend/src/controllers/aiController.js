@@ -25,6 +25,7 @@ const addCardQuestions = async (req, res) => {
         let questionData;
         if (concept === "Basic Vocabulary") {
             console.log("the learner is clicking Basic Vocabulary~~");
+            //check topic if topic.concept_id exists and if it matches concept's id
             questionData = await generateVocabularyQuestionsByAI(topic, user_native_language, user_level);
         } else if (concept === "Basic Grammar") {
             console.log("the learner is clicking Basic Grammar~~");
