@@ -86,7 +86,7 @@ function LanguageSelector({ setLocale }) {
               variant="contained"
               sx={{
                 width: "100%",
-                height: "200px", // Fixed height to ensure uniformity
+                height: "100%", // Fixed height to ensure uniformity
                 padding: 0,
                 borderRadius: 0,
                 position: "relative",
