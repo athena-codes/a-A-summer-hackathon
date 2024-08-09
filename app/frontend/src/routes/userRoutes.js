@@ -1,5 +1,8 @@
 const express = require('express');
-const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress } = require('../controllers/userController');
+// const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress } = require('../controllers/userController');
+const { getAllQuestionsbyAI } = require('../controllers/aiController');
+
+const { updateUserAttempt,getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt } = require('../controllers/userController');
 
 const router = express.Router();
 
@@ -17,5 +20,18 @@ router.get('/:id/progress', getUserProgress)
 
 //update user progress
 router.put('/:id/progress/update', updateUserProgress)
+
+
+//get all quetions by user id
+router.get('/:userId/all-questions', getAllQuestionsbyAI);
+
+//get user attempts
+router.get('/:id/attempts', getUserAttempts)
+
+//add user attempt
+router.post('/:id/attempts/new', addUserAttempt)
+
+//update user attempt
+router.put('/:userId/attempts/:attemptId/update', updateUserAttempt)
 
 module.exports = router;

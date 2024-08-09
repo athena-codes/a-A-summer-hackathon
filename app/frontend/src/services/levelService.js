@@ -3,31 +3,24 @@ const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where } = re
 
 const getAllUserLevelsFromDB = async () => {
     try {
-        const querySnapshot = await getDocs(collection(db, 'user_levels'));
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const querySnapshot = await getDocs(collection(db, 'users'));
+
+        const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        return users.map(user => {
+            return { id: user.id, current_level: user.current_level };
+        })
     } catch (error) {
         throw new Error('Error fetching user levels: ' + error.message);
     }
 }
 
 const getUserLevelFromDB = async (uid) => {
-    console.log('get user level route is hit', uid);
     try {
         const userDocRef = doc(db, 'users', uid);
         const userDoc = await getDoc(userDocRef);
+        return { id: uid, username: userDoc.data().username, current_level: userDoc.data().current_level};
 
-        if (!userDoc.exists()) {
-            throw new Error('User not found');
-        }
-        //use userDoc to find user_level in DB
-        const userLevelDocRef = doc(db, 'user_levels', userDoc.id);
-        const userLevelDoc = await getDoc(userLevelDocRef);
-
-        if (!userLevelDoc.exists()) {
-            throw new Error('User level not found');
-        }
-
-        return { uid, ...userDoc.data(), ...userLevelDoc.data() };
     } catch (error) {
         throw new Error('Error fetching user level: ' + error.message);
     }
@@ -76,10 +69,11 @@ const checkAndUpdateUserLevel = async (userId) => {
         }
 
         // Update the user level if it has changed
-        const userLevelDocRef = doc(db, 'user_levels', userId);
-        await updateDoc(userLevelDocRef, {
-            current_level: newLevel
-        });
+        const userLevelDocRef = doc(db, 'users', userId);
+
+        if (newLevel !== userDoc.data().current_level) {
+            await updateDoc(userLevelDocRef, { current_level: newLevel });
+        }
 
         console.log(`User level updated to ${newLevel}`);
     } catch (error) {

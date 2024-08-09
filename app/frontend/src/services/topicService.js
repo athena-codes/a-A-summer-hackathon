@@ -11,6 +11,26 @@ const getTopicsFromDB = async () => {
     }
 };
 
+//service to check topic progression
+const checkTopicProgression = async (topicId, passes) => {
+    //use this service to check curr_passes and update status
+    //calling this means
+    try {
+        const topicRef = doc(db, 'topics', topicId);
+        await updateDoc(topicRef, { passes });
+        const topic = await getDoc(topicRef);
+        console.log('passes: ', topic.data().passes)
+        const curr_passes = topic.data().passes
+        if (curr_passes === 3) {
+            await updateDoc(topicRef, { status: true });
+        }
+
+    } catch (error) {
+        throw new Error('Error updating topic: ' + error.message);
+    }
+}
+
+
 const addTopicToDB = async (topicData) => {
     try {
         const docRef = await addDoc(collection(db, 'topics'), topicData);

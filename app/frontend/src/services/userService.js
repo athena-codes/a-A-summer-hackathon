@@ -2,7 +2,6 @@ const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, setDoc } = require('firebase/firestore');
 const { checkAndUpdateUserLevel } = require('./levelService');
 const { getConceptsByLevel, getTopicsByConceptId } = require('./conceptService');
-const e = require('express');
 
 // Service to add a user
 const addUserToDB = async ({ uid, email, username, first_name, last_name, native_language, level }) => {
@@ -20,8 +19,9 @@ const addUserToDB = async ({ uid, email, username, first_name, last_name, native
 };
 
 const setUserLevel = async (uid, level) => {
-    await setDoc(doc(db, 'user_levels', uid), {
-        current_level: level
+    await setDoc(doc(db, 'users', uid), {
+        current_level: level,
+        updatedAt: new Date().toISOString()
     }, { merge: true });
 };
 
@@ -80,13 +80,17 @@ const initializeUserProgress = async (uid) => {
         // Use getConceptsByLevel to get the concepts for the current level
         let concepts = []
         if (currentLevel === 'advanced') {
-            const advancedConcepts = await getConceptsByLevel('advanced');
-            const intermediateConcepts = await getConceptsByLevel('intermediate');
-            const beginnerConcepts = await getConceptsByLevel('beginner');
+            const [advancedConcepts, intermediateConcepts, beginnerConcepts] = await Promise.all([
+                getConceptsByLevel('advanced'),
+                getConceptsByLevel('intermediate'),
+                getConceptsByLevel('beginner')
+            ]);
             concepts = [...advancedConcepts, ...intermediateConcepts, ...beginnerConcepts];
         } else if (currentLevel === 'intermediate') {
-            const intermediateConcepts = await getConceptsByLevel('intermediate');
-            const beginnerConcepts = await getConceptsByLevel('beginner');
+            const [intermediateConcepts, beginnerConcepts] = await Promise.all([
+                getConceptsByLevel('intermediate'),
+                getConceptsByLevel('beginner')
+            ]);
             concepts = [...intermediateConcepts, ...beginnerConcepts];
         } else {
             concepts = await getConceptsByLevel(currentLevel);
@@ -132,6 +136,7 @@ const getProgressFromDB = async (uid) => {
 
 // Service to update user progress
 const updateUserProgressFromDB = async (uid) => {
+    //call this service as a check after a concept is passed
     try {
         const userProgressRef = doc(db, 'progress', uid);
 
