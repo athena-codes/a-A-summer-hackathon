@@ -9,15 +9,12 @@ import { authenticate } from './store/session'
 import { auth } from './firebase/firebaseConfig'
 import HomePage from './components/HomePage'
 import WelcomePage from './components/WelcomePage'
-<<<<<<< HEAD
-=======
 import ConceptPage from './components/ConceptPage'
 import TopicsPage from './components/TopicsPage'
 import MainPage from './components/MainPage'
 import Footer from './components/Footer'
->>>>>>> dev
 
-function App ({ locale, setLocale }) {
+function App({ locale, setLocale }) {
   const [loaded, setLoaded] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const dispatch = useDispatch()
@@ -49,7 +46,7 @@ function App ({ locale, setLocale }) {
           {currentUser ? <Redirect to='/' /> : <LoginForm />}
         </Route>
         <Route path='/sign-up'>
-          {currentUser ? <Redirect to='/' /> : <SignUpForm setLocale={setLocale} locale={locale}/>}
+          {currentUser ? <Redirect to='/' /> : <SignUpForm setLocale={setLocale} locale={locale} />}
         </Route>
         <Route path='/concepts'>
           {currentUser ? <ConceptPage /> : <WelcomePage setLocale={setLocale} />}
