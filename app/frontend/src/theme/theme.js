@@ -21,6 +21,10 @@ const themeOptions: ThemeOptions = {
     background: {
       default: '#f5f5f5',
     },
+    completion: {
+      good: "#4caf50",
+      poor: "#f44336",
+    },
   },
 };
 

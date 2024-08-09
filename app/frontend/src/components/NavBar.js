@@ -70,7 +70,9 @@ const NavBar = () => {
         padding: '2vw',
       }}>
         <NavLink to='/' exact={true} activeClassName='active'>
-          <img src='../../logo.png' alt="Lingo.ai" />
+          <img src='../../logo.png' alt="Lingo.ai" 
+          style={{ width: '200px', height: 'auto' }}
+          />
         </NavLink>
         <Box
           sx={{
@@ -106,7 +108,46 @@ const NavBar = () => {
           onClose={handleClose}
         >
 
+<<<<<<< HEAD
           {!user &&
+=======
+          {user ? (
+            <Box>
+              <NoHoverMenuItem>
+                <Typography
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Hello, {user.email}!
+                </Typography>
+              </NoHoverMenuItem>
+              <MenuItem>
+                <Link href='/'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Profile
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <Link href='/concepts'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Concepts
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <NoHoverMenuItem>
+                <LogoutButton />
+              </NoHoverMenuItem>
+            </Box>
+          ) : (
+>>>>>>> dev
             <Box>
               <MenuItem>
                 <Link href='/login'

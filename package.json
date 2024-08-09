@@ -1,9 +1,14 @@
 {
   "dependencies": {
+    "@google/generative-ai": "^0.16.0",
     "axios": "^1.7.3",
     "express": "^4.19.2",
     "firebase": "^10.12.4",
+<<<<<<< HEAD
     "mui": "^0.0.1",
+=======
+    "node-fetch": "^3.3.2",
+>>>>>>> dev
     "redux-thunk": "^3.1.0"
   }
 }

@@ -1,7 +1,13 @@
-const { getDecksFromDB, createDeckInDB, addCardToDeckInDB, removeCardFromDeckInDB, removeDeckFromDB, archiveDeckInDB, getArchivedDecksFromDB } = require('../services/deckService');
+const { getDecksFromDB, createDeckInDB,
+    addCardsToDeckInDB, removeCardFromDeckInDB,
+    removeDeckFromDB, archiveDeckInDB,
+    getArchivedDecksFromDB, getUserArchivedDecksFromDB
+    , getDeckFromDB
+} = require('../services/deckService');
+const { doc, getDoc, addDoc, setDoc, collection } = require('firebase/firestore');
+const { db } = require('../firebase/firebaseConfig');
 
-
-const getDecks = async (req, res) => {
+const getAllDecks = async (req, res) => {
     try {
         const decks = await getDecksFromDB();
         res.status(200).json({ decks });
@@ -11,27 +17,64 @@ const getDecks = async (req, res) => {
 }
 
 
-const createDeck = async (req, res) => {
-    const { topic_id, createdAt, archived } = req.body;
+const getDeck = async (req, res) => {
+    const { deckId } = req.params;
     try {
-        const deck = await createDeckInDB({ topic_id, createdAt, archived });
-        res.status(201).json({ message: 'Deck created', deck });
+        const deck = await getDeckFromDB(deckId);
+        res.status(200).json({ deck });
     } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// const createDeck = async (req, res) => {
+//     const { userId, topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
+//     try {
+//         const deckInfo = await createDeckInDB({ userId, topic_id, createdAt, archived });
+//         const deckId = deckInfo.id;
+//         const deckQuestions = await addCardsToDeckInDB(deckId, userId);
+
+//         res.status(201).json({ message: 'Deck created', deckInfo, deckQuestions });
+//     } catch (error) {
+//         res.status(500).json({ message: `Error creating deck: ${error.message}` });
+//     }
+// };
+
+const createDeck = async (req, res) => {
+    const { userId, aiGeneratedRequestId, createdAt = new Date().toISOString(), archived = false } = req.body;
+    try {
+        console.log('Starting createDeck function');
+        // Retrieve the topic_id based on aiGeneratedRequestId
+        console.log('Fetching AI Generated Request document...');
+        const aiGeneratedRequestRef = doc(db, 'users', userId, 'ai_generated_requests', aiGeneratedRequestId);
+        const aiGeneratedRequestDoc = await getDoc(aiGeneratedRequestRef);
+
+        if (!aiGeneratedRequestDoc.exists()) {
+            console.log('AI Generated Request not found');
+            return res.status(404).json({ message: 'AI Generated Request not found' });
+        }
+
+        console.log('AI Generated Request document fetched successfully');
+        const topic_id = aiGeneratedRequestDoc.data().questionData.topic_id;
+
+        // Create the deck in the database
+        console.log('Creating deck in database...');
+        const deckInfo = await createDeckInDB({ userId, topic_id, createdAt, archived });
+        const deckId = deckInfo.id;
+
+        console.log('Deck created with ID:', deckId);
+        // Add cards to the deck using the aiGeneratedRequestId
+        console.log('Adding cards to the deck...');
+        const deckQuestions = await addCardsToDeckInDB(deckId, userId, aiGeneratedRequestId);
+
+        console.log('Cards added to the deck successfully');
+        res.status(201).json({ message: 'Deck created', deckInfo, deckQuestions });
+    } catch (error) {
+        console.error('Error occurred during deck creation:', error);
         res.status(500).json({ message: `Error creating deck: ${error.message}` });
     }
-}
+};
 
-
-const addCardToDeck = async (req, res) => {
-    const { deckId } = req.params;
-    //generated card => from ai_request
-    try {
-        await addCardToDeckInDB(deckId);
-        res.status(200).json({ message: 'Card added to deck' });
-    } catch (error) {
-        res.status(500).json({ message: `Error adding card to deck: ${error.message}` });
-    }
-}
 
 
 const removeCardFromDeck = async (req, res) => {
@@ -57,9 +100,15 @@ const removeDeck = async (req, res) => {
 
 
 const archiveDeck = async (req, res) => {
-    const { deckId } = req.params;
+    //const { deckId, uid } = req.params;
+    const { deckId, uid } = req.body;
+
+    if (!deckId || !uid) {
+        return res.status(400).json({ message: 'Missing deckId or uid' });
+    }
+
     try {
-        await archiveDeckInDB(deckId);
+        await archiveDeckInDB(deckId, uid);
         res.status(200).json({ message: 'Deck archived' });
     } catch (error) {
         res.status(500).json({ message: `Error archiving deck: ${error.message}` });
@@ -76,4 +125,14 @@ const getArchivedDecks = async (req, res) => {
     }
 }
 
-module.exports = { getDecks, createDeck, addCardToDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks };
+const getUserArchivedDecks = async (req, res) => {
+    const { uid } = req.params;
+    try {
+        const decks = await getUserArchivedDecksFromDB(uid);
+        res.status(200).json({ decks });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { getAllDecks, getDeck, createDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks };
