@@ -46,11 +46,12 @@ const addCardQuestions = async (req, res) => {
 
     try {
 
-        let questionData = await generateQuestionsByAI(topic_name, user_native_language, user_level);
+        let questionData = await generateQuestionsByAI(topic_name, user_native_language, user_level, topic_id);
         console.log("questionData: ", questionData)
 
         if (questionData) {
             const question_from_ai = await addQuestionsToDB(userId, { questionData });
+
             res.status(201).json({ message: `questions generated from ai added to db successfully!`, question_from_ai });
         } else {
             res.status(400).json({ message: `Error : ${error.message}` });

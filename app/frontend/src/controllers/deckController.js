@@ -4,7 +4,8 @@ const { getDecksFromDB, createDeckInDB,
     getArchivedDecksFromDB, getUserArchivedDecksFromDB
     , getDeckFromDB
 } = require('../services/deckService');
-
+const { doc, getDoc, addDoc, setDoc, collection } = require('firebase/firestore');
+const { db } = require('../firebase/firebaseConfig');
 
 const getAllDecks = async (req, res) => {
     try {
@@ -26,18 +27,55 @@ const getDeck = async (req, res) => {
     }
 }
 
+// const createDeck = async (req, res) => {
+//     const { userId, topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
+//     try {
+//         const deckInfo = await createDeckInDB({ userId, topic_id, createdAt, archived });
+//         const deckId = deckInfo.id;
+//         const deckQuestions = await addCardsToDeckInDB(deckId, userId);
+
+//         res.status(201).json({ message: 'Deck created', deckInfo, deckQuestions });
+//     } catch (error) {
+//         res.status(500).json({ message: `Error creating deck: ${error.message}` });
+//     }
+// };
+
 const createDeck = async (req, res) => {
-    const { userId, topic_id, createdAt = new Date().toISOString(), archived = false } = req.body;
+    const { userId, aiGeneratedRequestId, createdAt = new Date().toISOString(), archived = false } = req.body;
     try {
+        console.log('Starting createDeck function');
+        // Retrieve the topic_id based on aiGeneratedRequestId
+        console.log('Fetching AI Generated Request document...');
+        const aiGeneratedRequestRef = doc(db, 'users', userId, 'ai_generated_requests', aiGeneratedRequestId);
+        const aiGeneratedRequestDoc = await getDoc(aiGeneratedRequestRef);
+
+        if (!aiGeneratedRequestDoc.exists()) {
+            console.log('AI Generated Request not found');
+            return res.status(404).json({ message: 'AI Generated Request not found' });
+        }
+
+        console.log('AI Generated Request document fetched successfully');
+        const topic_id = aiGeneratedRequestDoc.data().questionData.topic_id;
+
+        // Create the deck in the database
+        console.log('Creating deck in database...');
         const deckInfo = await createDeckInDB({ userId, topic_id, createdAt, archived });
         const deckId = deckInfo.id;
-        const deckQuestions = await addCardsToDeckInDB(deckId, userId);
 
+        console.log('Deck created with ID:', deckId);
+        // Add cards to the deck using the aiGeneratedRequestId
+        console.log('Adding cards to the deck...');
+        const deckQuestions = await addCardsToDeckInDB(deckId, userId, aiGeneratedRequestId);
+
+        console.log('Cards added to the deck successfully');
         res.status(201).json({ message: 'Deck created', deckInfo, deckQuestions });
     } catch (error) {
+        console.error('Error occurred during deck creation:', error);
         res.status(500).json({ message: `Error creating deck: ${error.message}` });
     }
 };
+
+
 
 const removeCardFromDeck = async (req, res) => {
     const { deckId } = req.params;

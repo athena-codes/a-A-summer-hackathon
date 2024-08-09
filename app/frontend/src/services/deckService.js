@@ -37,6 +37,7 @@ const getDeckFromDB = async (deckId) => {
 
 //service to create a deck (empty)
 const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
+    console.log('userId: ', userId, 'topic_id: ', topic_id, 'createdAt: ', createdAt, 'archived: ', archived)
     try {
         const topicRef = doc(db, 'topics', topic_id);
         const topicDoc = await getDoc(topicRef);
@@ -69,7 +70,7 @@ const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
 };
 
 //service to add cards to a deck
-const addCardsToDeckInDB = async (deckId, userId) => {
+const addCardsToDeckInDB = async (deckId, userId, aiGeneratedRequestId) => {
     try {
         const deck = [];
         const userRef = doc(db, 'users', userId);
@@ -79,35 +80,77 @@ const addCardsToDeckInDB = async (deckId, userId) => {
             throw new Error('Deck not found');
         }
 
-        const topicRef = doc(db, 'topics', deckDoc.data().topic_id);
-        console.log('topicRef: ', topicRef);
+        // Reference the specific ai_generated_requests document in the subcollection
+        const aiGeneratedRequestRef = doc(db, 'users', userId, 'ai_generated_requests', aiGeneratedRequestId);
+        const aiGeneratedRequestDoc = await getDoc(aiGeneratedRequestRef);
+        if (!aiGeneratedRequestDoc.exists()) {
+            throw new Error('AI Generated Request not found');
+        }
+
+        const questionData = aiGeneratedRequestDoc.data().questionData;
+        const deckLevel = deckDoc.data().level;
+        const deckTopicId = deckDoc.data().topic_id;
+
+        const topicRef = doc(db, 'topics', deckTopicId);
         const topicDoc = await getDoc(topicRef);
         if (!topicDoc.exists()) {
             throw new Error('Topic not found');
         }
-        const level = deckDoc.data().level;
-        const topic_name = topicDoc.data().topic_name;
-        const aiGeneratedRequestsRef = collection(userRef, "ai_generated_requests");
-        //check ai_generated_id, then check topic/level
-        console.log('topic_name: ', topic_name, 'level: ', level)
-        const snapshot = await getDocs(aiGeneratedRequestsRef);
-        console.log('snapshot: ', snapshot.docs);
-        snapshot.docs.map(doc => {
-            console.log('doc: ', doc.data());
-            if (doc.data().questionData.topic === topic_name && doc.data().questionData.level === level) {
-                console.log('inside if statement: ', doc.data());
-                deck.push(doc.data());
-            }
-        })
-        console.log('deck: ', deck);
-        //we look for the deck in the db and add the deck
+        const topicName = topicDoc.data().topic_name;
 
-        await setDoc(deckRef, { userId: userId, cards: deck });
+        // Check if the question data matches the deck's topic and level
+        if (questionData.topic === topicName && questionData.level === deckLevel) {
+            deck.push(aiGeneratedRequestDoc.data());
+        }
+
+        // Update the deck with the new cards
+        await setDoc(deckRef, { ...deckDoc.data(), cards: deck }, { merge: true });
+
         return deck;
     } catch (error) {
         throw new Error('Error adding card to deck: ' + error.message);
     }
-}
+};
+
+// const addCardsToDeckInDB = async (deckId, userId) => {
+//     try {
+//         const deck = [];
+//         const userRef = doc(db, 'users', userId);
+//         const deckRef = doc(db, 'decks', deckId);
+//         const deckDoc = await getDoc(deckRef);
+//         if (!deckDoc.exists()) {
+//             throw new Error('Deck not found');
+//         }
+
+//         const topicRef = doc(db, 'topics', deckDoc.data().topic_id);
+//         console.log('topicRef: ', topicRef);
+//         const topicDoc = await getDoc(topicRef);
+//         if (!topicDoc.exists()) {
+//             throw new Error('Topic not found');
+//         }
+//         const level = deckDoc.data().level;
+//         const topic_name = topicDoc.data().topic_name;
+//         const aiGeneratedRequestsRef = collection(userRef, "ai_generated_requests");
+//         //check ai_generated_id, then check topic/level
+//         console.log('topic_name: ', topic_name, 'level: ', level)
+//         const snapshot = await getDocs(aiGeneratedRequestsRef);
+//         console.log('snapshot: ', snapshot.docs);
+//         snapshot.docs.map(doc => {
+//             console.log('doc: ', doc.data());
+//             if (doc.data().questionData.topic === topic_name && doc.data().questionData.level === level) {
+//                 console.log('inside if statement: ', doc.data());
+//                 deck.push(doc.data());
+//             }
+//         })
+//         console.log('deck: ', deck);
+//         //we look for the deck in the db and add the deck
+
+//         await setDoc(deckRef, { userId: userId, cards: deck });
+//         return deck;
+//     } catch (error) {
+//         throw new Error('Error adding card to deck: ' + error.message);
+//     }
+// }
 
 //service to remove a card from a deck
 const removeCardFromDeckInDB = async () => {
