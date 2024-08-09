@@ -46,29 +46,39 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
 
         const attemptData = attemptDoc.data();
         console.log('attemptData: ', attemptData);
+        console.log('deckData: ', deckData);
 
-        const correctAnswer = deckData.cards[0].questionData.jsonData[id].answer
-        const checkIfAttempted = deckData.cards[0].questionData.jsonData[id].isAttempted
+        const questionIndex = deckData.cards[0].questionData.jsonData.findIndex(q => q.id === id);
+        if (questionIndex === -1) {
+            throw new Error('Question not found');
+        }
+
+        const correctAnswer = deckData.cards[0].questionData.jsonData[questionIndex].answer;
+        const checkIfAttempted = deckData.cards[0].questionData.jsonData[questionIndex].isAttempted;
         console.log('checkIfAttempted: ', checkIfAttempted);
+
         if (checkIfAttempted === true) {
             throw new Error('Question already attempted');
         }
 
         console.log('correctAnswer: ', correctAnswer);
-        // Ensure correctAnswer is defined
         if (correctAnswer === undefined) {
             throw new Error('Correct answer is not defined in the database');
         }
 
         if (answer === correctAnswer) {
-            // Mark the question as attempted in the local deckData
-            deckData.cards[0].questionData.jsonData[id].isAttempted = true;
+            // Mark the question as attempted
+            deckData.cards[0].questionData.jsonData[questionIndex].isAttempted = true;
 
-            // Update the deck document in Firestore to reflect this change
+            // Update the deck document in Firestore with the modified jsonData array
             const deckDocRef = doc(db, 'decks', deckId);
             console.log('deckDocRef: ', deckDocRef);
+
+            const updatedJsonData = deckData.cards[0].questionData.jsonData;
+            const updatePath = `cards.0.questionData.jsonData`;
+
             await updateDoc(deckDocRef, {
-                [`cards[0].questionData.jsonData.${id}.isAttempted`]: true,
+                [updatePath]: updatedJsonData,
             });
 
             // Increment the passes count in the attempt document
@@ -81,7 +91,8 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
     } catch (error) {
         throw new Error('Error checking answer: ' + error.message);
     }
-}
+};
+
 
 //Service to update user attempt
 const updateUserAttemptInDB = async (uid, attemptId, updateData) => {
