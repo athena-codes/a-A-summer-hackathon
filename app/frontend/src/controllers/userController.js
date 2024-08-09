@@ -73,10 +73,10 @@ const getUserAttempts = async (req, res) => {
 // Start new user attempt
 const addUserAttempt = async (req, res) => {
     const { id } = req.params;
-    const { deckId, passes = 0, totalQuestions = 3, correctAnswers = 0, createdAt = new Date().toISOString() } = req.body;
+    const { deckId, passes = 0, totalQuestions = 3, createdAt = new Date().toISOString() } = req.body;
     console.log('id: ', id);
     try {
-        const attemptData = { deckId, passes, totalQuestions, correctAnswers, createdAt };
+        const attemptData = { deckId, passes, totalQuestions, createdAt };
         const newAttemptId = await AddUserAttemptToDB( attemptData, id );
         res.status(200).json({ message: 'User attempt started', newAttemptId });
     } catch (error) {
@@ -85,10 +85,11 @@ const addUserAttempt = async (req, res) => {
 };
 
 const updateUserAttempt = async (req, res) => {
-    const { id, attemptId } = req.params;
-    const { answer } = req.body;
+    const { userId, attemptId } = req.params;
+    const { deckId, id, answer } = req.body;
+    console.log('userId: ', userId, 'attemptId: ', attemptId, 'deckId: ', deckId, 'id: ', id, 'answer: ', answer);
     try {
-        const checkAttempt = await checkAnswerInDB(id, attemptId, answer);
+        const checkAttempt = await checkAnswerInDB(userId, id, attemptId, answer, deckId);
         res.status(200).json({ message: 'User attempt updated', id, checkAttempt });
     } catch (error) {
         res.status(500).json({ message: 'Error updating user attempt', error: error.message });

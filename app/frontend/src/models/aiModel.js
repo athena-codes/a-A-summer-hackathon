@@ -5,7 +5,7 @@ const { sendEmailVerification } = require("firebase/auth");
 // Access your API key as an environment variable (see "Set up your API key" above)
 const { API_KEY } = process.env;
 
-const genAI = new GoogleGenerativeAI("api");
+const genAI = new GoogleGenerativeAI("AIzaSyBof4Q9PqSJhabGxPvzU69LoLG5d_aimaA");
 
 
 //generate questions from ai based on different topic
@@ -16,7 +16,7 @@ async function generateQuestionsByAI(topic, native_language, level) {
 
     let picked_topic = topic.toLowerCase().split(" ").join("")
     let role = `You're an English teacher.`
-    let jsonschema = `JSON schema: { "type":"array", "properties": {"id": "integer", "question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
+    let jsonschema = `JSON schema: { "type":"array", "properties": {"id": "integer", "question": "string",  "options": "array",  "answer": "string",  "explanation":"string", "isAttempted": false }}.`
 
     // Default prompt
     let prompt = role + `there're 3 student levels beginner, intermediate, advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + jsonschema

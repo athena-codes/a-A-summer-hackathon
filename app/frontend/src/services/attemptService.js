@@ -1,5 +1,7 @@
 const { db } = require('../firebase/firebaseConfig');
-const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where } = require('firebase/firestore');
+const { increment, collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where } = require('firebase/firestore');
+const { getDeckFromDB } = require('./deckService');
+const { getDeck } = require('../controllers/deckController');
 
 //Service to view all user attempts
 const getUserAttemptsFromDB = async (uid) => {
@@ -31,10 +33,11 @@ const AddUserAttemptToDB = async (attemptData, id) => {
     }
 }
 
-const checkAnswerInDB = async (id, attemptId, answer) => {
+const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
     try {
-        const attemptDocRef = doc(db, 'users', uid, 'attempts', attemptId);
+        const attemptDocRef = doc(db, 'users', userId, 'attempts', attemptId);
         const attemptDoc = await getDoc(attemptDocRef);
+        const deckData = await getDeckFromDB(deckId);
 
         // Ensure attemptDoc exists and has data
         if (!attemptDoc.exists()) {
@@ -43,15 +46,34 @@ const checkAnswerInDB = async (id, attemptId, answer) => {
 
         const attemptData = attemptDoc.data();
         console.log('attemptData: ', attemptData);
-        const { correctAnswer } = attemptData;
 
+        const correctAnswer = deckData.cards[0].questionData.jsonData[id].answer
+        const checkIfAttempted = deckData.cards[0].questionData.jsonData[id].isAttempted
+        console.log('checkIfAttempted: ', checkIfAttempted);
+        if (checkIfAttempted === true) {
+            throw new Error('Question already attempted');
+        }
+
+        console.log('correctAnswer: ', correctAnswer);
         // Ensure correctAnswer is defined
         if (correctAnswer === undefined) {
             throw new Error('Correct answer is not defined in the database');
         }
 
         if (answer === correctAnswer) {
+            // Mark the question as attempted in the local deckData
+            deckData.cards[0].questionData.jsonData[id].isAttempted = true;
+
+            // Update the deck document in Firestore to reflect this change
+            const deckDocRef = doc(db, 'decks', deckId);
+            console.log('deckDocRef: ', deckDocRef);
+            await updateDoc(deckDocRef, {
+                [`cards[0].questionData.jsonData.${id}.isAttempted`]: true,
+            });
+
+            // Increment the passes count in the attempt document
             await updateDoc(attemptDocRef, { passes: increment(1) });
+
             return { message: 'Answer is correct!' };
         } else {
             return { message: 'Answer is incorrect.', correctAnswer };

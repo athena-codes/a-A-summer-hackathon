@@ -2,7 +2,7 @@ const express = require('express');
 // const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress } = require('../controllers/userController');
 const { getAllQuestionsbyAI } = require('../controllers/aiController');
 
-const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt } = require('../controllers/userController');
+const { updateUserAttempt,getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt } = require('../controllers/userController');
 
 const router = express.Router();
 
@@ -30,5 +30,8 @@ router.get('/:id/attempts', getUserAttempts)
 
 //add user attempt
 router.post('/:id/attempts/new', addUserAttempt)
+
+//update user attempt
+router.put('/:userId/attempts/:attemptId/update', updateUserAttempt)
 
 module.exports = router;
