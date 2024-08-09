@@ -74,7 +74,9 @@ const NavBar = () => {
         padding: '2vw',
       }}>
         <NavLink to='/' exact={true} activeClassName='active'>
-          <img src='../../logo.png' alt="Lingo.ai" />
+          <img src='../../logo.png' alt="Lingo.ai" 
+          style={{ width: '200px', height: 'auto' }}
+          />
         </NavLink>
         <Box
           sx={{

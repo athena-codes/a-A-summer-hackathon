@@ -22,5 +22,9 @@ export const theme = createTheme({
     background: {
       main: "#f5f5f5",
     },
+    completion: {
+      good: "#4caf50",
+      poor: "#f44336",
+    },
   },
 });

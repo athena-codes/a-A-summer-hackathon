@@ -11,11 +11,8 @@ import HomePage from './components/HomePage'
 import WelcomePage from './components/WelcomePage'
 import ConceptPage from './components/ConceptPage'
 import TopicsPage from './components/TopicsPage'
-<<<<<<< HEAD
 import MainPage from './components/MainPage'
-=======
 import Footer from './components/Footer'
->>>>>>> origin/carmen-branch-2
 
 function App({ locale, setLocale }) {
   const [loaded, setLoaded] = useState(false)
