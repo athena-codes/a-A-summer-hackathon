@@ -44,14 +44,15 @@ export const login = (email, password) => async dispatch => {
 }
 
 
-export const signUp = async (email, password, username, firstName, lastName, nativeLanguage) => {
+export const signUp = async (email, password, username, firstName, lastName, nativeLanguage, level) => {
   console.log('Signing up with:', {
   email,
   password,
   username,
   firstName,
   lastName,
-  nativeLanguage
+  nativeLanguage,
+  level
 })
 
 if (!email) {
@@ -74,7 +75,8 @@ if (!email) {
       username,
       first_name: firstName || '',
       last_name: lastName || '',
-      native_language: nativeLanguage || 'en' // Assume default or get from another input
+      native_language: nativeLanguage || 'en', // Assume default or get from another input
+      level: level || 1
     })
 
     console.log('User signed up and added to Firestore')

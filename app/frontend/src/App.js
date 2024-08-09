@@ -7,10 +7,14 @@ import NavBar from './components/NavBar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { authenticate } from './store/session'
 import { auth } from './firebase/firebaseConfig'
-import HomePage from './components/Homepage'
+import HomePage from './components/HomePage'
 import WelcomePage from './components/WelcomePage'
+import ConceptPage from './components/ConceptPage'
+import TopicsPage from './components/TopicsPage'
+import MainPage from './components/MainPage'
+import Footer from './components/Footer'
 
-function App ({ locale, setLocale }) {
+function App({ locale, setLocale }) {
   const [loaded, setLoaded] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const dispatch = useDispatch()
@@ -42,13 +46,23 @@ function App ({ locale, setLocale }) {
           {currentUser ? <Redirect to='/' /> : <LoginForm />}
         </Route>
         <Route path='/sign-up'>
-          {currentUser ? <Redirect to='/' /> : <SignUpForm setLocale={setLocale} locale={locale}/>}
+          {currentUser ? <Redirect to='/' /> : <SignUpForm setLocale={setLocale} locale={locale} />}
+        </Route>
+        <Route path='/topics'>
+          {currentUser ? <TopicsPage /> : <WelcomePage setLocale={setLocale} />}
+        </Route>
+        <Route path='/concepts'>
+          {currentUser ? <ConceptPage /> : <WelcomePage setLocale={setLocale} />}
+        </Route>
+        <Route path='/main'>
+          {currentUser ? <MainPage /> : <WelcomePage setLocale={setLocale} />}
         </Route>
         {/* Ensure your ProtectedRoute component is redirecting correctly */}
-        <ProtectedRoute path='/home'>
+        <ProtectedRoute path='/'>
           {currentUser ? <HomePage /> : <Redirect to='/login' />}
         </ProtectedRoute>
       </Switch>
+      <Footer />
     </>
   )
 }

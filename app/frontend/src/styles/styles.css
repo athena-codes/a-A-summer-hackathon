@@ -2,14 +2,14 @@
   overflow: hidden;
   position: relative;
   width: 100%;
-  height: 2.5rem; /* Adjust height as needed */
+  height: 5.5rem; /* Adjust height as needed */
 }
 
 .scroll-container {
   display: flex;
   animation: scroll 15s linear infinite;
   position: absolute;
-  top: 0;
+  /* top: 0; */
   left: 0;
   width: calc(100% * 2); /* Ensure the width is sufficient to accommodate the scroll */
 }

@@ -6,7 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import configureStore from "./store";
-import theme from "./theme/theme"
+import { theme } from "./theme/theme";
 import messages from "./locales/messages.json"
 import { ThemeProvider } from "@mui/material";
 
