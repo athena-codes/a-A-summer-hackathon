@@ -13,6 +13,7 @@ const LogoutButton = () => {
     variant="contained"
     color='primary'
     onClick={onLogout}
+    fullWidth
   >
     Logout
   </Button>;
