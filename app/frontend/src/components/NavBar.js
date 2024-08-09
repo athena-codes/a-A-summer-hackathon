@@ -31,6 +31,10 @@ const StyledMenu = styled((props) => (
     '& .MuiMenu-list': {
       padding: '10px 0 14px 0',
     },
+    '& .MuiMenuItem-root:hover': { // target hover state
+      backgroundColor: 'transparent', // remove background on hover
+      cursor: 'default'
+    },
     '& .MuiMenuItem-root': {
       '& .MuiSvgIcon-root': {
         fontSize: 18,
@@ -70,7 +74,9 @@ const NavBar = () => {
         padding: '2vw',
       }}>
         <NavLink to='/' exact={true} activeClassName='active'>
-          <img src='../../logo.png' alt="Lingo.ai" />
+          <img src='../../logo.png' alt="Lingo.ai" 
+          style={{ width: '200px', height: 'auto' }}
+          />
         </NavLink>
         <Box
           sx={{
@@ -78,7 +84,7 @@ const NavBar = () => {
             columnGap: '10px',
             alignItems: 'center',
             padding: '10px',
-            borderRadius: '20px',
+            borderRadius: '5px',
             backgroundColor: '#a8716f',
             border: '1.5px solid #160e0e',
             "&:hover": {
@@ -106,7 +112,42 @@ const NavBar = () => {
           onClose={handleClose}
         >
 
-          {!user &&
+          {user ? (
+            <Box>
+              <NoHoverMenuItem>
+                <Typography
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Hello, {user.email}!
+                </Typography>
+              </NoHoverMenuItem>
+              <MenuItem>
+                <Link href='/'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Profile
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <Link href='/concepts'
+                  // exact={true}activeClassName='active'
+                  underline="none">
+                  <Typography
+                    color="primary"
+                  >
+                    Concepts
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <NoHoverMenuItem>
+                <LogoutButton />
+              </NoHoverMenuItem>
+            </Box>
+          ) : (
             <Box>
               <MenuItem>
                 <Link href='/login'
@@ -131,26 +172,7 @@ const NavBar = () => {
                 </Link>
               </MenuItem>
             </Box>
-          }
-          {user &&
-            <Box>
-              <NoHoverMenuItem>
-                <Typography
-                  sx={{ fontWeight: "bold" }}
-                >
-                  Hello, {user.email}!
-                </Typography>
-              </NoHoverMenuItem>
-              <MenuItem>
-                Profile
-              </MenuItem>
-              <MenuItem>
-                Concepts
-              </MenuItem>
-              <NoHoverMenuItem>
-                <LogoutButton />
-              </NoHoverMenuItem>
-            </Box>
+          )
           }
         </StyledMenu>
       </Container>
