@@ -100,7 +100,6 @@ const removeDeck = async (req, res) => {
 
 
 const archiveDeck = async (req, res) => {
-    //const { deckId, uid } = req.params;
     const { deckId, uid } = req.body;
 
     if (!deckId || !uid) {
@@ -108,12 +107,18 @@ const archiveDeck = async (req, res) => {
     }
 
     try {
-        await archiveDeckInDB(deckId, uid);
-        res.status(200).json({ message: 'Deck archived' });
+        const result = await archiveDeckInDB(deckId, uid);
+
+        if (result.success) {
+            return res.status(200).json({ message: result.message });
+        } else {
+            return res.status(400).json({ message: result.message });
+        }
     } catch (error) {
         res.status(500).json({ message: `Error archiving deck: ${error.message}` });
     }
-}
+};
+
 
 
 const getArchivedDecks = async (req, res) => {

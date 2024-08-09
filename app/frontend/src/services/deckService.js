@@ -165,26 +165,52 @@ const removeDeckFromDB = async () => {
 //service to archive a deck
 const archiveDeckInDB = async (deckId, uid) => {
     try {
-        // Update the deck's archived status in the main collection
-        const deckRef = doc(db, 'decks', deckId);
-        await updateDoc(deckRef, { archived: true });
-
         // Get the deck data
+        const deckRef = doc(db, 'decks', deckId);
         const deckDoc = await getDoc(deckRef);
+
         if (!deckDoc.exists()) {
             throw new Error('Deck not found');
         }
+
+        // Check if the deck is already archived
+        if (deckDoc.data().archived) {
+            return { success: false, message: 'Deck is already archived.' };
+        }
+
         const deckData = deckDoc.data();
+
+        // Check if the user ID matches the deck's userId
+        if (deckData.userId !== uid) {
+            return { success: false, message: 'Unauthorized: User ID does not match the deck owner.' };
+        }
+
+        // Check if all cards in the deck have isAttempted set to true
+        for (const card of deckData.cards) {
+            console.log('Checking card:', card);
+            for (const question of card.questionData.jsonData) {
+                console.log('Checking question:', question);
+                if (!question.isAttempted) {
+                    console.log(`Question with id ${question.id} is not attempted. Archiving will not proceed.`);
+                    return { success: false, message: 'Not all cards are attempted. Deck will not be archived.' };
+                }
+            }
+        }
+
+        // Archive the deck if all cards are attempted
+        await updateDoc(deckRef, { archived: true });
 
         // Add the deck to the user's subcollection
         const userDecksCollectionRef = collection(doc(db, 'users', uid), 'decks');
         await setDoc(doc(userDecksCollectionRef, deckId), deckData);
 
-        return true;
+        return { success: true, message: 'Deck archived' };
     } catch (error) {
-        throw new Error('Error archiving deck: ' + error.message);
+        return { success: false, message: 'Error archiving deck: ' + error.message };
     }
 };
+
+
 
 
 //service to view archived decks

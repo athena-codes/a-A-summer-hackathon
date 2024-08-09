@@ -37,17 +37,21 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
     try {
         const attemptDocRef = doc(db, 'users', userId, 'attempts', attemptId);
         const attemptDoc = await getDoc(attemptDocRef);
-        const deckData = await getDeckFromDB(deckId);
+        const deckDocRef = doc(db, 'decks', deckId);
+        const deckDoc = await getDoc(deckDocRef);
 
-        // Ensure attemptDoc exists and has data
+        // Ensure attemptDoc and deckDoc exist
         if (!attemptDoc.exists()) {
             throw new Error('Attempt not found');
         }
+        if (!deckDoc.exists()) {
+            throw new Error('Deck not found');
+        }
 
+        const deckData = deckDoc.data();
         const attemptData = attemptDoc.data();
-        console.log('attemptData: ', attemptData);
-        console.log('deckData: ', deckData);
 
+        // Find the specific question in the cards array
         const questionIndex = deckData.cards[0].questionData.jsonData.findIndex(q => q.id === id);
         if (questionIndex === -1) {
             throw new Error('Question not found');
@@ -55,30 +59,18 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
 
         const correctAnswer = deckData.cards[0].questionData.jsonData[questionIndex].answer;
         const checkIfAttempted = deckData.cards[0].questionData.jsonData[questionIndex].isAttempted;
-        console.log('checkIfAttempted: ', checkIfAttempted);
 
         if (checkIfAttempted === true) {
             throw new Error('Question already attempted');
-        }
-
-        console.log('correctAnswer: ', correctAnswer);
-        if (correctAnswer === undefined) {
-            throw new Error('Correct answer is not defined in the database');
         }
 
         if (answer === correctAnswer) {
             // Mark the question as attempted
             deckData.cards[0].questionData.jsonData[questionIndex].isAttempted = true;
 
-            // Update the deck document in Firestore with the modified jsonData array
-            const deckDocRef = doc(db, 'decks', deckId);
-            console.log('deckDocRef: ', deckDocRef);
-
-            const updatedJsonData = deckData.cards[0].questionData.jsonData;
-            const updatePath = `cards.0.questionData.jsonData`;
-
+            // Update the deck document in Firestore with the modified cards array
             await updateDoc(deckDocRef, {
-                [updatePath]: updatedJsonData,
+                cards: deckData.cards,  // Update the entire cards array
             });
 
             // Increment the passes count in the attempt document
@@ -92,6 +84,7 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
         throw new Error('Error checking answer: ' + error.message);
     }
 };
+
 
 
 //Service to update user attempt
