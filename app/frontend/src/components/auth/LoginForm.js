@@ -14,15 +14,6 @@ const LoginForm = () => {
     await dispatch(login(email, password));
   };
 
-  const handleDemoClick = async (e) => {
-    e.preventDefault();
-
-    const credential = "Demo-lition@gmail.com";
-    const password = "password";
-
-    await dispatch(login(credential, password));
-  };
-
   return (
     <form onSubmit={onLogin}>
       <Container
@@ -32,13 +23,12 @@ const LoginForm = () => {
           flexDirection: "column",
           justifyContent: "center",
           border: "1px solid black",
-          p: 2,
+          p: 10,
           borderRadius: 10,
         }}
       >
         <Typography
           variant="h1"
-          m={2}
           sx={{
             // color: "primary.main",
             fontSize: "2rem",
@@ -49,7 +39,7 @@ const LoginForm = () => {
           Log In
         </Typography>
         <Box display="flex" flexDirection="column" p={1}>
-          <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1 }}>
+        <Typography sx={{ fontWeight: "bold", my: 0.5, px: 1, }}>
             <FormattedMessage id="email" defaultMessage="Email" />
           </Typography>
           {/* <input
@@ -58,7 +48,7 @@ const LoginForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           /> */}
-          <TextField
+             <TextField
             id="outlined-email-input"
             label="Enter your Email"
             type="email"
@@ -89,28 +79,18 @@ const LoginForm = () => {
             InputProps={{ sx: { borderRadius: 100 } }}
             required
           />
-          <Button
-            variant="contained"
-            type="submit"
-            color="primary"
-            sx={{
-              borderRadius: 100,
-              mt: 2,
-            }}
-          >
-            <FormattedMessage id="logIn" defaultMessage="Log In" />
-          </Button>
-          <Button
-            onClick={handleDemoClick}
-            type="submit"
-            sx={{
-              borderRadius: 100,
-              mt: 1,
-            }}
-          >
-            Demo
-          </Button>
         </Box>
+        <Button
+          variant="contained"
+          type="submit"
+          color="primary"
+          sx={{
+            borderRadius: 100,
+            mt: 4,
+          }}
+        >
+          <FormattedMessage id="logIn" defaultMessage="Log In" />
+        </Button>
       </Container>
     </form>
   );

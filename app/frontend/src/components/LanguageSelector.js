@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
 const flagsArr = [
   {
-    url: "/assets/flags/Flag_of_the_United_States.png",
+    url: "/assets/flags/Flag_of_the_United_States.svg",
     language: "en",
     label: "English",
   },

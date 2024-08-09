@@ -31,10 +31,6 @@ const StyledMenu = styled((props) => (
     '& .MuiMenu-list': {
       padding: '10px 0 14px 0',
     },
-    '& .MuiMenuItem-root:hover': { // target hover state
-      backgroundColor: 'transparent', // remove background on hover
-      cursor: 'default'
-    },
     '& .MuiMenuItem-root': {
       '& .MuiSvgIcon-root': {
         fontSize: 18,
@@ -82,7 +78,7 @@ const NavBar = () => {
             columnGap: '10px',
             alignItems: 'center',
             padding: '10px',
-            borderRadius: '5px',
+            borderRadius: '20px',
             backgroundColor: '#a8716f',
             border: '1.5px solid #160e0e',
             "&:hover": {
@@ -110,42 +106,7 @@ const NavBar = () => {
           onClose={handleClose}
         >
 
-          {user ? (
-            <Box>
-              <NoHoverMenuItem>
-                <Typography
-                  sx={{ fontWeight: "bold" }}
-                >
-                  Hello, {user.email}!
-                </Typography>
-              </NoHoverMenuItem>
-              <MenuItem>
-                <Link href='/home'
-                  // exact={true}activeClassName='active'
-                  underline="none">
-                  <Typography
-                    color="primary"
-                  >
-                    Profile
-                  </Typography>
-                </Link>
-              </MenuItem>
-              <MenuItem>
-                <Link href='/'
-                  // exact={true}activeClassName='active'
-                  underline="none">
-                  <Typography
-                    color="primary"
-                  >
-                    Concepts
-                  </Typography>
-                </Link>
-              </MenuItem>
-              <NoHoverMenuItem>
-                <LogoutButton />
-              </NoHoverMenuItem>
-            </Box>
-          ) : (
+          {!user &&
             <Box>
               <MenuItem>
                 <Link href='/login'
@@ -170,7 +131,26 @@ const NavBar = () => {
                 </Link>
               </MenuItem>
             </Box>
-          )
+          }
+          {user &&
+            <Box>
+              <NoHoverMenuItem>
+                <Typography
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Hello, {user.email}!
+                </Typography>
+              </NoHoverMenuItem>
+              <MenuItem>
+                Profile
+              </MenuItem>
+              <MenuItem>
+                Concepts
+              </MenuItem>
+              <NoHoverMenuItem>
+                <LogoutButton />
+              </NoHoverMenuItem>
+            </Box>
           }
         </StyledMenu>
       </Container>
