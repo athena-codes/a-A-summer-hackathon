@@ -9,8 +9,13 @@ import {
 } from "@mui/material";
 import React from "react";
 import DeckSample from "./Decks/DeckSample";
+import { useSelector } from "react-redux";
 
 function MainPage() {
+
+  const conceptsObj = useSelector((state) => state.concepts)
+  console.log(conceptsObj)
+
   return (
     <Container
       sx={{
