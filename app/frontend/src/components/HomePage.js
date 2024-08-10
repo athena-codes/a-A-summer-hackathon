@@ -14,6 +14,11 @@ function HomePage() {
   }, [dispatch])
 
   console.log("USER", user);
+
+  const upperCase = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   const data = [
     {
       left: 'Current English Proficiency Level:',
