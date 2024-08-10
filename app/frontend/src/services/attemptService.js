@@ -17,6 +17,52 @@ const getUserAttemptsFromDB = async (uid) => {
     }
 }
 
+const getUserAttemptByIDFromDB = async (uid, attemptId) => {
+    try {
+        const userRef = doc(db, 'users', uid);
+        const attemptDocRef = doc(userRef, 'attempts', attemptId);
+        const attemptDoc = await getDoc(attemptDocRef);
+        if (attemptDoc.exists()) {
+            return attemptDoc.data();
+        } else {
+            throw new Error('Attempt not found');
+        }
+    } catch (error) {
+        throw new Error('Error fetching user attempt: ' + error.message);
+    }
+}
+
+const checkAttemptInDB = async (userId, attemptId) => {
+    console.log('userId: ', userId, 'attemptId: ', attemptId);
+    console.log('hit here')
+    try {
+        const userRef = doc(db, 'users', userId);
+        const attemptDocRef = doc(userRef, 'attempts', attemptId);
+        //console.log('attemptDocRef: ', attemptDocRef);
+        const attemptDoc = await getDoc(attemptDocRef);
+        console.log('attemptDoc: ', attemptDoc);
+        if (attemptDoc.exists()) {
+            const attemptData = attemptDoc.data();
+            console.log('Attempt data:', attemptData);
+
+            const { passes, totalQuestions } = attemptData;
+            const percentagePassed = (passes / totalQuestions) * 100;
+
+            if (percentagePassed >= 80) {
+                console.log('Attempt passes with 80% or more:', percentagePassed);
+                return { ...attemptData, percentagePassed, meetsThreshold: true };
+            } else {
+                console.log('Attempt does not pass with 80% or more:', percentagePassed);
+                return { ...attemptData, percentagePassed, meetsThreshold: false };
+            }
+        } else {
+            throw new Error('Attempt not found');
+        }
+    } catch (error) {
+        throw new Error('Error checking user attempt: ' + error.message);
+    }
+};
+
 //Service to add user attempt; call this service after user starts a deck
 const AddUserAttemptToDB = async (attemptData, id) => {
     try {
@@ -35,7 +81,9 @@ const AddUserAttemptToDB = async (attemptData, id) => {
 
 const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
     try {
-        const attemptDocRef = doc(db, 'users', userId, 'attempts', attemptId);
+        const userDocRef = doc(db, 'users', userId);
+        // const attemptDocRef = doc(db, 'users', userId, 'attempts', attemptId);
+        const attemptDocRef = doc(userDocRef, 'attempts', attemptId);
         const attemptDoc = await getDoc(attemptDocRef);
         const deckDocRef = doc(db, 'decks', deckId);
         const deckDoc = await getDoc(deckDocRef);
@@ -78,6 +126,10 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
 
             return { message: 'Answer is correct!' };
         } else {
+            deckData.cards[0].questionData.jsonData[questionIndex].isAttempted = true;
+            await updateDoc(deckDocRef, {
+                cards: deckData.cards,  // Update the entire cards array
+            });
             return { message: 'Answer is incorrect.', correctAnswer };
         }
     } catch (error) {
@@ -112,4 +164,4 @@ const endUserAttemptInDB = async (uid, attemptId) => {
 }
 
 
-module.exports = { checkAnswerInDB, getUserAttemptsFromDB, AddUserAttemptToDB, updateUserAttemptInDB, endUserAttemptInDB };
+module.exports = { getUserAttemptByIDFromDB, checkAttemptInDB, checkAnswerInDB, getUserAttemptsFromDB, AddUserAttemptToDB, updateUserAttemptInDB, endUserAttemptInDB };

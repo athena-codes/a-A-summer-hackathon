@@ -142,10 +142,8 @@ const getProgressFromDB = async (uid) => {
 
 // Service to update user progress
 const updateUserProgressFromDB = async (uid) => {
-    //call this service as a check after a concept/topic is passed
     try {
         const userProgressRef = doc(db, 'progress', uid);
-
         const conceptsCollectionRef = collection(userProgressRef, 'concepts');
         const conceptsSnapshot = await getDocs(conceptsCollectionRef);
 
@@ -153,23 +151,29 @@ const updateUserProgressFromDB = async (uid) => {
             const conceptData = conceptDoc.data();
             const conceptDocRef = doc(conceptsCollectionRef, conceptDoc.id);
 
-            // Update concept status if needed
-            await updateDoc(conceptDocRef, { status: conceptData.status });
+            // Check if all topics within the concept are passed
+            let allTopicsPassed = true;
 
-            // Access and update topics
-            const topicsCollectionRef = collection(conceptDocRef, 'topics');
-            const topicsSnapshot = await getDocs(topicsCollectionRef);
+            if (conceptData.topics && conceptData.topics.length > 0) {
+                for (const topic of conceptData.topics) {
+                    if (!topic.status) {
+                        allTopicsPassed = false;
+                        console.log('Topic not passed:', topic.id);
+                        break;
+                    }
+                }
+            } else {
+                allTopicsPassed = false;
+            }
 
-            for (const topicDoc of topicsSnapshot.docs) {
-                const topicData = topicDoc.data();
-                const topicDocRef = doc(topicsCollectionRef, topicDoc.id);
-
-                // Update topic status if needed
-                await updateDoc(topicDocRef, { status: topicData.status });
+            // Update concept status if all topics have been passed
+            if (allTopicsPassed && !conceptData.status) {
+                await updateDoc(conceptDocRef, { status: true });
+                console.log(`Concept ${conceptDoc.id} status updated to true`);
             }
         }
 
-        //this will check and update user level
+        // Check and update user level (NOT WORKING YET)
         await checkAndUpdateUserLevel(uid);
 
         console.log('User progress updated successfully');
@@ -177,6 +181,7 @@ const updateUserProgressFromDB = async (uid) => {
         console.error('Error updating user progress:', error);
     }
 };
+
 
 module.exports = {
     addUserToDB,
