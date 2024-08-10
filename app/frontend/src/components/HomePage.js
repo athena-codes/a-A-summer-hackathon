@@ -7,7 +7,7 @@ import { getSingleUser } from '../store/users';
 function HomePage() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.session.user);
-  const currUser = useSelector((state) => state)
+  const currUser = Object.values(useSelector((state) => state.users))
   console.log("CURRUSER", currUser);
   useEffect(() => {
     dispatch(getSingleUser(user.uid))
@@ -17,7 +17,7 @@ function HomePage() {
   const data = [
     {
       left: 'Current English Proficiency Level:',
-      right: `${user.level}`
+      right: `${currUser[0].level}`
     },
     {
       left: 'Proficiency Level Progress:',

@@ -6,7 +6,7 @@ const EDIT_USER = 'users/EDIT_USER'
 const REMOVE_USER = 'users/REMOVE_USER'
 
 /* ----- ACTIONS ------ */
-const load = (users) => ({
+const load = (users) => (console.log("USER ACTION", users), {
     type: LOAD_USERS,
     users,
 });
@@ -41,10 +41,11 @@ export const getUsers = () => async (dispatch) => {
 
 export const getSingleUser = (id) => async (dispatch) => {
     const response = await fetch(`/api/users/${id}`);
-
+    console.log("RESPONSE", response);
     if (response.ok) {
         const user = await response.json();
         dispatch(load([user]));
+        console.log("RESOK", user)
         return user;
     }
 }
@@ -88,32 +89,41 @@ const initialState = {};
 
 /* ------ REDUCER ------ */
 const usersReducer = (state = initialState, action) => {
-    let newState;
     switch (action.type) {
-        case LOAD_USERS:
-            console.log("ACTION", action.type);
-            newState = { ...state };
-            newState.users = {};
-            action.users.forEach((user) => (newState.users[user.id] = user));
+        case LOAD_USERS: {
+            const newState = { ...state };
+            console.log("REDUCER!", action)
+
+            action.users.forEach((user) => {
+                (newState[user.id] = user)
+            });
+
             return newState;
-        case ADD_USER:
-            newState = { ...state, users: { ...state.users } };
+        }
+
+        case ADD_USER: {
+            const newState = { ...state, users: { ...state.users } };
             newState.users = {
                 ...newState.users,
                 [action.user.id]: action.user,
             };
             return newState;
-        case EDIT_USER:
-            newState = { ...state, users: { ...state.users } };
+        }
+        case EDIT_USER: {
+            const newState = { ...state, users: { ...state.users } };
             newState.users = {
                 ...newState.users,
                 [action.user.id]: action.user,
             };
             return newState;
-        case REMOVE_USER:
-            newState = { ...state, users: { ...state.users } };
+        }
+
+        case REMOVE_USER: {
+            const newState = { ...state, users: { ...state.users } };
             delete newState.users[action.user.id];
             return newState;
+        }
+
         default:
             return state;
     }
