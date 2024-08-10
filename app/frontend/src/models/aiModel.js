@@ -5,7 +5,7 @@ const { sendEmailVerification } = require("firebase/auth");
 // Access your API key as an environment variable (see "Set up your API key" above)
 const { API_KEY } = process.env;
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+const genAI = new GoogleGenerativeAI(api);
 
 
 //generate questions from ai based on different topic
@@ -24,7 +24,7 @@ async function generateQuestionsByAI(topic, native_language, level, topic_id) {
     try {
         //common nouns, basic verbs, basic adj, common phrases (basic vocabulary)
         if (picked_topic === "commonnouns") {
-            prompt = role + `there're 3 levels :beginner, intermediate, advanced. Give me 3 unique Basic nouns questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
+            prompt = role + `there're 3 levels :beginner, intermediate, advanced. Give me 3 unique Basic nouns questions to test if ${level} learner understand it , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
 Don't eat the rotten apple. Identify the common noun in this sentence.
 using this` + prompt
         }
@@ -35,7 +35,7 @@ I usually listen _____ music when I'm on the bus to work using this` + prompt
         }
         else if (picked_topic === "basicadjectives") {
             console.log("Basic Adjectives?")
-            prompt = role + `there're 3 levels :beginner, intermediate, advanced. Give me 3 unique Basic Adjectives questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
+            prompt = role + `there're 3 levels :beginner, intermediate, advanced. Give me 3 unique Basic Adjectives questions to test if ${level} learner understand it , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
 Special people won.What is the adjective here ? using this` + prompt
         }
         else if (picked_topic === "commonphrases") {

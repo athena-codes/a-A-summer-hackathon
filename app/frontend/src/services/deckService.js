@@ -88,6 +88,7 @@ const addCardsToDeckInDB = async (deckId, userId, aiGeneratedRequestId) => {
         }
 
         const questionData = aiGeneratedRequestDoc.data().questionData;
+        console.log("questionData: ", questionData)
         const deckLevel = deckDoc.data().level;
         const deckTopicId = deckDoc.data().topic_id;
 
@@ -97,15 +98,20 @@ const addCardsToDeckInDB = async (deckId, userId, aiGeneratedRequestId) => {
             throw new Error('Topic not found');
         }
         const topicName = topicDoc.data().topic_name;
+        console.log("------: ", questionData.topic)
+        console.log("------: ", topicName)
+        console.log("------: ", questionData.level)
+        console.log("------: ", deckLevel)
 
         // Check if the question data matches the deck's topic and level
         if (questionData.topic === topicName && questionData.level === deckLevel) {
+            console.log("所以這裡有落入嗎? aiGeneratedRequestDoc.data(): ", aiGeneratedRequestDoc.data())
             deck.push(aiGeneratedRequestDoc.data());
         }
 
         // Update the deck with the new cards
         await setDoc(deckRef, { ...deckDoc.data(), cards: deck }, { merge: true });
-
+        console.log("這裡是deckservice: ", deck)
         return deck;
     } catch (error) {
         throw new Error('Error adding card to deck: ' + error.message);
