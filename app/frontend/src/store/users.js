@@ -90,43 +90,42 @@ const initialState = {};
 /* ------ REDUCER ------ */
 const usersReducer = (state = initialState, action) => {
     switch (action.type) {
-        case LOAD_USERS: {
-            const newState = { ...state };
-            console.log("REDUCER!", action)
-
-            action.users.forEach((user) => {
-                (newState[user.id] = user)
-            });
-
-            return newState;
-        }
-
-        case ADD_USER: {
-            const newState = { ...state, users: { ...state.users } };
-            newState.users = {
-                ...newState.users,
-                [action.user.id]: action.user,
-            };
-            return newState;
-        }
-        case EDIT_USER: {
-            const newState = { ...state, users: { ...state.users } };
-            newState.users = {
-                ...newState.users,
-                [action.user.id]: action.user,
-            };
-            return newState;
-        }
-
-        case REMOVE_USER: {
-            const newState = { ...state, users: { ...state.users } };
-            delete newState.users[action.user.id];
-            return newState;
-        }
-
-        default:
-            return state;
+      case LOAD_USERS: {
+        const newState = { ...state };
+        console.log("REDUCER!", action);
+  
+        action.users.forEach((user) => {
+          newState[user.id] = user;
+        });
+  
+        return newState;
+      }
+  
+      case ADD_USER: {
+        return {
+          ...state,
+          [action.user.id]: action.user,
+        };
+      }
+  
+      case EDIT_USER: {
+        return {
+          ...state,
+          [action.user.id]: {
+            ...state[action.user.id],
+            ...action.user,
+          },
+        };
+      }
+  
+      case REMOVE_USER: {
+        const { [action.user.id]: _, ...rest } = state;  // Using destructuring to remove the user
+        return rest;
+      }
+  
+      default:
+        return state;
     }
-};
+  };
 
 export default usersReducer;

@@ -7,17 +7,26 @@ import { getSingleUser } from '../store/users';
 function HomePage() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.session.user);
-  const currUser = Object.values(useSelector((state) => state.users))
-  console.log("CURRUSER", currUser);
+  const currUser = useSelector((state) => state.users[user.uid]); // Get the current user's data from Redux
+
+
+  const capitalizeLevel = (str) => {
+    return str?.charAt(0).toUpperCase() + str?.slice(1);
+  }
+
   useEffect(() => {
-    dispatch(getSingleUser(user.uid))
-  }, [dispatch])
+    if (user && user.uid) {
+      dispatch(getSingleUser(user.uid)); // Fetch current user's detailed info
+    }
+  }, [dispatch, user]);
+
+  console.log('this is the user', currUser)
 
   console.log("USER", user);
   const data = [
     {
       left: 'Current English Proficiency Level:',
-      right: `${currUser[0].level}`
+      right: `${capitalizeLevel(currUser?.level)}`
     },
     {
       left: 'Proficiency Level Progress:',
@@ -61,7 +70,7 @@ function HomePage() {
     <Container>
       <Box>
         <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-          <h1>Welcome, {user.email}.</h1>
+          <h1>Welcome, {currUser?.first_name}.</h1>
           <Link href='/concepts'
             // exact={true}activeClassName='active'
             underline="none">
