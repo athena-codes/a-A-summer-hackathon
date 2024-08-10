@@ -108,7 +108,9 @@ const initializeUserProgress = async (uid) => {
                 topics: topics.map(topic => ({
                     id: topic.id,
                     conceptId: topic.concept_id,
-                    status: false
+                    status: false,
+                    //this passes => we change it as user answers decks correctly
+                    passes: 0
                 }))
             }, { merge: true });
         }
@@ -121,14 +123,18 @@ const initializeUserProgress = async (uid) => {
 const getProgressFromDB = async (uid) => {
     console.log('get progress route is hit', uid);
     try {
-        const userDocRef = doc(db, 'progress', uid);
+        const progressDocRef = doc(db, 'progress', uid);
+        const userDocRef = doc(db, 'users', uid);
+
+        const userDoc = await getDoc(userDocRef);
+        console.log('User doc:', userDoc.data());
 
         // Access the 'concepts' subcollection
-        const conceptsCollectionRef = collection(userDocRef, 'concepts');
+        const conceptsCollectionRef = collection(progressDocRef, 'concepts');
         const conceptsSnapshot = await getDocs(conceptsCollectionRef);
         const concepts = conceptsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        return { uid, concepts };
+        return { uid, username: userDoc.data().username, current_level: userDoc.data().current_level, concepts };
     } catch (error) {
         throw new Error('Error fetching progress: ' + error.message);
     }
@@ -136,7 +142,7 @@ const getProgressFromDB = async (uid) => {
 
 // Service to update user progress
 const updateUserProgressFromDB = async (uid) => {
-    //call this service as a check after a concept is passed
+    //call this service as a check after a concept/topic is passed
     try {
         const userProgressRef = doc(db, 'progress', uid);
 
@@ -163,6 +169,7 @@ const updateUserProgressFromDB = async (uid) => {
             }
         }
 
+        //this will check and update user level
         await checkAndUpdateUserLevel(uid);
 
         console.log('User progress updated successfully');
