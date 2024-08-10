@@ -237,7 +237,7 @@ const SignUpForm = ({ locale, setLocale }) => {
                   {
                     <Typography>
                       Advanced: Select this if you are comfortable with complex
-                      sentences and want to master fluency and advanced topics.
+                      sentences and want to master fluency and Advanced topics.
                     </Typography>
                   }
                 </Typography>
@@ -253,8 +253,8 @@ const SignUpForm = ({ locale, setLocale }) => {
             sx={{ borderRadius: 10 }}
             size="small"
           >
-            <MenuItem value="beginner">1: Beginner</MenuItem>
-            <MenuItem value="intermediate">2: Intermediate</MenuItem>
+            <MenuItem value="Beginner">1: Beginner</MenuItem>
+            <MenuItem value="Intermediate">2: Intermediate</MenuItem>
             <MenuItem value="advance">3: Advance</MenuItem>
           </Select>
           <Button

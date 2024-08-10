@@ -43,12 +43,12 @@ export const login = (email, password) => async dispatch => {
   }
 }
 
-export const signUp =(email, password, username, first_name, last_name, locale, level) =>  async dispatch =>{
+export const signUp = (email, password, username, first_name, last_name, locale, level) => async (dispatch) => {
   try {
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         email,
@@ -57,8 +57,8 @@ export const signUp =(email, password, username, first_name, last_name, locale, 
         first_name,
         last_name,
         native_language: locale,
-        level
-      })
+        level,
+      }),
     });
 
     if (!response.ok) {
@@ -68,8 +68,18 @@ export const signUp =(email, password, username, first_name, last_name, locale, 
     }
 
     const data = await response.json();
-    console.log('User signed up successfully:', data);
-    dispatch(setUser(data))
+    console.log('User signed up successfully:', data.loginCredential.user.providerData[0]);
+
+    // Set the user in Redux state
+    dispatch(setUser({
+      uid: data.uid,
+      email: data.loginCredential.user.email,
+      username,
+      first_name,
+      last_name,
+      native_language: locale,
+      level
+    }));
     return data;
   } catch (error) {
     console.error('Error during sign up:', error);
