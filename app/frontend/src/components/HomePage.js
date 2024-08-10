@@ -1,15 +1,23 @@
-import React from 'react'
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Container, Grid, LinearProgress, Link, Typography } from "@mui/material";
+import { getSingleUser } from '../store/users';
 
 
 function HomePage() {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.session.user);
+  const currUser = useSelector((state) => state)
+  console.log("CURRUSER", currUser);
+  useEffect(() => {
+    dispatch(getSingleUser(user.uid))
+  }, [dispatch])
 
+  console.log("USER", user);
   const data = [
     {
       left: 'Current English Proficiency Level:',
-      right: 'Intermediate'
+      right: `${user.level}`
     },
     {
       left: 'Proficiency Level Progress:',

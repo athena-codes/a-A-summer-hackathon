@@ -4,7 +4,7 @@ import { fetchConcepts } from '../store/concepts'
 import { Box, Button, Container, Grid, LinearProgress } from '@mui/material'
 
 
-function ConceptPage () {
+function ConceptPage() {
   const dispatch = useDispatch()
   const {
     items: concepts,
@@ -12,6 +12,8 @@ function ConceptPage () {
     error
   } = useSelector(state => state.concepts)
 
+  console.log("CONCEPTS!", concepts
+  );
   useEffect(() => {
     dispatch(fetchConcepts())
   }, [dispatch])
