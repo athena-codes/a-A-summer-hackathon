@@ -20,7 +20,7 @@ function App({ locale, setLocale }) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    auth.onAuthStateChanged(async user => {
+    const unsubscribe = auth.onAuthStateChanged(async user => {
       if (user) {
         await dispatch(authenticate()) // Make sure this properly sets the user
         setCurrentUser(user)
@@ -29,7 +29,11 @@ function App({ locale, setLocale }) {
       }
       setLoaded(true)
     })
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe()
   }, [dispatch])
+
 
   if (!loaded) {
     return <div>Loading...</div> // or any other loading indicator

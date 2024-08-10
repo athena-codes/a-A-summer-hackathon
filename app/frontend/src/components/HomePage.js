@@ -41,7 +41,7 @@ function HomePage() {
     },
     {
       left: 'Badges:',
-      right: <img src="/assets/badges/beginner-badge.png"
+      right: <img src="/assets/badges/Beginner-badge.png"
         style={{
           width: "25%"
         }}

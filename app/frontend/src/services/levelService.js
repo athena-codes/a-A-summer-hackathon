@@ -56,16 +56,16 @@ const checkAndUpdateUserLevel = async (userId) => {
         }
         // Define criteria for level progression
         const criteria = {
-            beginner: 5, // Number of concepts to pass to move from beginner to intermediate
-            intermediate: 10, // Number of concepts to pass to move from intermediate to advanced
+            Beginner: 5, // Number of concepts to pass to move from Beginner to Intermediate
+            Intermediate: 10, // Number of concepts to pass to move from Intermediate to Advanced
         };
 
-        let newLevel = "beginner";
+        let newLevel = "Beginner";
 
-        if (passedConceptsCount >= criteria.intermediate) {
-            newLevel = "advanced";
-        } else if (passedConceptsCount >= criteria.beginner) {
-            newLevel = "intermediate";
+        if (passedConceptsCount >= criteria.Intermediate) {
+            newLevel = "Advanced";
+        } else if (passedConceptsCount >= criteria.Beginner) {
+            newLevel = "Intermediate";
         }
 
         // Update the user level if it has changed
