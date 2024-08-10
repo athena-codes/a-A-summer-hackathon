@@ -2,6 +2,7 @@ const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('
 const { auth } = require('../firebase/firebaseConfig');
 const { addUserToDB, setUserLevel } = require('../services/userService');
 const { initializeUserProgress } = require('../services/userService');
+const admin = require('../firebase/keyConfig/config')
 
 // Register user
 const registerUser = async (req, res) => {
@@ -47,4 +48,28 @@ const loginUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser };
+// controllers/authController.js
+const authenticateUser = async (req, res, next) => {
+    const authorizationHeader = req.headers.authorization;
+
+    if (!authorizationHeader) {
+        return res.status(401).json({ message: 'No authorization header provided' });
+    }
+
+    const token = authorizationHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        req.currentUser = decodedToken; // Attach the user's info to the request object
+        next(); // Proceed to the next middleware or route handler
+    } catch (error) {
+        return res.status(401).json({ message: 'Unauthorized', error: error.message });
+    }
+};
+
+
+module.exports = { registerUser, loginUser, authenticateUser };
