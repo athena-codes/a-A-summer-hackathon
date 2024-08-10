@@ -19,8 +19,8 @@ const SignUpForm = ({ locale, setLocale }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [first_name, setFirstName] = useState("");
+  const [last_name, setLastName] = useState("");
   const [level, setLevel] = useState("");
   const dispatch = useDispatch();
   const history = useHistory();
@@ -41,14 +41,14 @@ const SignUpForm = ({ locale, setLocale }) => {
     const password = "password";
 
     await dispatch(login(credential, password ));
-    
+
   };
 
   const onSignUp = async (e) => {
     e.preventDefault();
     try {
       await dispatch(
-        signUp(email, password, username, firstName, lastName, locale, level)
+        signUp(email, password, username, first_name, last_name, locale, level)
       );
       console.log("Signed up successfully");
       history.push("/home");

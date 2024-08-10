@@ -1,4 +1,4 @@
-// Import Firebase modules using ES6 import syntax
+
 // import { initializeApp } from 'firebase/app'
 // import { getAuth } from 'firebase/auth'
 // import { getFirestore } from 'firebase/firestore'
