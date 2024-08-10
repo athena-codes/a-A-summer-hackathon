@@ -9,7 +9,6 @@ function HomePage() {
   const user = useSelector((state) => state.session.user);
   const currUser = useSelector((state) => state.users[user.uid]); // Get the current user's data from Redux
 
-
   const capitalizeLevel = (str) => {
     return str?.charAt(0).toUpperCase() + str?.slice(1);
   }
@@ -20,13 +19,6 @@ function HomePage() {
     }
   }, [dispatch, user]);
 
-  console.log('this is the user', currUser)
-
-  console.log("USER", user);
-
-  const upperCase = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
 
   const data = [
     {
