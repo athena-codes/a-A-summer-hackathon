@@ -10,7 +10,7 @@ const getTopics = async (req, res) => {
 };
 
 const addTopic = async (req, res) => {
-    const { topic_name, status, concept_id} = req.body;
+    const { topic_name, status, concept_id } = req.body;
     //we need to check if topic_id and concept_id exist in the database
     try {
         const topic = await addTopicToDB({ topic_name, status, concept_id });

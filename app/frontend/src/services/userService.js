@@ -141,16 +141,24 @@ const getProgressFromDB = async (uid) => {
 };
 
 // Service to update user progress
-const updateUserProgressFromDB = async (uid) => {
+const updateUserProgressFromDB = async (uid, concept_id) => {
     //call this service as a check after a concept/topic is passed
+
     try {
         const userProgressRef = doc(db, 'progress', uid);
 
         const conceptsCollectionRef = collection(userProgressRef, 'concepts');
         const conceptsSnapshot = await getDocs(conceptsCollectionRef);
 
+        //find passed in concept_id in userprogress concepts_id
+        console.log("conceptsSnapshot: ", conceptsSnapshot)
+
         for (const conceptDoc of conceptsSnapshot.docs) {
             const conceptData = conceptDoc.data();
+            console.log("conceptData: ", conceptData)
+
+
+
             const conceptDocRef = doc(conceptsCollectionRef, conceptDoc.id);
 
             // Update concept status if needed

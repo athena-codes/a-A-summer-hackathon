@@ -36,6 +36,7 @@ const AddUserAttemptToDB = async (attemptData, id) => {
 const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
     try {
         const attemptDocRef = doc(db, 'users', userId, 'attempts', attemptId);
+        console.log("do i hit this? ", attemptDocRef)
         const attemptDoc = await getDoc(attemptDocRef);
         const deckDocRef = doc(db, 'decks', deckId);
         const deckDoc = await getDoc(deckDocRef);
@@ -63,7 +64,7 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
         if (checkIfAttempted === true) {
             throw new Error('Question already attempted');
         }
-
+        console.log("answer and correctAnswer: ", answer, correctAnswer)
         if (answer === correctAnswer) {
             // Mark the question as attempted
             deckData.cards[0].questionData.jsonData[questionIndex].isAttempted = true;
@@ -78,6 +79,12 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
 
             return { message: 'Answer is correct!' };
         } else {
+            // Mark the question as attempted
+            deckData.cards[0].questionData.jsonData[questionIndex].isAttempted = true;
+            await updateDoc(deckDocRef, {
+                cards: deckData.cards,  // Update the entire cards array
+            });
+
             return { message: 'Answer is incorrect.', correctAnswer };
         }
     } catch (error) {

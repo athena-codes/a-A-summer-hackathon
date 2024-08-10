@@ -46,17 +46,31 @@ const getUserProgress = async (req, res) => {
     }
 };
 
+// const updateUserProgress = async (req, res) => {
+//     const { id } = req.params;
+//     console.log('update user progress route is hit', id);
+//     try {
+//         await updateUserProgressFromDB(id);
+//         const progress = await getProgressFromDB(id);
+//         res.status(200).json({ message: 'User progress updated successfully', progress });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error updating user progress', error: error.message });
+//     }
+// };
+
+//update topic status of user progress
 const updateUserProgress = async (req, res) => {
-    const { id } = req.params;
-    console.log('update user progress route is hit', id);
+    const { id, concept_id } = req.params;
+    console.log('update user progress route is hit', id, concept_id);
     try {
-        await updateUserProgressFromDB(id);
+        await updateUserProgressFromDB(id, concept_id);
         const progress = await getProgressFromDB(id);
-        res.status(200).json({ message: 'User progress updated successfully', progress});
+        res.status(200).json({ message: 'User progress updated successfully', progress });
     } catch (error) {
         res.status(500).json({ message: 'Error updating user progress', error: error.message });
     }
 };
+
 
 // View user attempts
 const getUserAttempts = async (req, res) => {
@@ -77,13 +91,14 @@ const addUserAttempt = async (req, res) => {
     console.log('id: ', id);
     try {
         const attemptData = { deckId, passes, totalQuestions, createdAt };
-        const newAttemptId = await AddUserAttemptToDB( attemptData, id );
+        const newAttemptId = await AddUserAttemptToDB(attemptData, id);
         res.status(200).json({ message: 'User attempt started', newAttemptId });
     } catch (error) {
         res.status(500).json({ message: 'Error starting user attempt', error: error.message });
     }
 };
 
+//change status of isAttempt
 const updateUserAttempt = async (req, res) => {
     const { userId, attemptId } = req.params;
     const { deckId, id, answer } = req.body;
@@ -95,6 +110,8 @@ const updateUserAttempt = async (req, res) => {
         res.status(500).json({ message: 'Error updating user attempt', error: error.message });
     }
 };
+
+
 
 
 module.exports = { getUsers, getUserProgress, getUserById, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt, updateUserAttempt };
