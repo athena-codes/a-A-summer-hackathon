@@ -1,9 +1,19 @@
-const { getTopicsFromDB, addTopicToDB, updateTopicInDB, removeTopicFromDB } = require('../services/topicService');
+const { getTopicByIdFromDB, getTopicsFromDB, addTopicToDB, updateTopicInDB, removeTopicFromDB } = require('../services/topicService');
 
 const getTopics = async (req, res) => {
     try {
         const topics = await getTopicsFromDB();
         res.status(200).json(topics);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getTopicById = async (req, res) => {
+    const { topicId } = req.params;
+    try {
+        const topic = await getTopicByIdFromDB(topicId);
+        res.status(200).json(topic);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -41,4 +51,4 @@ const removeTopic = async (req, res) => {
     }
 };
 
-module.exports = { getTopics, addTopic, updateTopic, removeTopic };
+module.exports = { getTopics, addTopic, updateTopic, removeTopic, getTopicById };

@@ -1,8 +1,10 @@
 const express = require('express');
-const { getConcepts, addConcept, updateConcept, removeConcept, getTopicsByConcept } = require('../controllers/conceptController');
+const { getConceptById, getConcepts, addConcept, updateConcept, removeConcept, getTopicsByConcept } = require('../controllers/conceptController');
 const router = express.Router();
 
 router.get('/all-concepts', getConcepts);
+
+router.get('/:conceptId', getConceptById);
 
 router.post('/add-concept', addConcept);
 

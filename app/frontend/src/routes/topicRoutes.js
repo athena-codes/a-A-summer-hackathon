@@ -1,8 +1,10 @@
 const express = require('express');
-const { getTopics, addTopic, updateTopic, removeTopic } = require('../controllers/topicController');
+const {getTopicById, getTopics, addTopic, updateTopic, removeTopic } = require('../controllers/topicController');
 const router = express.Router();
 
 router.get('/all-topics', getTopics);
+
+router.get('/:topicId', getTopicById);
 
 router.post('/new', addTopic);
 
