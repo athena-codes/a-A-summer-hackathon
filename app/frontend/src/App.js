@@ -5,7 +5,7 @@ import LoginForm from './components/auth/LoginForm'
 import SignUpForm from './components/auth/SignUpForm'
 import NavBar from './components/NavBar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
-import { authenticate } from './store/session'
+import { authenticate } from './store/actions/sessionAction'
 import { auth } from './firebase/firebaseConfig'
 import HomePage from './components/HomePage'
 import WelcomePage from './components/WelcomePage'
@@ -52,8 +52,11 @@ function App({ locale, setLocale }) {
         <Route path='/sign-up'>
           {currentUser ? <Redirect to='/' /> : <SignUpForm setLocale={setLocale} locale={locale} />}
         </Route>
-        <Route path='/topics'>
+        <Route path='/concepts/:conceptId'>
           {currentUser ? <TopicsPage /> : <WelcomePage setLocale={setLocale} />}
+        </Route>
+        <Route path='/topics/:topicId'>
+          {currentUser ? <MainPage /> : <WelcomePage setLocale={setLocale} />}
         </Route>
         <Route path='/concepts'>
           {currentUser ? <ConceptPage /> : <WelcomePage setLocale={setLocale} />}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { logout } from '../../store/session';
+import { logout } from '../../store/actions/sessionAction';
 import { Button } from "@mui/material";
 
 const LogoutButton = () => {
@@ -13,6 +13,7 @@ const LogoutButton = () => {
     variant="contained"
     color='primary'
     onClick={onLogout}
+    fullWidth
   >
     Logout
   </Button>;

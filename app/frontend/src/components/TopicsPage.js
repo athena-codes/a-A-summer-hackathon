@@ -1,12 +1,27 @@
-import { Box, Button, Container, Grid, LinearProgress } from "@mui/material";
-import React from "react";
+import { Box, Button, Container, Grid, LinearProgress, Link, Typography } from "@mui/material";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from 'react-router-dom';
+import { fetchTopicsbyConcept, fetchOneConcept } from "../store/actions/conceptsActions";
 
 function TopicsPage() {
+    const dispatch = useDispatch();
+    const conceptId = useParams()
+    const concept = useSelector(state => state.concepts.concept)
+    const topics = useSelector(state => state.concepts.topics)
+    console.log(concept)
+
+
+    useEffect(() => {
+        dispatch(fetchOneConcept(conceptId.conceptId))
+        dispatch(fetchTopicsbyConcept(conceptId.conceptId))
+    }, [dispatch, conceptId])
+
     return (
         <Container>
             <Box>
                 <Box display="flex" flexDirection="column" alignItems="center">
-                    <h1>Select a Basic Vocabulary Topic</h1>
+                    <h1>Select a {concept?.concept_name} Topic</h1>
                     <p>
                         Select any topic to begin. In order to pass a topic, you must score at least 80% three times.
                     </p>
@@ -22,89 +37,28 @@ function TopicsPage() {
                 </Box>
             </Box>
 
-            <Grid container spacing={10} justifyContent="center" py={5}>
-                <Grid item>
-                    <Button>
-                        <Box display="flex" flexDirection="column">
-                            <p>Common Nouns</p>
-                            <p>explanation</p>
-                            <LinearProgress
-                                variant="determinate"
-                                value={50}
-                                sx={{ height: 15 }}
-                            />
-                        </Box>
-                    </Button>
+            {topics.length > 0 ? (
+                <Grid container spacing={10} justifyContent='center' py={5}>
+                    {topics.map(topic => (
+                        <Grid item key={topic.id}>
+                            <Button>
+                                <Link href={`/topics/${topic.id}`}>
+                                    <Box display='flex' flexDirection='column'>
+                                        <p>{topic.topic_name}</p> <p>EXPLANATION</p>{' '}
+                                        <LinearProgress
+                                            variant='determinate'
+                                            value={50}
+                                            sx={{ height: 15 }}
+                                        />
+                                    </Box>
+                                </Link>
+                            </Button>
+                        </Grid>
+                    ))}
                 </Grid>
-
-                <Grid item>
-                    <Button>
-                        <Box display="flex" flexDirection="column">
-                            <p>Pronouns</p>
-                            <p>explanation</p>
-                            <LinearProgress
-                                variant="determinate"
-                                value={50}
-                                sx={{ height: 15 }}
-                            />
-                        </Box>
-                    </Button>
-                </Grid>
-                <Grid item>
-                    <Button>
-                        <Box display="flex" flexDirection="column">
-                            <p>Basic Verbs</p>
-                            <p>explanation</p>
-                            <LinearProgress
-                                variant="determinate"
-                                value={50}
-                                sx={{ height: 15 }}
-                            />
-                        </Box>
-                    </Button>
-                </Grid>
-            </Grid>
-            <Grid container spacing={10} justifyContent="center" py={5}>
-                <Grid item>
-                    <Button>
-                        <Box display="flex" flexDirection="column">
-                            <p>Adjectives</p>
-                            <p>explanation</p>
-                            <LinearProgress
-                                variant="determinate"
-                                value={50}
-                                sx={{ height: 15 }}
-                            />
-                        </Box>
-                    </Button>
-                </Grid>
-                <Grid item>
-                    <Button>
-                        <Box display="flex" flexDirection="column">
-                            <p>Numbers</p>
-                            <p>explanation</p>
-                            <LinearProgress
-                                variant="determinate"
-                                value={50}
-                                sx={{ height: 15 }}
-                            />
-                        </Box>
-                    </Button>
-                </Grid>
-                <Grid item>
-                    <Button>
-                        <Box display="flex" flexDirection="column">
-                            <p>Days and Months</p>
-                            <p>explanation</p>
-                            <LinearProgress
-                                variant="determinate"
-                                value={50}
-                                sx={{ height: 15 }}
-                            />
-                        </Box>
-                    </Button>
-                </Grid>
-            </Grid>
+            ) : (
+                <Typography textAlign="center" paddingTop="40px">No topics found.</Typography>
+            )}
         </Container>
     );
 }

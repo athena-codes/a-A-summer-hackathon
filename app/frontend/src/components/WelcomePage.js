@@ -1,7 +1,8 @@
-import { Link, Container, Box, Typography } from "@mui/material";
+import { Link, Container, Box, Typography, Button } from "@mui/material";
 import React from "react";
 import LanguageSelector from "./LanguageSelector";
 import InfiniteScroll from "./InfiniteLogIn";
+import { NavLink } from "react-router-dom";
 
 function WelcomePage({ setLocale }) {
   return (
@@ -12,10 +13,10 @@ function WelcomePage({ setLocale }) {
       </Container>
         <Container>
           <Typography align="center" mt="50px" variant="h5">Already a User?</Typography>
-          <Link href="/login" underline="none">
+          <Box component={NavLink} to='/login'>
             <InfiniteScroll />
             {/* {" Log in"} */}
-          </Link>
+          </Box>
         </Container>
     </Box>
   );

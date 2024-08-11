@@ -9,8 +9,27 @@ import {
 } from "@mui/material";
 import React from "react";
 import DeckSample from "./Decks/DeckSample";
+import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+// import { addCardQuestions } from '../controllers/aiController'
+
 
 function MainPage() {
+
+  const dispatch = useDispatch();
+  const topicId = useParams();
+
+  const handleGenerateQuestions = async (e) => {
+    e.preventDefault();
+
+
+    // await dispatch(addCardQuestions(
+    //   {
+
+    //   }
+    // ));
+  };
+
   return (
     <Container
       sx={{

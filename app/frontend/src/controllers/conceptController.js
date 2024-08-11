@@ -22,7 +22,7 @@ const getTopicsByConcept = async (req, res) => {
     const { conceptId } = req.params;
     try {
         const topics = await getTopicsByConceptId(conceptId);
-        res.status(200).json({topics});
+        res.status(200).json({ topics });
     } catch (error) {
         res.status(500).json({ message: `Error fetching topics: ${error.message}` });
     }
