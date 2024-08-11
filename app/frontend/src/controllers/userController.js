@@ -58,12 +58,17 @@ const getUserProgress = async (req, res) => {
 //     }
 // };
 
-//update topic status of user progress
+
+//update topic status of user progress when the the user passes 3 times of deck in a row
 const updateUserProgress = async (req, res) => {
-    const { id, concept_id } = req.params;
-    console.log('update user progress route is hit', id, concept_id);
+    // const { id, concept_id, topic_id } = req.params;
+    const { id } = req.params;
+    const { topic_id } = req.body;
+
+
+    console.log('update user progress route is hit', id, topic_id);
     try {
-        await updateUserProgressFromDB(id, concept_id);
+        await updateUserProgressFromDB(id, topic_id);
         const progress = await getProgressFromDB(id);
         res.status(200).json({ message: 'User progress updated successfully', progress });
     } catch (error) {

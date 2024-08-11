@@ -141,8 +141,7 @@ const getProgressFromDB = async (uid) => {
 };
 
 // Service to update user progress
-const updateUserProgressFromDB = async (uid, concept_id) => {
-    //call this service as a check after a concept/topic is passed
+const updateUserProgressFromDB = async (uid, topic_id) => {
 
     try {
         const userProgressRef = doc(db, 'progress', uid);
@@ -150,35 +149,34 @@ const updateUserProgressFromDB = async (uid, concept_id) => {
         const conceptsCollectionRef = collection(userProgressRef, 'concepts');
         const conceptsSnapshot = await getDocs(conceptsCollectionRef);
 
-        //find passed in concept_id in userprogress concepts_id
-        console.log("conceptsSnapshot: ", conceptsSnapshot)
-
+        //get the conceptsnashot inside of userProgress, so that we can access the topic data inside of concept
+        //iterate through each concept to find topic_id matched passed in topic_id (user currently play on )
         for (const conceptDoc of conceptsSnapshot.docs) {
             const conceptData = conceptDoc.data();
-            console.log("conceptData: ", conceptData)
+            const all_topics = conceptData.topics;
+
+            for (let i = 0; i < all_topics.length; i++) {
+                const topic = all_topics[i];
+
+                if (topic.id === topic_id && topic.passes >= 3) {
+                    console.log("User has tried this topic 3 times");
+
+                    // Update the topic status
+                    topic.status = true;
+
+                    // Update the topics array in Firestore
+                    const updatedTopics = [...all_topics];
+                    updatedTopics[i] = topic;
 
 
+                    // Update the concept document in Firestore with the modified topics array
+                    await updateDoc(conceptDoc.ref, { topics: updatedTopics });
 
-            const conceptDocRef = doc(conceptsCollectionRef, conceptDoc.id);
-
-            // Update concept status if needed
-            await updateDoc(conceptDocRef, { status: conceptData.status });
-
-            // Access and update topics
-            const topicsCollectionRef = collection(conceptDocRef, 'topics');
-            const topicsSnapshot = await getDocs(topicsCollectionRef);
-
-            for (const topicDoc of topicsSnapshot.docs) {
-                const topicData = topicDoc.data();
-                const topicDocRef = doc(topicsCollectionRef, topicDoc.id);
-
-                // Update topic status if needed
-                await updateDoc(topicDocRef, { status: topicData.status });
+                    console.log("Topic status updated successfully in Firestore");
+                }
             }
-        }
 
-        //this will check and update user level
-        await checkAndUpdateUserLevel(uid);
+        }
 
         console.log('User progress updated successfully');
     } catch (error) {
