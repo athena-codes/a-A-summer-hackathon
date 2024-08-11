@@ -1,5 +1,5 @@
 const { getUserByIdFromDB, getUsersFromDB, getProgressFromDB, updateUserInDB, addUserToDB, updateUserProgressFromDB } = require('../services/userService');
-const {getUserAttemptByIDFromDB, AddUserAttemptToDB, updateUserAttemptInDB, getUserAttemptsFromDB, checkAnswerInDB, checkAttemptInDB } = require('../services/attemptService');
+const { AddUserAttemptToDB, updateUserAttemptInDB, getUserAttemptsFromDB, checkAnswerInDB } = require('../services/attemptService');
 
 const getUsers = async (req, res) => {
     console.log('get users route is hit');
@@ -46,17 +46,36 @@ const getUserProgress = async (req, res) => {
     }
 };
 
+// const updateUserProgress = async (req, res) => {
+//     const { id } = req.params;
+//     console.log('update user progress route is hit', id);
+//     try {
+//         await updateUserProgressFromDB(id);
+//         const progress = await getProgressFromDB(id);
+//         res.status(200).json({ message: 'User progress updated successfully', progress });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error updating user progress', error: error.message });
+//     }
+// };
+
+
+//update topic status of user progress when the the user passes 3 times of deck in a row
 const updateUserProgress = async (req, res) => {
+    // const { id, concept_id, topic_id } = req.params;
     const { id } = req.params;
-    console.log('update user progress route is hit', id);
+    const { topic_id } = req.body;
+
+
+    console.log('update user progress route is hit', id, topic_id);
     try {
-        await updateUserProgressFromDB(id);
+        await updateUserProgressFromDB(id, topic_id);
         const progress = await getProgressFromDB(id);
-        res.status(200).json({ message: 'User progress updated successfully', progress});
+        res.status(200).json({ message: 'User progress updated successfully', progress });
     } catch (error) {
         res.status(500).json({ message: 'Error updating user progress', error: error.message });
     }
 };
+
 
 // View user attempts
 const getUserAttempts = async (req, res) => {
@@ -70,29 +89,6 @@ const getUserAttempts = async (req, res) => {
     }
 };
 
-//view user attempt by id
-const getUserAttemptById = async (req, res) => {
-    const { userId, attemptId } = req.params;
-    console.log('userId: ', userId, 'attemptId: ', attemptId);
-    try {
-        const attempt = await getUserAttemptByIDFromDB(userId, attemptId);
-        res.status(200).json({ userId, attempt});
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching user attempt', error: error.message });
-    }
-}
-const checkUserAttempt = async (req, res) => {
-    //use this route to check if user attempt's score is 80% or greater than total questions
-    const { userId, attemptId } = req.params;
-    console.log('userId: ', userId, 'attemptId: ', attemptId);
-    try {
-        const checkAttempt = await checkAttemptInDB(userId, attemptId);
-        res.status(200).json({ message: 'User attempt checked', checkAttempt });
-    } catch (error) {
-        res.status(500).json({ message: 'Error checking user attempt', error: error.message });
-    }
-}
-
 // Start new user attempt
 const addUserAttempt = async (req, res) => {
     const { id } = req.params;
@@ -100,13 +96,14 @@ const addUserAttempt = async (req, res) => {
     console.log('id: ', id);
     try {
         const attemptData = { deckId, passes, totalQuestions, createdAt };
-        const newAttemptId = await AddUserAttemptToDB( attemptData, id );
+        const newAttemptId = await AddUserAttemptToDB(attemptData, id);
         res.status(200).json({ message: 'User attempt started', newAttemptId });
     } catch (error) {
         res.status(500).json({ message: 'Error starting user attempt', error: error.message });
     }
 };
 
+//change status of isAttempt
 const updateUserAttempt = async (req, res) => {
     const { userId, attemptId } = req.params;
     const { deckId, id, answer } = req.body;
@@ -120,4 +117,6 @@ const updateUserAttempt = async (req, res) => {
 };
 
 
-module.exports = { getUserAttemptById, checkUserAttempt, getUsers, getUserProgress, getUserById, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt, updateUserAttempt };
+
+
+module.exports = { getUsers, getUserProgress, getUserById, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt, updateUserAttempt };
