@@ -1,14 +1,14 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const userRoutes = require('./frontend/src/routes/userRoutes');
-const authRoutes = require('./frontend/src/routes/authRoutes');
-const conceptRoutes = require('./frontend/src/routes/conceptRoutes');
-const topicRoutes = require('./frontend/src/routes/topicRoutes');
-const levelRoutes = require('./frontend/src/routes/levelRoutes');
-const aiRoutes = require('./frontend/src/routes/aiRoutes');
+const userRoutes = require('./src/routes/userRoutes');
+const authRoutes = require('./src/routes/authRoutes');
+const conceptRoutes = require('./src/routes/conceptRoutes');
+const topicRoutes = require('./src/routes/topicRoutes');
+const levelRoutes = require('./src/routes/levelRoutes');
+const aiRoutes = require('./src/routes/aiRoutes');
 
-const deckRoutes = require('./frontend/src/routes/deckRoutes');
+const deckRoutes = require('./src/routes/deckRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
