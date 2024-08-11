@@ -145,7 +145,6 @@ const updateUserProgressFromDB = async (uid, topic_id) => {
 
     try {
         const userProgressRef = doc(db, 'progress', uid);
-
         const conceptsCollectionRef = collection(userProgressRef, 'concepts');
         const conceptsSnapshot = await getDocs(conceptsCollectionRef);
 
@@ -183,6 +182,7 @@ const updateUserProgressFromDB = async (uid, topic_id) => {
         console.error('Error updating user progress:', error);
     }
 };
+
 
 module.exports = {
     addUserToDB,
