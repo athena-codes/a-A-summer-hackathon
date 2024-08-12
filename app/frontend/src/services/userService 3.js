@@ -1,6 +1,6 @@
 const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, setDoc } = require('firebase/firestore');
-const { checkAndUpdateUserLevel } = require('./levelService');
+// const { checkAndUpdateUserLevel } = require('./levelService');
 const { getConceptsByLevel, getTopicsByConceptId } = require('./conceptService');
 
 // Service to add a user
@@ -99,6 +99,14 @@ const initializeUserProgress = async (uid, level = null) => {
         console.log('User info:', userInfo);
         const currentLevel = level || userInfo.current_level;
         // Use getConceptsByLevel to get the concepts for the current level
+
+        // Fetch existing concepts progress
+        const existingConceptsSnapshot = await getDocs(conceptsCollectionRef);
+        const existingConcepts = existingConceptsSnapshot.docs.reduce((acc, doc) => {
+            acc[doc.id] = doc.data();
+            return acc;
+        }, {});
+
         let concepts = []
         if (currentLevel === 'Advanced') {
             const [AdvancedConcepts, IntermediateConcepts, BeginnerConcepts] = await Promise.all([
@@ -123,16 +131,25 @@ const initializeUserProgress = async (uid, level = null) => {
             const topics = await getTopicsByConceptId(concept.id);
             const conceptDocRef = doc(conceptsCollectionRef, concept.id);
 
+            const existingConcept = existingConcepts[concept.id];
+
+            const updatedTopics = topics.map(topic => {
+                const existingTopic = existingConcept?.topics.find(t => t.id === topic.id);
+
+                return existingTopic
+                    ? existingTopic // Preserve existing topic progress
+                    : {
+                        id: topic.id,
+                        conceptId: topic.concept_id,
+                        status: false,
+                        passes: 0
+                    };
+            });
+
             await setDoc(conceptDocRef, {
-                status: false,
+                status: existingConcept ? existingConcept.status : false,
                 level: concept.level,
-                topics: topics.map(topic => ({
-                    id: topic.id,
-                    conceptId: topic.concept_id,
-                    status: false,
-                    //this passes => we change it as user answers decks correctly
-                    passes: 0
-                }))
+                topics: updatedTopics
             }, { merge: true });
         }
     } catch (error) {
