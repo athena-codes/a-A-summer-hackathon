@@ -26,21 +26,39 @@ const getTopicByIdFromDB = async (topicId) => {
 }
 
 //service to check topic progression
-const checkTopicProgression = async (topicId, passes) => {
-    //use this service to check curr_passes and update status
-    //calling this means
-    try {
-        const topicRef = doc(db, 'topics', topicId);
-        await updateDoc(topicRef, { passes });
-        const topic = await getDoc(topicRef);
-        console.log('passes: ', topic.data().passes)
-        const curr_passes = topic.data().passes
-        if (curr_passes === 3) {
-            await updateDoc(topicRef, { status: true });
-        }
+const checkTopicProgression = async (userId, topicId, isPassing) => {
+    // topicId from deck
+    // passes from attempt
 
+    console.log('topicId: ', topicId, 'isPassing: ', isPassing, 'userId: ', userId)
+
+    try {
+        const userProgressRef = doc(db, 'progress', userId);
+        const conceptsCollectionRef = collection(userProgressRef, 'concepts');
+        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
+
+        for (const conceptDoc of conceptsSnapshot.docs) {
+            const conceptData = conceptDoc.data();
+            //console.log('conceptData: ', conceptData);
+
+            // Create a new array with updated topics
+            const updatedTopics = conceptData.topics.map(topic => {
+                if (topic.id === topicId) {
+                    const passes = isPassing ? topic.passes + 1 : 0;
+                    return {
+                        ...topic, // Keep all other properties of the topic unchanged
+                        passes: passes, // Update the passes value
+                        status: passes >= 3 // Update the status if passes is 3 or more
+                    };
+                }
+                return topic; // Return the topic unchanged if the id does not match
+            });
+            console.log('updatedTopics: ', updatedTopics);
+            // Update the document with the modified topics array
+            await updateDoc(conceptDoc.ref, { topics: updatedTopics });
+        }
     } catch (error) {
-        throw new Error('Error updating topic: ' + error.message);
+        throw new Error('Error checking topic progression: ' + error.message);
     }
 }
 

@@ -1,6 +1,6 @@
 const { db } = require('../firebase/firebaseConfig');
 const { collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where, setDoc } = require('firebase/firestore');
-const { checkAndUpdateUserLevel } = require('./levelService');
+// const { checkAndUpdateUserLevel } = require('./levelService');
 const { getConceptsByLevel, getTopicsByConceptId } = require('./conceptService');
 
 // Service to add a user
@@ -61,7 +61,28 @@ const getUserByIdFromDB = async (id) => {
     }
 };
 
-const initializeUserProgress = async (uid) => {
+// Service to get user progress
+const getProgressFromDB = async (uid) => {
+    console.log('get progress route is hit', uid);
+    try {
+        const progressDocRef = doc(db, 'progress', uid);
+        const userDocRef = doc(db, 'users', uid);
+
+        const userDoc = await getDoc(userDocRef);
+        console.log('User doc:', userDoc.data());
+
+        // Access the 'concepts' subcollection
+        const conceptsCollectionRef = collection(progressDocRef, 'concepts');
+        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
+        const concepts = conceptsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        return { uid, username: userDoc.data().username, current_level: userDoc.data().current_level, concepts };
+    } catch (error) {
+        throw new Error('Error fetching progress: ' + error.message);
+    }
+};
+
+const initializeUserProgress = async (uid, level = null) => {
     console.log('initialize user progress route is hit', uid);
     try {
         const userDocRef = doc(db, 'progress', uid);
@@ -76,8 +97,16 @@ const initializeUserProgress = async (uid) => {
 
         const userInfo = userInfoSnap.data();
         console.log('User info:', userInfo);
-        const currentLevel = userInfo.current_level;
+        const currentLevel = level || userInfo.current_level;
         // Use getConceptsByLevel to get the concepts for the current level
+
+        // Fetch existing concepts progress
+        const existingConceptsSnapshot = await getDocs(conceptsCollectionRef);
+        const existingConcepts = existingConceptsSnapshot.docs.reduce((acc, doc) => {
+            acc[doc.id] = doc.data();
+            return acc;
+        }, {});
+
         let concepts = []
         if (currentLevel === 'Advanced') {
             const [AdvancedConcepts, IntermediateConcepts, BeginnerConcepts] = await Promise.all([
@@ -102,16 +131,25 @@ const initializeUserProgress = async (uid) => {
             const topics = await getTopicsByConceptId(concept.id);
             const conceptDocRef = doc(conceptsCollectionRef, concept.id);
 
+            const existingConcept = existingConcepts[concept.id];
+
+            const updatedTopics = topics.map(topic => {
+                const existingTopic = existingConcept?.topics.find(t => t.id === topic.id);
+
+                return existingTopic
+                    ? existingTopic // Preserve existing topic progress
+                    : {
+                        id: topic.id,
+                        conceptId: topic.concept_id,
+                        status: false,
+                        passes: 0
+                    };
+            });
+
             await setDoc(conceptDocRef, {
-                status: false,
+                status: existingConcept ? existingConcept.status : false,
                 level: concept.level,
-                topics: topics.map(topic => ({
-                    id: topic.id,
-                    conceptId: topic.concept_id,
-                    status: false,
-                    //this passes => we change it as user answers decks correctly
-                    passes: 0
-                }))
+                topics: updatedTopics
             }, { merge: true });
         }
     } catch (error) {
@@ -119,62 +157,70 @@ const initializeUserProgress = async (uid) => {
     }
 }
 
-// Service to get user progress
-const getProgressFromDB = async (uid) => {
-    console.log('get progress route is hit', uid);
-    try {
-        const progressDocRef = doc(db, 'progress', uid);
-        const userDocRef = doc(db, 'users', uid);
-
-        const userDoc = await getDoc(userDocRef);
-        console.log('User doc:', userDoc.data());
-
-        // Access the 'concepts' subcollection
-        const conceptsCollectionRef = collection(progressDocRef, 'concepts');
-        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
-        const concepts = conceptsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        return { uid, username: userDoc.data().username, current_level: userDoc.data().current_level, concepts };
-    } catch (error) {
-        throw new Error('Error fetching progress: ' + error.message);
-    }
-};
 
 // Service to update user progress
 const updateUserProgressFromDB = async (uid, topic_id) => {
-
     try {
         const userProgressRef = doc(db, 'progress', uid);
+        const userDocRef = doc(db, 'users', uid);
+        const userDoc = await getDoc(userDocRef);
         const conceptsCollectionRef = collection(userProgressRef, 'concepts');
         const conceptsSnapshot = await getDocs(conceptsCollectionRef);
 
-        //get the conceptsnashot inside of userProgress, so that we can access the topic data inside of concept
-        //iterate through each concept to find topic_id matched passed in topic_id (user currently play on )
+        let allConceptsPassed = true; // To track if all concepts are passed
+
+        // Iterate through each concept to find the matching topic_id
         for (const conceptDoc of conceptsSnapshot.docs) {
             const conceptData = conceptDoc.data();
-            const all_topics = conceptData.topics;
+            let topicsUpdated = false; // To track if topics were updated
 
-            for (let i = 0; i < all_topics.length; i++) {
-                const topic = all_topics[i];
-
+            const updatedTopics = conceptData.topics.map(topic => {
                 if (topic.id === topic_id && topic.passes >= 3) {
                     console.log("User has tried this topic 3 times");
 
                     // Update the topic status
                     topic.status = true;
-
-                    // Update the topics array in Firestore
-                    const updatedTopics = [...all_topics];
-                    updatedTopics[i] = topic;
-
-
-                    // Update the concept document in Firestore with the modified topics array
-                    await updateDoc(conceptDoc.ref, { topics: updatedTopics });
-
-                    console.log("Topic status updated successfully in Firestore");
+                    topicsUpdated = true;
                 }
+                return topic;
+            });
+
+            // Update the concept in Firestore if topics were updated
+            if (topicsUpdated) {
+                await updateDoc(conceptDoc.ref, { topics: updatedTopics });
+                console.log("Topic status updated successfully in Firestore");
             }
 
+            // Check if all topics in this concept are passed
+            const conceptPassed = updatedTopics.every(topic => topic.status);
+            if (conceptPassed && conceptData.status !== true) {
+                await updateDoc(conceptDoc.ref, { status: true });
+                console.log("Concept status updated successfully in Firestore");
+            }
+
+            // Track if all concepts are passed
+            allConceptsPassed = allConceptsPassed && conceptPassed;
+            console.log("Concept passed:", conceptPassed, allConceptsPassed);
+        }
+
+        // If all concepts are passed, consider leveling up the user
+        current_level = userDoc.data().current_level
+        if (allConceptsPassed) {
+            console.log("All concepts are passed, leveling up the user");
+            console.log("Old level:", current_level);
+            // Level up logic
+            const levels = ["Beginner", "Intermediate", "Advanced"];
+            const new_level = levels[Math.min(levels.indexOf(current_level) + 1, levels.length - 1)];
+
+            if (new_level !== current_level) {
+                console.log("New level:", new_level);
+
+                // Update user's level
+                await updateDoc(userDocRef, { current_level: new_level });
+
+                // Re-initialize user progress with new concepts
+                await initializeUserProgress(uid, new_level);
+            }
         }
 
         console.log('User progress updated successfully');
@@ -182,6 +228,7 @@ const updateUserProgressFromDB = async (uid, topic_id) => {
         console.error('Error updating user progress:', error);
     }
 };
+
 
 
 module.exports = {

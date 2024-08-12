@@ -104,7 +104,7 @@ const addCardsToDeckInDB = async (deckId, userId, aiGeneratedRequestId) => {
         console.log("------: ", deckLevel)
 
         // Check if the question data matches the deck's topic and level
-        if (questionData.topic === topicName && questionData.level === deckLevel) {
+        if (questionData.topic === topicName) {
             console.log("所以這裡有落入嗎? aiGeneratedRequestDoc.data(): ", aiGeneratedRequestDoc.data())
             deck.push(aiGeneratedRequestDoc.data());
         }
@@ -170,6 +170,7 @@ const removeDeckFromDB = async () => {
 
 //service to archive a deck
 const archiveDeckInDB = async (deckId, uid) => {
+    console.log('archiveDeckInDB: ', deckId, uid)
     try {
         // Get the deck data
         const deckRef = doc(db, 'decks', deckId);
@@ -207,7 +208,7 @@ const archiveDeckInDB = async (deckId, uid) => {
         await updateDoc(deckRef, { archived: true });
 
         // Add the deck to the user's subcollection
-        const userDecksCollectionRef = collection(doc(db, 'users', uid), 'decks');
+        const userDecksCollectionRef = collection(doc(db, 'users', uid), 'archived_decks');
         await setDoc(doc(userDecksCollectionRef, deckId), deckData);
 
         return { success: true, message: 'Deck archived' };

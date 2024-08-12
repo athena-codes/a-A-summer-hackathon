@@ -26,47 +26,9 @@ const getUserLevelFromDB = async (uid) => {
     }
 }
 
-const checkAndUpdateUserLevel = async (userId) => {
+const checkAndUpdateUserLevel = async (userId, newLevel) => {
     try {
         const userDocRef = doc(db, 'progress', userId);
-
-        // Query to get all concepts and their topic completion status
-        const conceptsCollectionRef = collection(userDocRef, 'concepts');
-        const topicsCollectionRef = collection(userDocRef, 'topics');
-
-        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
-        let passedConceptsCount = 0;
-
-        for (const conceptDoc of conceptsSnapshot.docs) {
-            const conceptId = conceptDoc.id;
-            const topicsQuery = query(topicsCollectionRef, where("conceptId", "==", conceptId));
-            const topicsSnapshot = await getDocs(topicsQuery);
-
-            const totalTopics = topicsSnapshot.size;
-            const passedTopics = topicsSnapshot.docs.filter(doc => doc.data().status === true).length;
-
-            // Check if 80% of the topics are passed
-            if (passedTopics / totalTopics >= 0.8) {
-                // Mark the concept as passed if not already passed
-                if (!conceptDoc.data().status) {
-                    await updateDoc(conceptDoc.ref, { status: true });
-                }
-                passedConceptsCount++;
-            }
-        }
-        // Define criteria for level progression
-        const criteria = {
-            Beginner: 5, // Number of concepts to pass to move from Beginner to Intermediate
-            Intermediate: 10, // Number of concepts to pass to move from Intermediate to Advanced
-        };
-
-        let newLevel = "Beginner";
-
-        if (passedConceptsCount >= criteria.Intermediate) {
-            newLevel = "Advanced";
-        } else if (passedConceptsCount >= criteria.Beginner) {
-            newLevel = "Intermediate";
-        }
 
         // Update the user level if it has changed
         const userLevelDocRef = doc(db, 'users', userId);
