@@ -9,6 +9,10 @@ change directory to app/backend
 change directory to app/backend
 1. npm install
 
+## Ensure Environment set up
+Using Node V18.20.4
+npm V10.7.0
+
 ## Start
 change directory to app/backend
 1. node server
