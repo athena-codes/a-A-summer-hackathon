@@ -24,7 +24,7 @@ const getAllQuestionsbyAI = async (req, res) => {
 // get question from AI and store in db
 const addCardQuestions = async (req, res) => {
     console.log("am i hitting get ai questions route: ", req.body)
-    const { topic_id, user_native_language, user_level, userId } = req.body
+    const { topic_id, user_native_language, userId } = req.body
 
 
     //check if topic belongs to an existing concept
@@ -40,13 +40,26 @@ const addCardQuestions = async (req, res) => {
     const topic_name = topicData.topic_name
     console.log("topicData: ", topicData);
 
+
+    //get concept level
+    const conceptRef = doc(db, 'concepts', topicData.concept_id);
+    const conceptDoc = await getDoc(conceptRef);
+    const conceptData = conceptDoc.data();
+    console.log("conceptData: ", conceptData);
+
+
+    let concept_level = conceptData.level
+    let concept_name = conceptData.concept_name
+
+
+
     if (!topicData.concept_id) {
         throw new Error("Invalid topic due to concept_id is empty!!")
     }
 
     try {
 
-        let questionData = await generateQuestionsByAI(topic_name, user_native_language, user_level, topic_id);
+        let questionData = await generateQuestionsByAI(concept_name, topic_name, user_native_language, concept_level, topic_id);
         console.log("questionData: ", questionData)
 
         if (questionData) {
