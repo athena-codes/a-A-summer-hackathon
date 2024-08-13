@@ -16,9 +16,10 @@ function TopicsPage() {
   const dispatch = useDispatch();
   const { conceptId } = useParams();
   const concept = useSelector((state) => state.concepts.concepts[conceptId]);
-  const topics = useSelector(
-    (state) => state.concepts.topics[conceptId]?.topics || []
-  ); // Safely accessing topics array
+const topics = useSelector(
+  state => state.concepts.topics[conceptId]?.topics || []
+)
+
 
   useEffect(() => {
     dispatch(fetchOneConcept(conceptId));

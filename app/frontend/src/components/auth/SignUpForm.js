@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { FormattedMessage } from "react-intl";
-import { useHistory } from "react-router-dom";
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { FormattedMessage } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import {
   Box,
   Button,
@@ -12,8 +12,8 @@ import {
   Tooltip,
   Typography
 } from '@mui/material'
-import { signUp } from "../../store/session";
-import { login } from "../../store/session";
+import { signUp } from '../../store/session'
+import { login } from '../../store/session'
 import InfoIcon from '@mui/icons-material/Info'
 
 const SignUpForm = ({ locale, setLocale }) => {
@@ -33,8 +33,7 @@ const SignUpForm = ({ locale, setLocale }) => {
   }
 
   const handleLevelChange = event => {
-    const value = event.target.value
-    setLevel(value)
+    setLevel(event.target.value)
   }
 
   const handleDemoClick = async e => {
@@ -114,13 +113,12 @@ const SignUpForm = ({ locale, setLocale }) => {
           mb='10px'
         >
           <Typography
-            variant="h1"
+            variant='h1'
             m={2}
             sx={{
-              // color: "primary.main",
-              fontSize: "2rem",
-              textAlign: "center",
-              fontWeight: "bold",
+              fontSize: '2rem',
+              textAlign: 'center',
+              fontWeight: 'bold'
             }}
           >
             Create your Account
@@ -140,7 +138,7 @@ const SignUpForm = ({ locale, setLocale }) => {
             <TextField
               id={`outlined-${field}-input`}
               type={
-                field.includes('password')
+                field === 'password' || field === 'confirmPassword'
                   ? 'password'
                   : field === 'email'
                   ? 'email'
@@ -155,6 +153,7 @@ const SignUpForm = ({ locale, setLocale }) => {
               error={!!errors[field]}
               helperText={errors[field]}
               InputProps={{ sx: { borderRadius: 100 } }}
+              required
             />
           </Box>
         ))}
@@ -186,24 +185,23 @@ const SignUpForm = ({ locale, setLocale }) => {
             sx={{ borderRadius: 10 }}
             size='small'
           >
-            <MenuItem value="Beginner">1: Beginner</MenuItem>
-            <MenuItem value="Intermediate">2: Intermediate</MenuItem>
-            <MenuItem value="Advanced">3: Advanced</MenuItem>
+            <MenuItem value='Beginner'>1: Beginner</MenuItem>
+            <MenuItem value='Intermediate'>2: Intermediate</MenuItem>
+            <MenuItem value='Advanced'>3: Advanced</MenuItem>
           </Select>
         </Box>
 
-<Box>
         <Button
           variant='contained'
           type='submit'
           color='primary'
           sx={{
             borderRadius: 100,
-            mt: 1,
-          }}>
-            Demo
-          </Button>
-        </Box>
+            mt: 1
+          }}
+        >
+          Sign Up
+        </Button>
       </Container>
     </form>
   )
