@@ -273,6 +273,54 @@ const getUserArchivedDecksFromDB = async (uid) => {
     }
 }
 
+//check if deck is in progress
+const checkDeckIsInProgressFromDB = async (deckId) => {
+    try {
+        // Get the deck document reference
+        const deckRef = doc(db, 'decks', deckId);
+        const deckDoc = await getDoc(deckRef);
+
+        if (!deckDoc.exists()) {
+            throw new Error('Deck not found');
+        }
+
+        const deckData = deckDoc.data();
+
+        // Check if the deck is archived
+        if (deckData.archived) {
+            throw new Error('Deck is archived');
+        }
+
+        // Check if the deck has any cards
+        const cards = deckData.cards;
+        if (cards.length === 0) {
+            throw new Error('Deck has no cards');
+        }
+
+        // Check if any card in the deck has been attempted
+        let isDeckInProgress = false;
+        for (const card of cards) {
+            const cardQuestions = card.questionData.jsonData;
+            for (const question of cardQuestions) {
+                if (question.isAttempted) {
+                    isDeckInProgress = true;
+                    break;
+                }
+            }
+            if (isDeckInProgress) break;
+        }
+
+        // Determine the deck status based on the card attempts
+        if (isDeckInProgress) {
+            return { message: 'Deck is in progress' };
+        } else {
+            return { message: 'Deck is brand new' };
+        }
+    } catch (error) {
+        throw new Error('Error fetching deck: ' + error.message);
+    }
+};
+
 
 module.exports = {
     getDecksFromDB, getDecksByTopicIdFromDB,
@@ -280,5 +328,6 @@ module.exports = {
     removeCardFromDeckInDB, removeDeckFromDB,
     archiveDeckInDB, getArchivedDecksFromDB,
     getUserArchivedDecksFromDB, getDeckFromDB,
-    getUserDecksFromDB, getAttemptByDeckIdFromDB
+    getUserDecksFromDB, getAttemptByDeckIdFromDB,
+    checkDeckIsInProgressFromDB
 };
