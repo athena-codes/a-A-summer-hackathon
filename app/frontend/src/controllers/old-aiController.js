@@ -1,5 +1,5 @@
 const { addQuestionsToDB, getQuestionsByUserIdFromDB } = require('../services/aiService');
-const { generateQuestionsByAI } = require('../models/aiModel');
+const { generateQuestionsByAI } = require('../models/old-aiModel');
 const { options } = require('../routes/userRoutes');
 const { db } = require('../firebase/firebaseConfig');
 

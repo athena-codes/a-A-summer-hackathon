@@ -30,81 +30,127 @@ async function generateQuestionsByAI(concept_name, topic, native_language, level
     }
 
     // Default prompt
-    let prompt = role + `there're 3 student levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + jsonschema
+    //let prompt = role + `there're 3 student levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english like "English Answer Choice, Native Language Answer Choice answer and explaination in ${native_language} for ${level} learner using this` + jsonschema
+    let prompt = `
+    You are an English teacher. There are three student levels: Beginner, Intermediate, and Advanced.
+    Please create 3 unique fill-in-the-blank questions for the topic "${topic}" suitable for ${level} learners.
+    Each question should have 4 answer options in the following format:
+    - Option in English (Translation in ${native_language})
 
-    // check concept_name (Vocabulary,Grammar,Everyday Situations)
-    try {
-        //common nouns, verbs, adj, common phrases (Vocabulary)
-        if (picked_concept === "vocabulary") {
-            console.log("hit concept- vocabulary")
-            if (picked_topic === "nouns") {
-                prompt = role + `there're 3 levels :beginner, intermediate, advanced. Give me 3 unique nouns and 4 choices in english to test if ${level} learner understand it. Answer and explaination in ${native_language}. Using this` + jsonschema
-            }
-            else if (picked_topic === "verbs") {
-                prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique verbs questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
-I usually listen _____ music when I'm on the bus to work using this` + jsonschema
-            }
-            else if (picked_topic === "adjectives") {
-                prompt = role + `there're 3 levels :beginner, intermediate, advanced. Give me 3 unique Adjectives questions to test if ${level} learner understand it, and 4 choices in english,answer and explaination in ${native_language}. for example:
-The weather is very__. using this` + jsonschema
-            }
-            else if (picked_topic === "commonphrases") {
-                prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Common Phrases questions (Greetings, introductions, common questions (e.g., How are you?)) to test if ${level} learner understand how to response it and 4 choices in english,answer and explaination in ${native_language}. Using` + jsonschema
-            }
+    For example:
+    Question: The weather is very __ today.
+    Options:
+    - hot (mainit)
+    - warm (mainit-init)
+    - cold (malamig)
+    - rainy (maulan)
 
+    Ensure that the explanation for the correct answer is also provided in ${native_language}.
+    Use the following JSON schema:
+    {
+      "type": "array",
+      "properties": {
+        "id": "integer",
+        "question": "string",
+        "options": "array",
+        "answer": "string",
+        "explanation": "string",
+        "isAttempted": false
+      }
+    }.
+    `;
+
+
+
+
+// Generate questions based on the selected concept (Vocabulary, Grammar, Everyday Situations)
+try {
+    if (picked_concept === "vocabulary") {
+        console.log("Selected concept: Vocabulary");
+
+        if (picked_topic === "nouns") {
+            prompt = `${role} Please create 3 unique fill-in-the-blank questions for common nouns. Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. For example:
+            Question: The dog is a __ animal.
+            Options:
+            - mammal (mamífero)
+            - reptile (reptil)
+            - amphibian (anfibio)
+            - insect (insecto).
+            ${jsonschema}`;
+        } else if (picked_topic === "verbs") {
+            prompt = `${role} Please create 3 unique fill-in-the-blank questions for common verbs. Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. For example:
+            Question: I usually listen _____ music when I'm on the bus to work.
+            Options:
+            - to (a)
+            - in (en)
+            - by (por)
+            - with (con).
+            ${jsonschema}`;
+        } else if (picked_topic === "adjectives") {
+            prompt = `${role} Please create 3 unique fill-in-the-blank questions for common adjectives. Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. For example:
+            Question: The weather is very __ today.
+            Options:
+            - hot (caluroso)
+            - cold (frío)
+            - warm (tibio)
+            - rainy (lluvioso).
+            ${jsonschema}`;
+        } else if (picked_topic === "commonphrases") {
+            prompt = `${role} Please create 3 unique fill-in-the-blank questions for common phrases (e.g., greetings, introductions, common questions like "How are you?"). Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. For example:
+            Question: How are you?
+            Options:
+            - Fine, thank you (Bien, gracias)
+            - I'm okay (Estoy bien)
+            - Not bad (No está mal)
+            - Could be better (Podría estar mejor).
+            ${jsonschema}`;
         }
 
+    } else if (picked_concept === "grammar") {
+        console.log("Selected concept: Grammar");
 
-        //present simple tense,sentence structure, prepositions, possessive pronouns (Grammar)
-        else if (picked_concept === "grammar") {
-            console.log("hit concept- grammar")
+        let tense_questions = grammar_tense_question[level];
 
-            //when the user pick up grammer concept, check their level and pull suitable tenses for the user
-            let tense_questions = grammar_tense_question[level]
-
-
-            if (tense_questions.includes(picked_topic)) {
-                prompt = role + `there're 3 levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + jsonschema
-                console.log(`user clicked grammer > ${picked_topic}`)
-            }
-            else if (picked_topic === "sentencestructure") {
-
-                prompt = role + ` There are 3 levels: Beginner, Intermediate, and Advanced. Create 3 questions for ${level} learners choose the sentence that follows the SVO structure, with options in english, answer and explanation in ${native_language} for ${level} learners using this` + jsonschema
-            }
-            else if (picked_topic === "prepositions") {
-                prompt = role + ` There are 3 levels: Beginner, Intermediate, and Advanced. Create 3 practices for ${level} learners to test if they understand Prepositions: In, on, at, under, over, beside. The practice includes a question and  4 options in English, answer and explanation in ${native_language} using this` + jsonschema
-            }
-            else if (picked_topic === "possessivepronouns") {
-                prompt = role + ` There are 3 levels: Beginner, Intermediate, and Advanced. Create 3 practices for ${level} learners to test if they understand Possessive Pronouns. The practice includes a question and 4 options in English, answer and explanation in ${native_language} using this` + jsonschema
-            }
+        if (tense_questions.includes(picked_topic)) {
+            prompt = `${role} Please create 3 unique fill-in-the-blank questions for ${topic}. Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. ${jsonschema}`;
+            console.log(`Grammar topic selected: ${picked_topic}`);
+        } else if (picked_topic === "sentencestructure") {
+            prompt = `${role} Please create 3 questions for ${level} learners to choose the sentence that follows the SVO structure. Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. ${jsonschema}`;
+        } else if (picked_topic === "prepositions") {
+            prompt = `${role} Please create 3 unique fill-in-the-blank questions to test understanding of prepositions (e.g., in, on, at, under, over, beside). Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. ${jsonschema}`;
+        } else if (picked_topic === "possessivepronouns") {
+            prompt = `${role} Please create 3 unique fill-in-the-blank questions to test understanding of possessive pronouns. Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. ${jsonschema}`;
         }
 
-        //family and friends, daily routines,shopping , food and drink (Everyday Situations)
-        else if (picked_concept === "everydaysituations") {
-            console.log("hit concept- everydaysituations")
-            prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique questions about  ${topic} to test if  ${level} learner understand how to response or ask the question and 4 choices in english,answer and explaination in ${native_language}. using this` + jsonschema
+    } else if (picked_concept === "everydaysituations") {
+        console.log("Selected concept: Everyday Situations");
 
-        }
-    } catch (error) {
-        res.status(500).json({ message: `Error generating questions from AI: ${error.message}` });
-
+        prompt = `${role} Please create 3 unique fill-in-the-blank questions about ${topic}. Each question should include 4 answer options in both English and ${native_language}, formatted as "English Answer (Native Language Translation)". Ensure the explanation for the correct answer is in ${native_language}. For example:
+        Question: Where is the nearest grocery store?
+        Options:
+        - It's two blocks away (Está a dos cuadras)
+        - It's next door (Está al lado)
+        - It's around the corner (Está a la vuelta de la esquina)
+        - It's far away (Está lejos).
+        ${jsonschema}`;
     }
+} catch (error) {
+    res.status(500).json({ message: `Error generating questions from AI: ${error.message}` });
+}
 
+try {
+    const result = await model.generateContent(prompt);
+    console.log('AI result: ', result);
+    const jsonString = result.response.text();
 
-    try {
+    console.log("Generated JSON String:", jsonString);
+    let jsonData = JSON.parse(jsonString);
+    console.log('Parsed topic data: ', topic);
+    return { topic_id, topic, level, jsonData };
+} catch (error) {
+    console.error('Error generating content:', error);
+}
 
-        const result = await model.generateContent(prompt);
-        console.log('result: ', result);
-        const jsonString = result.response.text();
-
-
-        console.log("------------------------------")
-        let jsonData = JSON.parse([jsonString])
-        console.log('topic: ', topic)
-        return { topic_id, topic, level, jsonData }
-    } catch (error) {
-        console.error('Error generating content:', error);
-    }
 }
 
 

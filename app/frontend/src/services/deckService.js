@@ -36,6 +36,49 @@ const getDecksByTopicIdFromDB = async (topicId) => {
     }
 }
 
+//get attempt by deck id
+const getAttemptByDeckIdFromDB = async (deckId) => {
+    try {
+        // Get the deck document reference
+        const deckRef = doc(db, 'decks', deckId);
+        const deckDoc = await getDoc(deckRef);
+
+        if (!deckDoc.exists()) {
+            throw new Error('Deck not found');
+        }
+
+        // Grab the userId from the deck document
+        const userId = deckDoc.data().userId;
+
+        // Get the user document reference
+        const userDocRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+            throw new Error('User not found');
+        }
+
+        // Reference to the 'attempts' subcollection within the user document
+        const userAttemptsCollectionRef = collection(userDocRef, 'attempts');
+        const userAttemptsSnapshot = await getDocs(userAttemptsCollectionRef);
+
+        // Filter attempts by deckId
+        const userAttempts = userAttemptsSnapshot.docs.filter(doc => doc.data().deckId === deckId);
+
+        // Return the first attempt found (if any)
+        if (userAttempts.length > 0) {
+            const firstAttempt = userAttempts[0].data();  // Get the data of the first attempt
+            return { id: userAttempts[0].id, ...firstAttempt }; // Or return additional data as needed
+        } else {
+            throw new Error('No attempts found for this deck.');
+        }
+
+    } catch (error) {
+        throw new Error('Error fetching attempt by deckId: ' + error.message);
+    }
+}
+
+
 //service to view a deck
 const getDeckFromDB = async (deckId) => {
     try {
@@ -237,5 +280,5 @@ module.exports = {
     removeCardFromDeckInDB, removeDeckFromDB,
     archiveDeckInDB, getArchivedDecksFromDB,
     getUserArchivedDecksFromDB, getDeckFromDB,
-    getUserDecksFromDB
+    getUserDecksFromDB, getAttemptByDeckIdFromDB
 };
