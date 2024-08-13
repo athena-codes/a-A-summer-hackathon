@@ -1,5 +1,5 @@
 const { getUserByIdFromDB, getUsersFromDB, getProgressFromDB, updateUserInDB, addUserToDB, updateUserProgressFromDB } = require('../services/userService');
-const { AddUserAttemptToDB, updateUserAttemptInDB, getUserAttemptsFromDB, checkAnswerInDB } = require('../services/attemptService');
+const {getUserAttemptByIDFromDB, AddUserAttemptToDB, updateUserAttemptInDB, getUserAttemptsFromDB, checkAnswerInDB, checkAttemptInDB } = require('../services/attemptService');
 
 const getUsers = async (req, res) => {
     console.log('get users route is hit');
@@ -70,6 +70,29 @@ const getUserAttempts = async (req, res) => {
     }
 };
 
+//view user attempt by id
+const getUserAttemptById = async (req, res) => {
+    const { userId, attemptId } = req.params;
+    console.log('userId: ', userId, 'attemptId: ', attemptId);
+    try {
+        const attempt = await getUserAttemptByIDFromDB(userId, attemptId);
+        res.status(200).json({ userId, attempt});
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching user attempt', error: error.message });
+    }
+}
+const checkUserAttempt = async (req, res) => {
+    //use this route to check if user attempt's score is 80% or greater than total questions
+    const { userId, attemptId } = req.params;
+    console.log('userId: ', userId, 'attemptId: ', attemptId);
+    try {
+        const checkAttempt = await checkAttemptInDB(userId, attemptId);
+        res.status(200).json({ message: 'User attempt checked', checkAttempt });
+    } catch (error) {
+        res.status(500).json({ message: 'Error checking user attempt', error: error.message });
+    }
+}
+
 // Start new user attempt
 const addUserAttempt = async (req, res) => {
     const { id } = req.params;
@@ -97,4 +120,4 @@ const updateUserAttempt = async (req, res) => {
 };
 
 
-module.exports = { getUsers, getUserProgress, getUserById, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt, updateUserAttempt };
+module.exports = { getUserAttemptById, checkUserAttempt, getUsers, getUserProgress, getUserById, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt, updateUserAttempt };

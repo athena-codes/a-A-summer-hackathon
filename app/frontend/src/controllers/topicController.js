@@ -1,4 +1,4 @@
-const { getTopicsFromDB, addTopicToDB, updateTopicInDB, removeTopicFromDB } = require('../services/topicService');
+const { getTopicByIdFromDB, getTopicsFromDB, addTopicToDB, updateTopicInDB, removeTopicFromDB } = require('../services/topicService');
 
 const getTopics = async (req, res) => {
     try {
@@ -9,11 +9,21 @@ const getTopics = async (req, res) => {
     }
 };
 
+const getTopicById = async (req, res) => {
+    const { topicId } = req.params;
+    try {
+        const topic = await getTopicByIdFromDB(topicId);
+        res.status(200).json(topic);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const addTopic = async (req, res) => {
-    const { topic_name, status, concept_id, passes = 0 } = req.body;
+    const { topic_name, status, concept_id} = req.body;
     //we need to check if topic_id and concept_id exist in the database
     try {
-        const topic = await addTopicToDB({ topic_name, status, concept_id, passes });
+        const topic = await addTopicToDB({ topic_name, status, concept_id });
         res.status(201).json({ message: 'Topic added', topic });
     } catch (error) {
         res.status(500).json({ message: `Error adding topic: ${error.message}` });
@@ -41,4 +51,4 @@ const removeTopic = async (req, res) => {
     }
 };
 
-module.exports = { getTopics, addTopic, updateTopic, removeTopic };
+module.exports = { getTopics, addTopic, updateTopic, removeTopic, getTopicById };

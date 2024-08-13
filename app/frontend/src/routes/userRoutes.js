@@ -2,7 +2,7 @@ const express = require('express');
 // const { getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress } = require('../controllers/userController');
 const { getAllQuestionsbyAI } = require('../controllers/aiController');
 
-const { updateUserAttempt,getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt } = require('../controllers/userController');
+const { getUserAttemptById, checkUserAttempt, updateUserAttempt,getUserById, getUserProgress, getUsers, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt } = require('../controllers/userController');
 
 const router = express.Router();
 
@@ -27,6 +27,12 @@ router.get('/:userId/all-questions', getAllQuestionsbyAI);
 
 //get user attempts
 router.get('/:id/attempts', getUserAttempts)
+
+//check user attempt
+router.get('/:userId/attempts/:attemptId/check', checkUserAttempt)
+
+//view user attempt by id
+router.get('/:userId/attempts/:attemptId', getUserAttemptById)
 
 //add user attempt
 router.post('/:id/attempts/new', addUserAttempt)

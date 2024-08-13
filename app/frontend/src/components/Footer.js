@@ -3,7 +3,7 @@ import React from "react";
 
 function Footer() {
     return (
-        <Container style={{ padding: "40px 0px 20px 0px", textAlign: "center" }}>
+        <Container style={{ padding: "10px 0px 20px 0px", textAlign: "center" }}>
             <Typography variant="overline" display="block" gutterBottom>
                 Developed by:&nbsp;
                 <Link href="https://github.com/athena-codes" target="_blank" rel="noopener noreferrer">Athena Chiarello</Link>&nbsp;&#183;&nbsp;

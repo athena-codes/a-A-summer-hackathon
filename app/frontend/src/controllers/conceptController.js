@@ -17,12 +17,23 @@ const getConcepts = async (req, res) => {
     }
 };
 
+// Controller to get a specific concept by id
+const getConcept = async (req, res) => {
+    const { conceptId } = req.params;
+    try {
+        const concept = await getConceptByIdFromDB(conceptId);
+        res.status(200).json(concept);
+    } catch (error) {
+        res.status(500).json({ message: `Error fetching concept: ${error.message}` });
+    }
+};
+
 //Controller for getting all topics by concept id
 const getTopicsByConcept = async (req, res) => {
     const { conceptId } = req.params;
     try {
         const topics = await getTopicsByConceptId(conceptId);
-        res.status(200).json({topics});
+        res.status(200).json({ topics });
     } catch (error) {
         res.status(500).json({ message: `Error fetching topics: ${error.message}` });
     }
@@ -79,5 +90,6 @@ module.exports = {
     updateConcept,
     getConceptById,
     removeConcept,
-    getTopicsByConcept
+    getTopicsByConcept,
+    getConceptById
 };

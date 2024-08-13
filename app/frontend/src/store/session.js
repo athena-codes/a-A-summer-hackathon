@@ -1,110 +1,102 @@
-import { auth } from '../firebase/firebaseConfig'
-import {
+const {
   getAuth,
   signInWithEmailAndPassword,
+  signOut,
   createUserWithEmailAndPassword,
-  signOut
-} from 'firebase/auth'
+} = require("firebase/auth");
+const { doc, setDoc } = require("firebase/firestore");
+const { auth, db } = require("../firebase/firebaseConfig");
 
-// Assuming Firebase app is initialized in another file and exported
-import { firebaseApp } from '../firebase/firebaseConfig'
-import { db } from '../firebase/firebaseConfig' // Import Firestore database reference
-import { doc, setDoc } from 'firebase/firestore' // Make sure you're using Firestore SDK v9+
+export const SET_USER = () => "session/SET_USER";
 
-
-
-// Action Types
-const SET_USER = 'session/SET_USER'
-
-// Action Creators
-const setUser = user => ({
+const setUser = (user) => ({
   type: SET_USER,
-  payload: user
-})
+  payload: user,
+});
 
-// Thunks
-export const authenticate = () => async dispatch => {
-  const user = auth.currentUser
+export const authenticate = () => async (dispatch) => {
+  const user = auth.currentUser;
   if (user) {
-    dispatch(setUser(user))
+    dispatch(setUser(user));
   }
-}
+};
 
-export const login = (email, password) => async dispatch => {
+export const login = (email, password) => async (dispatch) => {
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password
-    )
-    dispatch(setUser(userCredential.user))
+    );
+    dispatch(setUser(userCredential.user));
   } catch (error) {
-    console.error('Error logging in:', error)
+    console.error("Error logging in:", error);
   }
-}
+};
 
-export const signUp = (email, password, username, first_name, last_name, locale, level) => async (dispatch) => {
-  try {
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+export const signUp =
+  (email, password, username, first_name, last_name, locale, level) =>
+  async (dispatch) => {
+    try {
+      // Create user with Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
         email,
-        password,
+        password
+      );
+      const userId = userCredential.user.uid;
+
+      // Update user profile with additional data
+      // await user.updateProfile({
+      //     displayName: username,
+      // });
+
+      const userRef = doc(db, "users", userId);
+      await setDoc(userRef, {
+        email,
         username,
         first_name,
         last_name,
         native_language: locale,
         level,
-      }),
-    });
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error signing up:', errorData.message);
-      throw new Error(errorData.message);
+      // Set the user in Redux state
+      dispatch(
+        setUser({
+          // uid: user.uid,
+          email,
+          username,
+          first_name,
+          last_name,
+          native_language: locale,
+          level,
+        })
+      );
+
+      // return user;
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      throw error;
     }
+  };
 
-    const data = await response.json();
-    console.log('User signed up successfully:', data.loginCredential.user.providerData[0]);
-
-    // Set the user in Redux state
-    dispatch(setUser({
-      uid: data.uid,
-      email: data.loginCredential.user.email,
-      username,
-      first_name,
-      last_name,
-      native_language: locale,
-      level
-    }));
-    return data;
+export const logout = () => async (dispatch) => {
+  try {
+    await auth.signOut();
+    dispatch(setUser(null));
   } catch (error) {
-    console.error('Error during sign up:', error);
-    throw error;
+    console.error("Error logging out", error);
   }
 };
 
+const initialState = { user: null };
 
-export const logout = () => async dispatch => {
-  try {
-    await auth.signOut()
-    dispatch(setUser(null))
-  } catch (error) {
-    console.error('Error logging out', error)
-  }
-}
-
-// Reducer
-const initialState = { user: null }
-
-export default function sessionReducer (state = initialState, action) {
+export default function sessionReducer(state = initialState, action) {
   switch (action.type) {
     case SET_USER:
-      return { ...state, user: action.payload }
+      return { ...state, user: action.payload };
     default:
-      return state
+      return state;
   }
 }

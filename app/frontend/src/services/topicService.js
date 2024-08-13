@@ -11,6 +11,20 @@ const getTopicsFromDB = async () => {
     }
 };
 
+const getTopicByIdFromDB = async (topicId) => {
+    try {
+        const topicRef = doc(db, 'topics', topicId);
+        const topicSnap = await getDoc(topicRef);
+        if (topicSnap.exists()) {
+            return { id: topicSnap.id, ...topicSnap.data() };
+        } else {
+            throw new Error('Topic not found');
+        }
+    } catch (error) {
+        throw new Error('Error fetching topic: ' + error.message);
+    }
+}
+
 //service to check topic progression
 const checkTopicProgression = async (topicId, passes) => {
     //use this service to check curr_passes and update status
@@ -60,4 +74,4 @@ const removeTopicFromDB = async (topicId) => {
     }
 }
 
-module.exports = { getTopicsFromDB, addTopicToDB, updateTopicInDB, removeTopicFromDB };
+module.exports = { getTopicByIdFromDB, getTopicsFromDB, addTopicToDB, updateTopicInDB, removeTopicFromDB, getTopicByIdFromDB, checkTopicProgression };

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import { Box, Button, Container, Grid, LinearProgress, Link, Typography } from "@mui/material";
-
+import { Box, Button, Container, Grid, LinearProgress, Link, Typography, Tooltip } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 
 function HomePage() {
   const user = useSelector((state) => state.session.user);
@@ -9,7 +9,7 @@ function HomePage() {
   const data = [
     {
       left: 'Current English Proficiency Level:',
-      right: 'Intermediate'
+      right: `${user.level}`
     },
     {
       left: 'Proficiency Level Progress:',
@@ -21,7 +21,7 @@ function HomePage() {
     },
     {
       left: 'Current Concept:',
-      right: 'Basic Nouns'
+      right: `${user.level} - Basic Nouns`
     },
     {
       left: 'Concept Progress:',
@@ -40,8 +40,24 @@ function HomePage() {
       />
     },
     {
-      left: 'Badges:',
-      right: <img src="/assets/badges/Beginner-badge.png"
+      left: (
+        <>
+          <Box display="flex" alignItems="center">
+            Badges
+            <Tooltip
+              title={
+                <Typography>
+                  Earn a Lingo.ai Champion badge for each level you complete.
+                </Typography>
+              }
+              arrow
+            >
+              <InfoIcon color="action" sx={{ mt: -1, fontSize: 16 }} />
+            </Tooltip>:
+          </Box>
+        </>
+      ),
+      right: <img src="/assets/badges/beginner-badge.png"
         style={{
           width: "25%"
         }}
@@ -49,11 +65,34 @@ function HomePage() {
     },
   ]
 
+  if (user.level === 'Advanced') {
+    data.splice(5, 0, {
+      left: (
+        <>
+          <Box display="flex" alignItems="center">
+            Supplementary Learning
+            <Tooltip
+              title={
+                <Typography>
+                  Available level(s) to reinforce your knowledge. Completing these will earn you the corresponding badges, if you haven't already.
+                </Typography>
+              }
+              arrow
+            >
+              <InfoIcon color="action" sx={{ mt: -1, fontSize: 16 }} />
+            </Tooltip>:
+          </Box>
+        </>
+      ),
+      right: 'Beginner • Intermediate'
+    });
+  }
+
   return (
     <Container>
       <Box>
         <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-          <h1>Welcome, {user.email}.</h1>
+          <h1>Welcome, {user.username}!</h1>
           <Link href='/concepts'
             // exact={true}activeClassName='active'
             underline="none">

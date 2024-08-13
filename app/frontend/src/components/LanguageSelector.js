@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Button, Typography, Box } from "@mui/material";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { useHistory } from "react-router-dom";
 
 
 const flagsArr = [

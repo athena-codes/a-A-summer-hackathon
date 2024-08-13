@@ -1,7 +1,8 @@
 const { db } = require('../firebase/firebaseConfig');
 const { increment, collection, addDoc, getDocs, updateDoc, getDoc, doc, query, where } = require('firebase/firestore');
-const { getDeckFromDB } = require('./deckService');
+const { archiveDeckInDB, getDeckFromDB } = require('./deckService');
 const { getDeck } = require('../controllers/deckController');
+const { checkTopicProgression } = require('./topicService');
 
 //Service to view all user attempts
 const getUserAttemptsFromDB = async (uid) => {
@@ -17,6 +18,52 @@ const getUserAttemptsFromDB = async (uid) => {
     }
 }
 
+const getUserAttemptByIDFromDB = async (uid, attemptId) => {
+    try {
+        const userRef = doc(db, 'users', uid);
+        const attemptDocRef = doc(userRef, 'attempts', attemptId);
+        const attemptDoc = await getDoc(attemptDocRef);
+        if (attemptDoc.exists()) {
+            return attemptDoc.data();
+        } else {
+            throw new Error('Attempt not found');
+        }
+    } catch (error) {
+        throw new Error('Error fetching user attempt: ' + error.message);
+    }
+}
+
+const checkAttemptInDB = async (userId, attemptId) => {
+    console.log('userId: ', userId, 'attemptId: ', attemptId);
+    console.log('hit here')
+    try {
+        const userRef = doc(db, 'users', userId);
+        const attemptDocRef = doc(userRef, 'attempts', attemptId);
+        //console.log('attemptDocRef: ', attemptDocRef);
+        const attemptDoc = await getDoc(attemptDocRef);
+        console.log('attemptDoc: ', attemptDoc);
+        if (attemptDoc.exists()) {
+            const attemptData = attemptDoc.data();
+            console.log('Attempt data:', attemptData);
+
+            const { passes, totalQuestions } = attemptData;
+            const percentagePassed = (passes / totalQuestions) * 100;
+
+            if (percentagePassed >= 80) {
+                console.log('Attempt passes with 80% or more:', percentagePassed);
+                return { ...attemptData, percentagePassed, meetsThreshold: true };
+            } else {
+                console.log('Attempt does not pass with 80% or more:', percentagePassed);
+                return { ...attemptData, percentagePassed, meetsThreshold: false };
+            }
+        } else {
+            throw new Error('Attempt not found');
+        }
+    } catch (error) {
+        throw new Error('Error checking user attempt: ' + error.message);
+    }
+};
+
 //Service to add user attempt; call this service after user starts a deck
 const AddUserAttemptToDB = async (attemptData, id) => {
     try {
@@ -27,6 +74,7 @@ const AddUserAttemptToDB = async (attemptData, id) => {
         const userAttemptsRef = collection(userDocRef, 'attempts')
         const docRef = await addDoc(userAttemptsRef, attemptData);
         console.log('Document written with ID: ', docRef.id);
+
         return docRef.id;
     } catch (error) {
         throw new Error('Error adding user attempt: ' + error.message);
@@ -35,7 +83,8 @@ const AddUserAttemptToDB = async (attemptData, id) => {
 
 const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
     try {
-        const attemptDocRef = doc(db, 'users', userId, 'attempts', attemptId);
+        const userDocRef = doc(db, 'users', userId);
+        const attemptDocRef = doc(userDocRef, 'attempts', attemptId);
         const attemptDoc = await getDoc(attemptDocRef);
         const deckDocRef = doc(db, 'decks', deckId);
         const deckDoc = await getDoc(deckDocRef);
@@ -49,7 +98,7 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
         }
 
         const deckData = deckDoc.data();
-        const attemptData = attemptDoc.data();
+        //const attemptData = attemptDoc.data();
 
         // Find the specific question in the cards array
         const questionIndex = deckData.cards[0].questionData.jsonData.findIndex(q => q.id === id);
@@ -75,9 +124,22 @@ const checkAnswerInDB = async (userId, id, attemptId, answer, deckId) => {
 
             // Increment the passes count in the attempt document
             await updateDoc(attemptDocRef, { passes: increment(1) });
+            const updatedAttemptDoc = await getDoc(attemptDocRef);
+            const updatedAttemptData = updatedAttemptDoc.data();
+            // if passes >= 3, call checkTopicProgression service
+            console.log('deck data', updatedAttemptData)
+            if (updatedAttemptData.passes >= 3) {
+
+                await checkTopicProgression(deckData.userId, deckData.cards[0].questionData.topic_id, isPassing=true);
+                await archiveDeckInDB(deckId, deckData.userId);
+            }
 
             return { message: 'Answer is correct!' };
         } else {
+            deckData.cards[0].questionData.jsonData[questionIndex].isAttempted = true;
+            await updateDoc(deckDocRef, {
+                cards: deckData.cards,  // Update the entire cards array
+            });
             return { message: 'Answer is incorrect.', correctAnswer };
         }
     } catch (error) {
@@ -112,4 +174,4 @@ const endUserAttemptInDB = async (uid, attemptId) => {
 }
 
 
-module.exports = { checkAnswerInDB, getUserAttemptsFromDB, AddUserAttemptToDB, updateUserAttemptInDB, endUserAttemptInDB };
+module.exports = { getUserAttemptByIDFromDB, checkAttemptInDB, checkAnswerInDB, getUserAttemptsFromDB, AddUserAttemptToDB, updateUserAttemptInDB, endUserAttemptInDB };

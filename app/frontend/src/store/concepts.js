@@ -1,72 +1,127 @@
-import { db } from '../firebase/firebaseConfig'
-import { getDocs, collection } from 'firebase/firestore'
+const { db } = require("../firebase/firebaseConfig");
+const { collection, getDocs } = require("firebase/firestore");
 
 // Action Types
-const FETCH_CONCEPTS_BEGIN = 'concepts/FETCH_CONCEPTS_BEGIN'
-const FETCH_CONCEPTS_SUCCESS = 'concepts/FETCH_CONCEPTS_SUCCESS'
-const FETCH_CONCEPTS_FAILURE = 'concepts/FETCH_CONCEPTS_FAILURE'
+export const LOAD_CONCEPTS = "concepts/LOAD_CONCEPTS";
+export const LOAD_ONE_CONCEPT = "concepts/LOAD_ONE_CONCEPT";
+export const LOAD_TOPICS_BY_CONCEPT = "concepts/LOAD_TOPICS_BY_CONCEPT";
 
 // Action Creators
-const fetchConceptsBegin = () => ({
-  type: FETCH_CONCEPTS_BEGIN
-})
+const loadConcepts = (concepts, userLevel) => ({
+    type: LOAD_CONCEPTS,
+    concepts,
+    userLevel,
+});
 
-const fetchConceptsSuccess = concepts => ({
-  type: FETCH_CONCEPTS_SUCCESS,
-  payload: { concepts }
-})
+const loadOneConcept = (concept) => ({
+    type: LOAD_ONE_CONCEPT,
+    concept,
+});
 
-const fetchConceptsFailure = error => ({
-  type: FETCH_CONCEPTS_FAILURE,
-  payload: { error }
-})
+const loadConceptTopics = (conceptId, topics) => ({
+    type: LOAD_TOPICS_BY_CONCEPT,
+    payload: { conceptId, topics },
+});
 
-// Thunks
-export const fetchConcepts = () => {
-  return async dispatch => {
-    dispatch(fetchConceptsBegin())
+// Thunk Actions
+export const fetchConcepts = (userLevel) => async (dispatch) => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'concepts'))
-      const concepts = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      dispatch(fetchConceptsSuccess(concepts))
+        const conceptsCollectionRef = collection(db, 'concepts');
+        const conceptsSnapshot = await getDocs(conceptsCollectionRef);
+
+        const conceptsData = conceptsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+
+        dispatch(loadConcepts(conceptsData, userLevel)); // Update Redux state with concepts data
     } catch (error) {
-      dispatch(fetchConceptsFailure(error))
+        console.error("Error fetching concepts:", error);
+        // Dispatch error action or handle error appropriately
     }
-  }
-}
+};
+
+export const fetchOneConcept = (conceptId) => async (dispatch) => {
+    try {
+        const response = await fetch(`/api/concepts/${conceptId}`);
+
+        if (response.ok) {
+            const concept = await response.json();
+            dispatch(loadOneConcept(concept));
+            return concept;
+        } else {
+            console.error("Response failed:", response.statusText);
+        }
+    } catch (error) {
+        console.error('Error fetching concept:', error);
+        // Dispatch error action or handle error appropriately
+    }
+};
+
+export const fetchTopicsByConcept = (conceptId) => async (dispatch) => {
+    console.log("CONCEPTIDHERE", conceptId);
+    try {
+        const response = await fetch(`/api/concepts/${conceptId}/topics`);
+        console.log("CONCEPTID", response);
+        if (response.ok) {
+            const topics = await response.json();
+            dispatch(loadConceptTopics(conceptId, topics));
+            return topics;
+        } else {
+            console.error("Response failed:", response.statusText);
+        }
+    } catch (error) {
+        console.error('Error fetching topics:', error);
+        // Dispatch error action or handle error appropriately
+    }
+};
+
+// Initial State
+const initialState = {
+    concepts: {}, // Store concepts by ID
+    topics: {},    // Store topics by concept ID
+};
 
 // Reducer
-const initialState = {
-  items: [],
-  loading: false,
-  error: null
-}
+const conceptsReducer = (state = initialState, action) => {
+    switch (action.type) {
+        case LOAD_CONCEPTS: {
+            const filteredConcepts = action.concepts
+                .filter(concept => concept.level === action.userLevel)
+                .reduce((acc, concept) => {
+                    acc[concept.id] = concept;
+                    return acc;
+                }, {});
 
-export default function conceptsReducer (state = initialState, action) {
-  switch (action.type) {
-    case FETCH_CONCEPTS_BEGIN:
-      return {
-        ...state,
-        loading: true,
-        error: null
-      }
-    case FETCH_CONCEPTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        items: action.payload.concepts
-      }
-    case FETCH_CONCEPTS_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload.error,
-        items: []
-      }
-    default:
-      return state
-  }
-}
+            return {
+                ...state,
+                concepts: filteredConcepts,
+            };
+        }
+        case LOAD_ONE_CONCEPT: {
+            const { concept } = action;
+            return {
+                ...state,
+                concepts: {
+                    ...state.concepts,
+                    [concept.id]: concept,
+                },
+            };
+        }
+        case LOAD_TOPICS_BY_CONCEPT: {
+            const { conceptId, topics } = action.payload;
+
+            return {
+                ...state,
+                topics: {
+                    ...state.topics,
+                    [conceptId]: topics, // Replace topics for the specific concept
+                },
+            };
+        }
+        default:
+            return state;
+    }
+};
+
+export default conceptsReducer;

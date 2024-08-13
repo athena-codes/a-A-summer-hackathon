@@ -95,5 +95,6 @@ module.exports = {
     getConceptByIdFromDB,
     removeConceptFromDB,
     getTopicsByConceptId,
-    getConceptsByLevel
+    getConceptsByLevel,
+    getConceptByIdFromDB
 }
