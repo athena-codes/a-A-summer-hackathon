@@ -2,7 +2,7 @@ const { getDecksFromDB, createDeckInDB,
     addCardsToDeckInDB, removeCardFromDeckInDB,
     removeDeckFromDB, archiveDeckInDB,
     getArchivedDecksFromDB, getUserArchivedDecksFromDB
-    , getDeckFromDB
+    , getDeckFromDB, getUserDecksFromDB
 } = require('../services/deckService');
 const { doc, getDoc, addDoc, setDoc, collection } = require('firebase/firestore');
 const { db } = require('../firebase/firebaseConfig');
@@ -132,6 +132,7 @@ const getArchivedDecks = async (req, res) => {
 
 const getUserArchivedDecks = async (req, res) => {
     const { uid } = req.params;
+    console.log('uid: ', uid);
     try {
         const decks = await getUserArchivedDecksFromDB(uid);
         res.status(200).json({ decks });
@@ -140,4 +141,15 @@ const getUserArchivedDecks = async (req, res) => {
     }
 }
 
-module.exports = { getAllDecks, getDeck, createDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks };
+const getUserDecks = async (req, res) => {
+    const { uid } = req.params;
+    console.log('uid: ', uid);
+    try {
+        const decks = await getUserDecksFromDB(uid);
+        res.status(200).json({ decks });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { getAllDecks, getDeck, createDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks, getUserDecks };

@@ -11,6 +11,22 @@ const getDecksFromDB = async () => {
     }
 }
 
+//service to get user decks from DB
+const getUserDecksFromDB = async (uid) => {
+    try {
+        const userDocRef = doc(db, 'users', uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) {
+            throw new Error('User not found');
+        }
+        const userDecksCollectionRef = collection(userDocRef, 'decks');
+        const userDecksSnapshot = await getDocs(userDecksCollectionRef);
+        const userDecks = userDecksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return userDecks;
+    } catch (error) {
+        throw new Error('Error fetching user decks: ' + error.message);
+    }
+}
 const getDecksByTopicIdFromDB = async (topicId) => {
     try {
         const querySnapshot = await getDocs(query(collection(db, 'decks'), where('topic_id', '==', topicId)));
@@ -63,6 +79,8 @@ const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
         });
         const deck = { id: docRef.id, level, userId: userId, topic_id: topic_id, createdAt, archived };
         console.log('deck check: ', deck)
+        const userDecksCollectionRef = collection(doc(db, 'users', userId), 'decks');
+        await setDoc(doc(userDecksCollectionRef, docRef.id), deck);
         return deck;
     } catch (error) {
         throw new Error('Error creating deck: ' + error.message);
@@ -118,46 +136,6 @@ const addCardsToDeckInDB = async (deckId, userId, aiGeneratedRequestId) => {
     }
 };
 
-// const addCardsToDeckInDB = async (deckId, userId) => {
-//     try {
-//         const deck = [];
-//         const userRef = doc(db, 'users', userId);
-//         const deckRef = doc(db, 'decks', deckId);
-//         const deckDoc = await getDoc(deckRef);
-//         if (!deckDoc.exists()) {
-//             throw new Error('Deck not found');
-//         }
-
-//         const topicRef = doc(db, 'topics', deckDoc.data().topic_id);
-//         console.log('topicRef: ', topicRef);
-//         const topicDoc = await getDoc(topicRef);
-//         if (!topicDoc.exists()) {
-//             throw new Error('Topic not found');
-//         }
-//         const level = deckDoc.data().level;
-//         const topic_name = topicDoc.data().topic_name;
-//         const aiGeneratedRequestsRef = collection(userRef, "ai_generated_requests");
-//         //check ai_generated_id, then check topic/level
-//         console.log('topic_name: ', topic_name, 'level: ', level)
-//         const snapshot = await getDocs(aiGeneratedRequestsRef);
-//         console.log('snapshot: ', snapshot.docs);
-//         snapshot.docs.map(doc => {
-//             console.log('doc: ', doc.data());
-//             if (doc.data().questionData.topic === topic_name && doc.data().questionData.level === level) {
-//                 console.log('inside if statement: ', doc.data());
-//                 deck.push(doc.data());
-//             }
-//         })
-//         console.log('deck: ', deck);
-//         //we look for the deck in the db and add the deck
-
-//         await setDoc(deckRef, { userId: userId, cards: deck });
-//         return deck;
-//     } catch (error) {
-//         throw new Error('Error adding card to deck: ' + error.message);
-//     }
-// }
-
 //service to remove a card from a deck
 const removeCardFromDeckInDB = async () => {
     return
@@ -166,6 +144,16 @@ const removeCardFromDeckInDB = async () => {
 //service to remove a deck
 const removeDeckFromDB = async () => {
     return
+}
+
+//service to view archived decks
+const getArchivedDecksFromDB = async () => {
+    try {
+        const querySnapshot = await getDocs(query(collection(db, 'decks'), where('archived', '==', true)));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        throw new Error('Error fetching archived decks: ' + error.message);
+    }
 }
 
 //service to archive a deck
@@ -179,7 +167,7 @@ const archiveDeckInDB = async (deckId, uid) => {
         if (!deckDoc.exists()) {
             throw new Error('Deck not found');
         }
-
+        console.log('check if archived: ', deckDoc.data().archived)
         // Check if the deck is already archived
         if (deckDoc.data().archived) {
             return { success: false, message: 'Deck is already archived.' };
@@ -206,29 +194,22 @@ const archiveDeckInDB = async (deckId, uid) => {
 
         // Archive the deck if all cards are attempted
         await updateDoc(deckRef, { archived: true });
+        const updatedDeckDoc = await getDoc(deckRef);
 
+        if (!updatedDeckDoc.exists()) {
+            throw new Error('Deck not found');
+        }
+
+        const updatedDeckData = updatedDeckDoc.data();
         // Add the deck to the user's subcollection
         const userDecksCollectionRef = collection(doc(db, 'users', uid), 'archived_decks');
-        await setDoc(doc(userDecksCollectionRef, deckId), deckData);
+        await setDoc(doc(userDecksCollectionRef, deckId), updatedDeckData);
 
         return { success: true, message: 'Deck archived' };
     } catch (error) {
         return { success: false, message: 'Error archiving deck: ' + error.message };
     }
 };
-
-
-
-
-//service to view archived decks
-const getArchivedDecksFromDB = async () => {
-    try {
-        const querySnapshot = await getDocs(query(collection(db, 'decks'), where('archived', '==', true)));
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (error) {
-        throw new Error('Error fetching archived decks: ' + error.message);
-    }
-}
 
 //service to view user archived decks
 const getUserArchivedDecksFromDB = async (uid) => {
@@ -239,7 +220,7 @@ const getUserArchivedDecksFromDB = async (uid) => {
         if (!userDoc.exists()) {
             throw new Error('User not found');
         }
-        const userDecksCollectionRef = collection(userDocRef, 'decks');
+        const userDecksCollectionRef = collection(userDocRef, 'archived_decks');
 
         const userDecksSnapshot = await getDocs(userDecksCollectionRef);
         const userDecks = userDecksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -255,5 +236,6 @@ module.exports = {
     createDeckInDB, addCardsToDeckInDB,
     removeCardFromDeckInDB, removeDeckFromDB,
     archiveDeckInDB, getArchivedDecksFromDB,
-    getUserArchivedDecksFromDB, getDeckFromDB
+    getUserArchivedDecksFromDB, getDeckFromDB,
+    getUserDecksFromDB
 };
