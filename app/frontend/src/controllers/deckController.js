@@ -3,7 +3,7 @@ const { getDecksFromDB, createDeckInDB,
     removeDeckFromDB, archiveDeckInDB,
     getArchivedDecksFromDB, getUserArchivedDecksFromDB
     , getDeckFromDB, getUserDecksFromDB, getAttemptByDeckIdFromDB,
-    checkDeckIsInProgressFromDB
+    checkDeckIsInProgressFromDB, getUserDeckByIdFromDB
 } = require('../services/deckService');
 const { doc, getDoc, addDoc, setDoc, collection } = require('firebase/firestore');
 const { db } = require('../firebase/firebaseConfig');
@@ -153,6 +153,17 @@ const getUserDecks = async (req, res) => {
     }
 }
 
+const getUserDeckById = async (req, res) => {
+    const { uid, deckId } = req.params;
+    console.log('uid: ', uid, 'deckId: ', deckId);
+    try {
+        const deck = await getUserDeckByIdFromDB(uid, deckId);
+        res.status(200).json({ deck });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 const getAttemptbyDeck = async (req, res) => {
     const { deckId } = req.params;
     try {
@@ -173,4 +184,4 @@ const checkDeckProgress = async (req, res) => {
     }
 }
 
-module.exports = { getAllDecks, getDeck, createDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks, getUserDecks, getAttemptbyDeck , checkDeckProgress };
+module.exports = { getUserDeckById, getAllDecks, getDeck, createDeck, removeCardFromDeck, removeDeck, archiveDeck, getArchivedDecks, getUserArchivedDecks, getUserDecks, getAttemptbyDeck , checkDeckProgress };

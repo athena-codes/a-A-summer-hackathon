@@ -1,4 +1,4 @@
-const { getUserByIdFromDB, getUsersFromDB, getProgressFromDB, updateUserInDB, addUserToDB, updateUserProgressFromDB } = require('../services/userService');
+const { initializeUserProgress, getUserByIdFromDB, getUsersFromDB, getProgressFromDB, updateUserInDB, addUserToDB, updateUserProgressFromDB } = require('../services/userService');
 const {getUserAttemptByIDFromDB, AddUserAttemptToDB, updateUserAttemptInDB, getUserAttemptsFromDB, checkAnswerInDB, checkAttemptInDB } = require('../services/attemptService');
 
 const getUsers = async (req, res) => {
@@ -46,18 +46,15 @@ const getUserProgress = async (req, res) => {
     }
 };
 
-// const updateUserProgress = async (req, res) => {
-//     const { id } = req.params;
-//     console.log('update user progress route is hit', id);
-//     try {
-//         await updateUserProgressFromDB(id);
-//         const progress = await getProgressFromDB(id);
-//         res.status(200).json({ message: 'User progress updated successfully', progress });
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error updating user progress', error: error.message });
-//     }
-// };
-
+const initializeUserProgressRoute = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const newProgress = await initializeUserProgress(id);
+        res.status(200).json({ newProgress });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to get user progress', details: error.message });
+    }
+}
 
 //update topic status of user progress when the the user passes 3 times of deck in a row
 const updateUserProgress = async (req, res) => {
@@ -140,4 +137,4 @@ const updateUserAttempt = async (req, res) => {
 };
 
 
-module.exports = { getUserAttemptById, checkUserAttempt, getUsers, getUserProgress, getUserById, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt, updateUserAttempt };
+module.exports = { initializeUserProgressRoute,  getUserAttemptById, checkUserAttempt, getUsers, getUserProgress, getUserById, updateUserById, updateUserProgress, getUserAttempts, addUserAttempt, updateUserAttempt };

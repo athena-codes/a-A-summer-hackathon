@@ -94,6 +94,22 @@ const getDeckFromDB = async (deckId) => {
     }
 }
 
+const getUserDeckByIdFromDB = async (uid, deckId) => {
+    try {
+        const userDocRef = doc(db, 'users', uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) {
+            throw new Error('User not found');
+        }
+        const userDecksCollectionRef = collection(userDocRef, 'decks');
+        const userDecksSnapshot = await getDocs(userDecksCollectionRef);
+        const userDecks = userDecksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return userDecks.find(deck => deck.id === deckId);
+    } catch (error) {
+        throw new Error('Error fetching user deck: ' + error.message);
+    }
+}
+
 //service to create a deck (empty)
 const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
     console.log('userId: ', userId, 'topic_id: ', topic_id, 'createdAt: ', createdAt, 'archived: ', archived)
@@ -117,10 +133,11 @@ const createDeckInDB = async ({ userId, topic_id, createdAt, archived }) => {
             userId,
             level,
             topic_id,
+            attemptId: null,
             createdAt,
             archived
         });
-        const deck = { id: docRef.id, level, userId: userId, topic_id: topic_id, createdAt, archived };
+        const deck = { id: docRef.id, level, userId: userId, topic_id: topic_id, createdAt, archived, attemptId: null };
         console.log('deck check: ', deck)
         const userDecksCollectionRef = collection(doc(db, 'users', userId), 'decks');
         await setDoc(doc(userDecksCollectionRef, docRef.id), deck);
@@ -178,16 +195,6 @@ const addCardsToDeckInDB = async (deckId, userId, aiGeneratedRequestId) => {
         throw new Error('Error adding card to deck: ' + error.message);
     }
 };
-
-//service to remove a card from a deck
-const removeCardFromDeckInDB = async () => {
-    return
-}
-
-//service to remove a deck
-const removeDeckFromDB = async () => {
-    return
-}
 
 //service to view archived decks
 const getArchivedDecksFromDB = async () => {
@@ -325,9 +332,8 @@ const checkDeckIsInProgressFromDB = async (deckId) => {
 module.exports = {
     getDecksFromDB, getDecksByTopicIdFromDB,
     createDeckInDB, addCardsToDeckInDB,
-    removeCardFromDeckInDB, removeDeckFromDB,
     archiveDeckInDB, getArchivedDecksFromDB,
     getUserArchivedDecksFromDB, getDeckFromDB,
     getUserDecksFromDB, getAttemptByDeckIdFromDB,
-    checkDeckIsInProgressFromDB
+    checkDeckIsInProgressFromDB, getUserDeckByIdFromDB
 };
