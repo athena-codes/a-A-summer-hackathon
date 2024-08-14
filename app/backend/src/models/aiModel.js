@@ -47,15 +47,11 @@ async function generateQuestionsByAI(concept_name, topic, native_language, level
         "Intermediate": "Compound and complex sentences, For example: I ___ home because it ___ raining or She __ to the store, and she __ some milk.",
         "Advanced": "Use of subordinate clauses and participle clauses. For example: In each sentence below, identify the subordinate clause. Even though it was late, they continued working on the project."
     }
-    // const grammar_tense_question = {
-    //     "Beginner": ["presentsimpletense"],
-    //     "Intermediate": ["pastsimpletense", "pastcontinuoustenses", "presentperfecttenses", "presentperfectcontinuoustenses", "futuretenses"],
-    //     "Advanced": ["futureperfecttenses", "pastperfectcontinuous"]
-    // }
     const grammar_tense_question = {
-        "Beginner": "Present Simple Tense: Simple statements, negatives, and questions.",
-        "Intermediate": "Present Simple Tense: Present continuous and perfect tenses.",
-        "Advanced": "Present Simple Tense: Present perfect continuous and nuances in aspect."
+        "Beginner": "Present Simple Tense: Simple statements, negatives, and questions ",
+        "Intermediate": "Past Tense: Past Simple, past continuous , past perfect and past perfect continuous, For example: I ______ (watch) TV when the phone rang. ",
+        "Advanced": "Future Tense: Future simple, future continuous, future perfect and future perfect continuous "
+
     }
     const grammar_prepositions_question = {
         "Beginner": "Simple prepositions (in, on, at, under, over, beside)",
@@ -68,12 +64,27 @@ async function generateQuestionsByAI(concept_name, topic, native_language, level
         "Intermediate": "Specific and general use of articles, omission of articles",
         "Advanced": "Nuanced article usage, such as in academic writing"
     }
-    const everyday_situations_question = {
-        "Beginner": ["familyandfriends", "dailyroutines", "shopping", "foodanddrink"],
-        "Intermediate": ["describingexperiences", "givingopinionsandreasons", "makingplansandarrangements", "discussingpreferencesandhabits"],
-        "Advanced": ["professionalcontexts", "advancedsocialsituations"]
+    const everyday_situations_introductions_question = {
+        "Beginner": "Basic self-introductions (name, age, where you’re from).",
+        "Intermediate": "Detailed personal introductions, talking about hobbies and interests.",
+        "Advanced": "Professional introductions, networking, and formal settings "
     }
 
+    const everyday_situations_familyandfriends_question = {
+        "Beginner": "Describing family members and close friends.",
+        "Intermediate": "Discussing relationships, family traditions, and friend dynamics.",
+        "Advanced": "Complex family structures, nuanced discussions about relationships."
+    }
+    const everyday_situations_dailyroutines_question = {
+        "Beginner": "Simple descriptions of daily activities and times of day ",
+        "Intermediate": "Detailed routines, discussing habits and frequency",
+        "Advanced": "Complex schedules, discussing productivity and time management"
+    }
+    const everyday_situations_shopping_question = {
+        "Beginner": "Asking for prices, describing items ",
+        "Intermediate": "Bargaining, asking for recommendations, and product details",
+        "Advanced": "Discussing consumer rights, returning items, and making complaints "
+    }
     // Default prompt
     let prompt = role + `there're 3 student levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + jsonschema
 
@@ -81,94 +92,189 @@ async function generateQuestionsByAI(concept_name, topic, native_language, level
     try {
         //common nouns, verbs, adj, common phrases (Vocabulary)
         if (picked_concept === "vocabulary") {
-            console.log("hit concept- vocabulary")
             if (picked_topic === "nouns") {
                 prompt = role + ` there are 3 levels :beginner, intermediate, advanced. create 3 unique fill-in-the-blank questions for the topic ${vocabulary_nouns_content[level]} suitable for ${level} learners.
-    Each question should have 4 answer options in the following format:
-     - Option in English (Translation in ${native_language})
+                Each question should have 4 answer options in the following format:
+                - Option in English (Translation in ${native_language})
 
-    For example:
-    Question: The weather is very __ today.
-    Options:
-    - hot (mainit)
-    - warm (mainit-init)
-    - cold (malamig)
-    - rainy (maulan)
-    Ensure that the explanation for the correct answer is also provided in ${native_language} using this` + jsonschema
-
-                // prompt = role + `there're 3 levels :beginner, intermediate, advanced. Give me 3 unique nouns in english about ${vocabulary_nouns_content[level]}. And give me 4 translated choices in ${native_language} and answer in English and ${native_language} to test if ${level} learner understand the vocabulary using this` + jsonschema
-                console.log("generate nouns Q:", prompt)
+                For example:
+                Question: The weather is very __ today.
+                Options:
+                A) hot (mainit)
+                B) warm (mainit-init)
+                C) cold (malamig)
+                D) rainy (maulan)
+                Ensure that the explanation for the correct answer is also provided in ${native_language} using this` + jsonschema
 
             }
             else if (picked_topic === "verbs") {
                 prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique verbs questions to test if ${level} learner understand ${vocabulary_verbs_content[level]} and 4 choices in english,answer and explaination in ${native_language} using this` + jsonschema
-                console.log("generate verbs Q:", prompt)
 
             }
             else if (picked_topic === "adjectives") {
                 prompt = role + `there're 3 levels :beginner, intermediate, advanced. Give me 3 unique fill-in-the-blank Adjectives questions to test if ${level} learner understand ${vocabulary_adjectives_content[level]}, and 4 choices in english,answer and explaination in ${native_language} using this` + jsonschema
-                console.log("generate adjectives Q:", prompt)
+
 
             }
             else if (picked_topic === "pronouns") {
                 prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank pronouns questions to test if ${level} learner understand ${vocabulary_pronouns_content[level]} and 4 choices in english,answer and explaination in ${native_language}. Using` + jsonschema
-                console.log("generate pronouns Q:", prompt)
+
             }
-            // else if (picked_topic === "commonphrases") {
-            //     prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Common Phrases questions (Greetings, introductions, common questions (e.g., How are you?)) to test if ${level} learner understand how to response it and 4 choices in english,answer and explaination in ${native_language}. Using` + jsonschema
-            // }
+
 
         }
 
 
         //present simple tense,sentence structure, prepositions, possessive pronouns (Grammar)
         else if (picked_concept === "grammar") {
-            console.log("hit concept- grammar")
 
-            //when the user pick up grammer concept, check their level and pull suitable tenses for the user
-            // let tense_questions = grammar_tense_question[level]
-
-
-            // if (tense_questions.includes(picked_topic)) {
-            //     prompt = role + `there're 3 levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + jsonschema
-            //     console.log(`user clicked grammer > ${picked_topic}`)
-            //     console.log("generate tense_questions Q:", prompt)
-
-            // }
-            if (picked_topic === "presentsimpletense") {
+            if (picked_topic === "tense") {
                 prompt = role + `there're 3 levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${grammar_tense_question[level]} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + jsonschema
-                console.log(`user clicked grammer > ${picked_topic}`)
-                console.log("generate tense_questions Q:", prompt)
 
             }
             else if (picked_topic === "sentencestructure") {
-
                 prompt = role + ` There are 3 levels: Beginner, Intermediate, and Advanced. Create 3 questions about ${grammar_sentence_structure_question[level]} for ${level} learners with 4 options in english, answer and explanation in ${native_language} for ${level} learners using this` + jsonschema
-                console.log("generate sentencestructure Q:", prompt)
+
 
             }
             else if (picked_topic === "prepositions") {
                 prompt = role + ` There are 3 levels: Beginner, Intermediate, and Advanced. Create 3 questions about ${grammar_prepositions_question[level]} for ${level} learners with 4 options in English, answer and explanation in ${native_language} using this` + jsonschema
-                console.log("generate prepositions Q:", prompt)
+
 
             }
-            // else if (picked_topic === "possessivepronouns") {
-            //     prompt = role + ` There are 3 levels: Beginner, Intermediate, and Advanced. Create 3 practices for ${level} learners to test if they understand Possessive Pronouns. The practice includes a question and 4 options in English, answer and explanation in ${native_language} using this` + jsonschema
-            //     console.log("generate possessivepronouns Q:", prompt)
 
-            // }
             else if (picked_topic === "articles") {
-                prompt = role + ` There are 3 levels: Beginner, Intermediate, and Advanced. Create 3 practices about ${grammar_articles_question[level]} for ${level} learners with 4 options in English, answer and explanation in ${native_language} using this` + jsonschema
-                console.log("generate possessivepronouns Q:", prompt)
+                prompt = role + ` There are 3 levels: Beginner, Intermediate, and Advanced. Create 3 quesitons about ${grammar_articles_question[level]} for ${level} learners.
+                 Each question should have 4 answer options in the following format:
+                - Option in English
+
+                For example:
+                Question: Choose the sentence that uses the indefinite article \"a\" correctly:
+                Options:
+                A)"The professor gave a lecture on philosophy.",
+                B)"Professor gave lecture on philosophy.",
+                C)"A professor gave a lecture on philosophy."
+                D)"The professor gave the lecture on a philosophy."
+
+                Ensure that the explanation for the correct answer is also provided in ${native_language} using this` + jsonschema
+
 
             }
         }
 
         //family and friends, daily routines,shopping , food and drink (Everyday Situations)
         else if (picked_concept === "everydaysituations") {
-            console.log("hit concept- everydaysituations")
-            prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique questions about  ${topic} to test if  ${level} learner understand how to response or ask the question and 4 choices in english,answer and explaination in ${native_language}. using this` + jsonschema
-            console.log("generate everydaysituations Q:", prompt)
+
+            // prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique questions about  ${topic} to test if  ${level} learner understand how to response or ask the question and 4 choices in english,answer and explaination in ${native_language}. using this` + jsonschema
+
+            if (picked_topic === "introductions") {
+                prompt = role + `there're 3 levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions about ${everyday_situations_introductions_question[level]} in English
+                Each question should have 4 answer options in the following format:
+                - Option in English
+
+                For example:
+                Question: Hello, I’m Emily , a Project Manager at Tech, Inc. I ______ leading cross-functional teams to develop innovative software solutions.
+                Options:
+                A)"specialize in",
+                B)"good at",
+                C)"expert on"
+                D)"good on"
+
+                Ensure that the explanation for the correct answer is also provided in ${native_language} using this` + jsonschema
+
+            }
+            else if (picked_topic === "familyandfriends") {
+                // prompt = role + `there're 3 levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${everyday_situations_familyandfriends_question[level]}
+
+                prompt = role + `there're 3 levels Beginner, Intermediate, Advanced. Create 3 questions, each question is a short conversations between 2 people about the topic:
+                ${everyday_situations_familyandfriends_question[level]} in English.
+                there're 3 levels Beginner, Intermediate, Advanced.Create 3 questions, each question is a short conversation between 2 people about the topic:${everyday_situations_dailyroutines_question[level]}.
+                each question includes question with Select the most suitable answer for the blank on the top, 4 options in english, answer and explaination test ${level} learner to select the most suitable response or request for the conversation.
+                For example:
+
+                    Question:
+
+                    Select the most suitable answer for the blank.
+
+                    Person A: Do you have any siblings?
+
+                    Person B: Yes, I have a brother. _______________
+
+                    Person A: That’s nice! How old is he?
+
+                    Options:
+
+                    A) His name is John.
+
+                    B) He lives in New York.
+
+                    C) He is my best friend.
+
+                    D) He is very funny.
+
+
+
+                ensure answer and explaination in ${native_language} using this` + jsonschema
+
+
+
+
+            }
+            else if (picked_topic === "dailyroutines") {
+                // prompt = role + `there're 3 levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${everyday_situations_dailyroutines_question[level]} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + jsonschema
+                prompt = role + `there're 3 levels Beginner, Intermediate, Advanced.Create 3 questions, each question is a short conversation between 2 people about the topic:${everyday_situations_dailyroutines_question[level]}.
+                each question includes question with Select the most suitable answer for the blank on the top, 4 options in english, answer and explaination test ${level} learner to select the most suitable response or request for the conversation.
+                For example:
+
+                    Question:
+                    Select the most suitable answer for the blank.
+
+                    Person A: What do you do every morning?
+
+                    Person B: I wake up at 7 AM and then I _______________.
+
+                    Options:
+                    A) watch TV
+                    B) go to bed
+                    C) read a book
+                    D) eat breakfast
+                ensure answer and explaination in ${native_language} using this` + jsonschema
+
+            }
+            else if (picked_topic === "shopping") {
+                prompt = role + `there're 3 levels Beginner, Intermediate, Advanced.Create 3 questions, each question is a short conversation between 2 people about the topic:${everyday_situations_shopping_question[level]}.
+                each question includes question with Select the most suitable answer for the blank on the top, 4 options in english, answer and explaination test ${level} learner to select the most suitable response or request for the conversation.
+                For example:
+
+                    Question:
+                    Select the most suitable answer for the blank.
+
+                    Shopper: Hi, can you help me?
+
+                    Shop Assistant: Of course! What are you looking for?
+
+                    Shopper: I am looking for a blue jacket.
+
+                    Shop Assistant: We have some blue jackets over here. Would you like to see them?
+
+                    Shopper: Yes, please. __________________________
+
+                    Shop Assistant: That jacket is $55.
+
+                    Options:
+
+                    A) How much is this one?
+
+                    B) What color is it?
+
+                    C) How tall is it?
+
+                    D) Where is the fitting room?
+
+                ensure answer and explaination in ${native_language} using this` + jsonschema
+
+            }
+
 
         }
     } catch (error) {
@@ -192,91 +298,6 @@ async function generateQuestionsByAI(concept_name, topic, native_language, level
         console.error('Error generating content:', error);
     }
 }
-
-
-// async function generateQuestionsByAI(topic, native_language, level, topic_id) {
-//     console.log("am i hitting generateVocabularyQuestionsByAI functions and check the user level: ", topic, native_language, level)
-//     // The Gemini 1.5 models are versatile and work with both text-only and multimodal prompts
-//     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
-
-//     let picked_topic = topic.toLowerCase().split(" ").join("")
-//     let role = `You're an English teacher.`
-//     let jsonschema = `JSON schema: { "type":"array", "properties": {"id": "integer", "question": "string",  "options": "array",  "answer": "string",  "explanation":"string", "isAttempted": false }}.`
-
-//     // Default prompt
-//     let prompt = role + `there're 3 student levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + jsonschema
-
-//     try {
-//         //common nouns, basic verbs, basic adj, common phrases (basic vocabulary)
-//         if (picked_topic === "commonnouns") {
-//             prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Basic nouns questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
-// Don't eat the rotten apple. Identify the common noun in this sentence.
-// using this` + prompt
-//         }
-//         else if (picked_topic === "basicverbs") {
-//             prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Basic Verbs questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
-// I usually listen _____ music when I'm on the bus to work using this` + prompt
-//         }
-//         else if (picked_topic === "basicadjectives") {
-//             prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Basic Adjectives questions to test if ${level} learner understand main verbs , auxiliaries and 4 choices in english,answer and explaination in ${native_language}. for example:
-// Special people won.What is the adjective here ? using this` + prompt
-//         }
-//         else if (picked_topic === "commonphrases") {
-//             prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Common Phrases questions (Greetings, introductions, common questions (e.g., How are you?)) to test if ${level} learner understand how to response it and 4 choices in english,answer and explaination in ${native_language}. Using` + prompt
-//         }
-//         //present simple tense,sentence structure, prepositions, possessive pronouns (basic grammar)
-
-//         else if (picked_topic === "presentsimpletense") {
-//             prompt = role + `there're 3 student levels Beginner, Intermediate, Advanced. Give me 3 unique fill-in-the-blank questions for ${picked_topic} and 4 choices in english,answer and explaination in ${native_language} for ${level} learner using this` + prompt
-//         }
-//         else if (picked_topic === "sentencestructure") {
-
-//             prompt = role + ` There are 3 student levels: Beginner, Intermediate, and Advanced. Create 3 questions for ${level} learners choose the sentence that follows the SVO structure, with options in english, answer and explanation in ${native_language} for ${level} learners using this` + prompt
-//         }
-//         else if (picked_topic === "prepositions") {
-//             prompt = role + ` There are 3 student levels: Beginner, Intermediate, and Advanced. Create 3 practices for ${level} learners to test if they understand Prepositions: In, on, at, under, over, beside. The practice includes a question and  4 options in English, answer and explanation in ${native_language} using this` + prompt
-//         }
-//         else if (picked_topic === "possessivepronouns") {
-//             prompt = role + ` There are 3 student levels: Beginner, Intermediate, and Advanced. Create 3 practices for ${level} learners to test if they understand Possessive Pronouns. The practice includes a question and 4 options in English, answer and explanation in ${native_language} using this` + prompt
-//         }
-//         //family and friends, daily routines,shopping , food and drink (for everyday situations)
-//         else if (picked_topic === "familyandfriends") {
-//             prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Everyday Situations questions about  ${picked_topic} to test if  ${level} learner understand how to response or ask the question and 4 choices in english,answer and explaination in ${native_language}. using this` + prompt
-
-//         }
-//         else if (topic === "dailyroutines") {
-//             prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Daily Routines questions about  ${topic} to test if  ${level} learner understand how to response or ask the question and 4 choices in english,answer and explaination in ${native_language}. using this` + prompt
-
-//         }
-//         else if (topic === "shopping") {
-//             prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Shopping questions about  ${topic} to test if  ${level} learner understand how to response or ask the question and 4 choices in english,answer and explaination in ${native_language}. using this` + prompt
-
-//         }
-//         else if (topic === "foodanddrink") {
-//             prompt = role + `there're 3 levels :Beginner, Intermediate, Advanced. Give me 3 unique Food and Drink questions about  ${topic} to test if  ${level} learner understand how to response or ask the question and 4 choices in english,answer and explaination in ${native_language}. using this JSON schema: { "type":"array", "properties": {"question": "string",  "options": "array",  "answer": "string",  "explanation":"string"}}.`
-
-//         }
-//     } catch (error) {
-//         res.status(500).json({ message: `Error generating questions from AI: ${error.message}` });
-
-//     }
-
-
-
-//     try {
-
-//         const result = await model.generateContent(prompt);
-//         console.log('result: ', result);
-//         const jsonString = result.response.text();
-
-
-//         console.log("------------------------------")
-//         let jsonData = JSON.parse([jsonString])
-//         return { topic_id, topic, level, jsonData }
-//     } catch (error) {
-//         console.error('Error generating content:', error);
-//     }
-// }
 
 
 module.exports = {
