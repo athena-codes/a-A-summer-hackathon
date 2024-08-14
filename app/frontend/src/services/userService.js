@@ -96,13 +96,14 @@ const initializeUserProgress = async (uid, level = null) => {
         }
         // Create the 'concepts' subcollection
         const conceptsCollectionRef = collection(userDocRef, 'concepts');
-
+        console.log('Concepts collection ref:', conceptsCollectionRef);
         const userInfo = userInfoSnap.data();
         console.log('User info:', userInfo);
         const currentLevel = level || userInfo.level;
 
         // Fetch existing concepts progress
         const existingConceptsSnapshot = await getDocs(conceptsCollectionRef);
+        console.log('Existing concepts snapshot:', existingConceptsSnapshot);
         const existingConcepts = existingConceptsSnapshot.docs.reduce((acc, doc) => {
             acc[doc.id] = doc.data();
             return acc;
@@ -142,10 +143,10 @@ const initializeUserProgress = async (uid, level = null) => {
                 return existingTopic
                     ? existingTopic // Preserve existing topic progress
                     : {
-                        id: topic.id,
-                        topic_name: topic.topic_name,
-                        conceptId: topic.concept_id,
-                        topic_description: topic.description,
+                        id: topic.id || '',
+                        topic_name: topic.topic_name || '',
+                        conceptId: topic.concept_id || '',
+                        topic_description: topic.description || '',
                         status: false,
                         passes: 0
                     };
@@ -154,8 +155,8 @@ const initializeUserProgress = async (uid, level = null) => {
 
             await setDoc(conceptDocRef, {
                 status: existingConcept ? existingConcept.status : false,
-                concept_name: concept.concept_name,
-                level: concept.level,
+                concept_name: concept.concept_name || '',
+                level: concept.level || '',
                 topics: updatedTopics,
                 topicsPassed: topicsPassedDecimal // New field to track passed topics
             }, { merge: true });
@@ -179,10 +180,25 @@ const updateUserProgressFromDB = async (uid, topic_id) => {
         const conceptsCollectionRef = collection(userProgressRef, 'concepts');
         const conceptsSnapshot = await getDocs(conceptsCollectionRef);
 
+        // Query to find the concept that contains the given topic_id
+        const conceptQuery = query(conceptsCollectionRef, where('topics', 'array-contains', { id: topic_id }));
+        const conceptSnapshot = await getDocs(conceptQuery);
+
+        if (conceptSnapshot.empty) {
+            throw new Error('Concept for the given topic not found');
+        }
+
+        let conceptDoc = conceptSnapshot.docs[0]; // Assuming topic_id is unique, so we take the first (and only) result
+        let conceptData = conceptDoc.data();
+
+        // Check if the concept is already passed
+        if (conceptData.topicsPassed === 1.0) {
+            throw new Error('This concept is already passed!');
+        }
+
         let allConceptsPassed = true;
-        let allBeginnerPassed = true;
-        let allIntermediatePassed = true;
-        let allAdvancedPassed = true;
+        let currentLevelPassed = true;  // This tracks if all concepts at the current level are passed
+        const currentLevel = userDoc.data().level;
 
         // Iterate through each concept to find the matching topic_id
         for (const conceptDoc of conceptsSnapshot.docs) {
@@ -225,42 +241,39 @@ const updateUserProgressFromDB = async (uid, topic_id) => {
 
             // Track if all concepts are passed
             allConceptsPassed = allConceptsPassed && conceptPassed;
-            if (conceptData.level === 'Beginner') {
-                allBeginnerPassed = allBeginnerPassed && conceptPassed;
-            } else if (conceptData.level === 'Intermediate') {
-                allIntermediatePassed = allIntermediatePassed && conceptPassed;
-            } else if (conceptData.level === 'Advanced') {
-                allAdvancedPassed = allAdvancedPassed && conceptPassed;
-            }
 
-            console.log("Concept passed:", conceptPassed, allConceptsPassed);
+            // Specifically check if the current level's concepts are all passed
+            if (conceptData.level === currentLevel) {
+                currentLevelPassed = currentLevelPassed && conceptPassed;
+            }
         }
 
         const badges = userDoc.data().badges || [];
 
-        if (allBeginnerPassed && !badges.includes('Bronze')) {
+        // Badge assignment logic based on completed levels
+        if (currentLevel === "Beginner" && currentLevelPassed && !badges.includes('Bronze')) {
             badges.push('Bronze');
             await updateDoc(userDocRef, { badges });
             console.log("Bronze badge assigned");
         }
 
-        if (allIntermediatePassed && !badges.includes('Silver')) {
+        if (currentLevel === "Intermediate" && currentLevelPassed && !badges.includes('Silver')) {
             badges.push('Silver');
             await updateDoc(userDocRef, { badges });
             console.log("Silver badge assigned");
         }
 
-        if (allConceptsPassed && allAdvancedPassed && !badges.includes('Gold')) {
+        if (currentLevel === "Advanced" && currentLevelPassed && !badges.includes('Gold')) {
             badges.push('Gold');
             await updateDoc(userDocRef, { badges });
             console.log("Gold badge assigned");
         }
 
+        // Level up logic only if all concepts of the current level are passed
         const levels = ["Beginner", "Intermediate", "Advanced"];
-        const current_level = userDoc.data().level;
-        const new_level = levels[Math.min(levels.indexOf(current_level) + 1, levels.length - 1)];
+        const new_level = levels[Math.min(levels.indexOf(currentLevel) + 1, levels.length - 1)];
 
-        if (new_level !== current_level && allConceptsPassed) {
+        if (new_level !== currentLevel && currentLevelPassed) {
             console.log("New level:", new_level);
             await updateDoc(userDocRef, { level: new_level });
             await initializeUserProgress(uid, new_level);
