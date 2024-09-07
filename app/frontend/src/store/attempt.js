@@ -50,22 +50,6 @@ export const fetchUserAttempt = (deckId) => async (dispatch) => {
   }
 };
 
-// Add User Attempt Thunk
-// export const startUserAttempt = (userId, deckId, passes = 0, totalQuestions = 3, createdAt = new Date().toISOString()) => async (dispatch) => {
-//   try {
-//       const attemptData = { deckId, passes, totalQuestions, createdAt };
-//       const newAttemptId = await AddUserAttemptToDB(attemptData, userId); // API call
-
-//       dispatch(addUserAttempt(newAttemptId));
-
-//       // Return the new attempt ID
-//       return { payload: newAttemptId };
-//   } catch (error) {
-//       console.error("Error creating user attempt:", error);
-//       throw error; // Throw the error to handle it where the thunk is called
-//   }
-// };
-
 export const createUserAttempt = (userId, deckId) => async (dispatch) => {
   try {
     const userDocRef = doc(db, "users", userId);
@@ -74,6 +58,10 @@ export const createUserAttempt = (userId, deckId) => async (dispatch) => {
     // Create the attempt data (you'll need to define this structure)
     const attemptData = {
       deckId,
+      passes: 0,
+      totalQuestions: 3,
+      createdAt: new Date().toISOString(),
+      editedAt: new Date().toISOString(),
     };
 
     // Add the attempt document to the attempts collection
@@ -88,6 +76,8 @@ export const createUserAttempt = (userId, deckId) => async (dispatch) => {
 
     // Dispatch the action to add the attempt to your Redux store
     dispatch(addUserAttempt(newAttemptId));
+
+    // Return the new attempt ID as the payload
     return { payload: newAttemptId };
   } catch (error) {
     console.error("Error creating user attempt:", error);
@@ -96,7 +86,7 @@ export const createUserAttempt = (userId, deckId) => async (dispatch) => {
 };
 
 export const modifyUserAttempt =
-  (userId, id, attemptId, answer, deckId) => async (dispatch) => {
+(userId, id, attemptId, answer, deckId) => async (dispatch) => {
     try {
       const checkAttempt = await checkAnswerInDB(
         userId,
@@ -104,8 +94,22 @@ export const modifyUserAttempt =
         attemptId,
         answer,
         deckId
-      ); // API call
+      );
+
+      // // Get the document reference for the user's attempt
+      // const userDocRef = doc(db, "users", userId);
+      // const attemptDocRef = doc(userDocRef, "attempts", attemptId);
+
+      // // Update the attempt in Firestore, including the editedAt timestamp
+      // await updateDoc(attemptDocRef, {
+      //   editedAt: new Date().toISOString(),
+      //   ...checkAttempt, // Update any other data returned from checkAnswerInDB
+      // });
+
+      // // Dispatch the action to update the Redux store with the new attempt state
       dispatch(updateUserAttempt(attemptId, checkAttempt));
+
+      // Return the updated attempt result
       return checkAttempt;
     } catch (error) {
       console.error("Error updating user attempt:", error);

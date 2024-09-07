@@ -75,39 +75,18 @@ function CardPage() {
         )
       );
 
-      if (checkAttempt && checkAttempt.message === "Answer is correct!") {
+      if (checkAttempt) {
         setFeedback((prevFeedback) => ({
           ...prevFeedback,
           [cardIndex]: {
-            isCorrect: true
-          },
-        }));
-      } else if (
-        checkAttempt &&
-        checkAttempt.message === "Answer is incorrect."
-      ) {
-        setFeedback((prevFeedback) => ({
-          ...prevFeedback,
-          [cardIndex]: {
-            isCorrect: false,
-            correctAnswer: checkAttempt.correctAnswer,
+            isCorrect: checkAttempt.message === "Answer is correct!",
+            correctAnswer: checkAttempt.message === "Answer is incorrect." ? checkAttempt.correctAnswer : undefined,
           },
         }));
       }
-      // if (checkAttempt && checkAttempt.message === "Answer is correct!") {
-      //   setFeedback({ cardIndex, isCorrect: true });
-      // } else if (
-      //   checkAttempt &&
-      //   checkAttempt.message === "Answer is incorrect."
-      // ) {
-      //   setFeedback({
-      //     cardIndex,
-      //     isCorrect: false,
-      //     correctAnswer: checkAttempt.correctAnswer,
-      //   });
-      // }
 
-      const allQuestionsAttempted = Object.keys(selectedAnswers).length === cards.length - 1;
+      // const allQuestionsAttempted = Object.keys(selectedAnswers).length === cards.length - 1;
+      const allQuestionsAttempted = Object.keys(selectedAnswers).length === cards.length;
 
       if (allQuestionsAttempted) {
         await dispatch(archiveDeck(deckId, user.uid));

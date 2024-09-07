@@ -39,20 +39,6 @@ export const fetchSingleUser = (uid) => async (dispatch) => {
   }
 };
 
-// export const fetchUserProgress = (uid) => async (dispatch) => {
-//   try {
-//     const response = await fetch(`/api/users/${uid}/progress`);
-
-//     if (response.ok) {
-//       const progress = await response.json();
-//       dispatch(loadUserProgress(uid, progress));
-//     } else {
-//       console.error("Response not OK");
-//     }
-//   } catch (error) {
-//     console.error("Error fetching user progress:", error);
-//   }
-// };
 
 export const fetchUserProgress = (uid) => async (dispatch) => {
   try {
@@ -90,8 +76,6 @@ export const fetchUserProgress = (uid) => async (dispatch) => {
     console.error("Error fetching user progress:", error);
   }
 };
-
-
 
 
 export const fetchUsers = () => async (dispatch) => {

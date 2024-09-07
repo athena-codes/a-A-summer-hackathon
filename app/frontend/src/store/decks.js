@@ -1,5 +1,3 @@
-import { checkDeckIsInProgressFromDB } from "../services/deckService";
-
 const { db } = require("../firebase/firebaseConfig");
 const {
   collection,
@@ -8,13 +6,12 @@ const {
   updateDoc,
   setDoc,
   getDoc,
-  FieldValue,
 } = require("firebase/firestore");
 
 // Action Types
-export const LOAD_DECKS = "concepts/LOAD_DECKS";
-export const LOAD_ONE_DECK = "concepts/LOAD_ONE_DECK";
-export const ARCHIVE_DECK = "concepts/ARCHIVE_DECK";
+export const LOAD_DECKS = "decks/LOAD_DECKS";
+export const LOAD_ONE_DECK = "decks/LOAD_ONE_DECK";
+export const ARCHIVE_DECK = "decks/ARCHIVE_DECK";
 
 // Action Creators
 const loadDecks = (decks) => ({

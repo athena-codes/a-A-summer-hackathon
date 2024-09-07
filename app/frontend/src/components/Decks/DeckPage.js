@@ -32,6 +32,8 @@ function DeckPage() {
   const decksFilter = decks?.filter((deck) => topicId === deck.topic_id);
   const theme = useTheme();
 
+  console.log(decksFilter)
+
   useEffect(() => {
     if (user && topicId) {
       setLoading(true);
@@ -79,15 +81,27 @@ function DeckPage() {
   };
 
   const getAllDecks = () => {
-    return decksFilter?.filter((deck) => !deck.attemptId && !deck.isArchived) || [];
+    return (
+      decksFilter
+        ?.filter((deck) => !deck.attemptId && !deck.isArchived)
+        .sort((a, b) => b.createdAt.seconds - a.createdAt.seconds) || []
+    );
   };
-
+  
   const getInProgressDecks = () => {
-    return decksFilter?.filter((deck) => deck.attemptId && !deck.archived) || [];
+    return (
+      decksFilter
+        ?.filter((deck) => deck.attemptId && !deck.archived)
+        .sort((a, b) => b.createdAt.seconds - a.createdAt.seconds) || []
+    );
   };
-
+  
   const getArchivedDecks = () => {
-    return decksFilter?.filter((deck) => deck.archived) || [];
+    return (
+      decksFilter
+        ?.filter((deck) => deck.archived)
+        .sort((a, b) => b.createdAt.seconds - a.createdAt.seconds) || []
+    );
   };
 
   return (
@@ -147,7 +161,7 @@ function DeckPage() {
                   </Tooltip>
                 </h2>
                 {getAllDecks().length > 0 ? (
-                  <Grid container spacing={2} justifyContent="center">
+                  <Grid container spacing={2} >
                     <Grid item xs={12} md={6}>
                       <Box
                         sx={{
@@ -245,7 +259,7 @@ function DeckPage() {
               </Grid>
             </Grid>
 
-            <Box mt={4}>
+            <Box mt={4} >
               <h2>
                 Archived
                 <Tooltip

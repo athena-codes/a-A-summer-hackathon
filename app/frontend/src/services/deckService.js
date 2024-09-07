@@ -8,7 +8,6 @@ const {
   doc,
   query,
   where,
-  Timestamp,
   setDoc,
 } = require("firebase/firestore");
 
