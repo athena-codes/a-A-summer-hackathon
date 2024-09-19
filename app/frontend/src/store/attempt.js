@@ -50,22 +50,6 @@ export const fetchUserAttempt = (deckId) => async (dispatch) => {
   }
 };
 
-// Add User Attempt Thunk
-// export const startUserAttempt = (userId, deckId, passes = 0, totalQuestions = 3, createdAt = new Date().toISOString()) => async (dispatch) => {
-//   try {
-//       const attemptData = { deckId, passes, totalQuestions, createdAt };
-//       const newAttemptId = await AddUserAttemptToDB(attemptData, userId); // API call
-
-//       dispatch(addUserAttempt(newAttemptId));
-
-//       // Return the new attempt ID
-//       return { payload: newAttemptId };
-//   } catch (error) {
-//       console.error("Error creating user attempt:", error);
-//       throw error; // Throw the error to handle it where the thunk is called
-//   }
-// };
-
 export const createUserAttempt = (userId, deckId) => async (dispatch) => {
   try {
     const userDocRef = doc(db, "users", userId);
@@ -96,15 +80,17 @@ export const createUserAttempt = (userId, deckId) => async (dispatch) => {
 };
 
 export const modifyUserAttempt =
-  (userId, id, attemptId, answer, deckId) => async (dispatch) => {
+  (userId, id, attemptId, selectedOpinion, deckId) => async (dispatch) => {
     try {
       const checkAttempt = await checkAnswerInDB(
         userId,
         id,
         attemptId,
-        answer,
+        selectedOpinion,
         deckId
-      ); // API call
+      );
+
+      // Dispatch an action to update the attempt in the store
       dispatch(updateUserAttempt(attemptId, checkAttempt));
       return checkAttempt;
     } catch (error) {

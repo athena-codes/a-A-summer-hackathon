@@ -9,7 +9,6 @@ import {
   FormLabel,
   Grid,
   Card,
-  Button,
   LinearProgress
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -21,8 +20,8 @@ import {
   useLocation,
 } from "react-router-dom/cjs/react-router-dom.min";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOneDeck, archiveDeck } from "../../store/decks";
-import { fetchUserAttempt, modifyUserAttempt } from "../../store/attempt";
+import { fetchOneDeck, archiveDeck } from "../store/decks";
+import { modifyUserAttempt } from "../store/attempt";
 import Flippy, { FrontSide, BackSide } from 'react-flippy';
 
 function CardPage() {
@@ -33,7 +32,7 @@ function CardPage() {
   const user = useSelector((state) => state.session.user);
   const deck = useSelector((state) => state.decks.selectedDeck);
   const cards = deck?.cards?.[0]?.questionData?.jsonData || [];
-  const attempt = useSelector((state) => state.attempts);
+  // const attemptId = useSelector((state) => state.attempt.attemptId);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [feedback, setFeedback] = useState({});
   const [flipped, setFlipped] = useState({})
@@ -94,18 +93,6 @@ function CardPage() {
           },
         }));
       }
-      // if (checkAttempt && checkAttempt.message === "Answer is correct!") {
-      //   setFeedback({ cardIndex, isCorrect: true });
-      // } else if (
-      //   checkAttempt &&
-      //   checkAttempt.message === "Answer is incorrect."
-      // ) {
-      //   setFeedback({
-      //     cardIndex,
-      //     isCorrect: false,
-      //     correctAnswer: checkAttempt.correctAnswer,
-      //   });
-      // }
 
       const allQuestionsAttempted = Object.keys(selectedAnswers).length === cards.length - 1;
 

@@ -10,12 +10,11 @@ import HomePage from './components/HomePage'
 import WelcomePage from './components/WelcomePage'
 import ConceptPage from './components/ConceptPage'
 import TopicsPage from './components/TopicsPage'
-import MainPage from './components/MainPage'
 import { fetchSingleUser } from './store/users'
 import { authenticate } from './store/session'
-import DeckPage from './components/Decks/DeckPage'
-import CardPage from './components/Cards/CardPage'
 import { LinearProgress } from '@mui/material'
+import DeckPage from './components/DeckPage'
+import CardPage from './components/CardPage'
 
 function App({ locale, setLocale }) {
   const [loaded, setLoaded] = useState(false)
@@ -67,9 +66,6 @@ function App({ locale, setLocale }) {
         </Route> */}
         <Route path='/concepts'>
           {currentUser ? <ConceptPage /> : <WelcomePage setLocale={setLocale} />}
-        </Route>
-        <Route path='/main'>
-          {currentUser ? <MainPage /> : <WelcomePage setLocale={setLocale} />}
         </Route>
         <Route path='/decks/:deckId'>
           <CardPage />

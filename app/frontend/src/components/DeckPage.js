@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchDecks } from "../../store/decks";
 import { useParams } from "react-router-dom";
 import {
   Container,
@@ -11,11 +10,12 @@ import {
   CircularProgress,
   Tooltip
 } from "@mui/material";
-import { addQuestions } from "../../store/questions";
-import { fetchOneTopic } from "../../store/topics";
+import { addQuestions } from "../store/questions";
+import { fetchOneTopic } from "../store/topics";
 import { NavLink, useHistory } from "react-router-dom";
-import { createUserAttempt } from "../../store/attempt";
-import { fetchUserConcepts } from "../../store/concepts";
+import { fetchDecks } from "../store/decks";
+import { createUserAttempt } from "../store/attempt";
+import { fetchUserConcepts } from "../store/concepts";
 import { useTheme } from "@mui/material/styles";
 import InfoIcon from "@mui/icons-material/Info";
 
